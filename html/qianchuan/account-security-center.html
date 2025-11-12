@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>账户安全中心 - 千川账户管理</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="design-system.css">
+</head>
+<body class="bg-gray-50">
+      <!-- Header -->
+  <header class="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-gray-200">
+    <div class="flex h-16 items-center justify-between px-6">
+      <div class="flex items-center gap-3">
+        <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-red-500 to-orange-500">
+          <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+          </svg>
+        </div>
+        <div class="hidden md:block">
+          <h1 class="text-lg font-bold text-gray-900">千川直播带货</h1>
+          <p class="text-xs text-gray-500">Qianchuan Live E-commerce</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <button class="relative flex items-center justify-center w-10 h-10 rounded-lg hover:bg-gray-100 transition-colors">
+          <svg class="h-5 w-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+          </svg>
+          <span class="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-red-500"></span>
+        </button>
+        <div class="relative">
+          <button class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors">
+            <div class="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-red-500 to-orange-500 text-white">
+              <span class="text-sm font-medium">商</span>
+            </div>
+            <span class="hidden text-sm font-medium md:inline-block">商家中心</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="flex">
+    <aside class="w-64 bg-white border-r border-gray-200 min-h-[calc(100vh-64px)] sticky top-16">
+      <nav id="main-nav" class="p-4 space-y-6"></nav>
+    </aside>
+
+    <main class="flex-1 p-8">
+      <div class="max-w-7xl mx-auto space-y-6">
+<main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="mb-8">
+            <h2 class="text-3xl font-bold text-gray-900">🔐 账户安全中心</h2>
+            <p class="mt-2 text-gray-600">管理账户安全设置，保护资金和数据安全</p>
+        </div>
+
+        <!-- 安全评分 -->
+        <div class="qc-card bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-300 mb-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">账户安全评分</h3>
+                    <div class="flex items-center gap-3">
+                        <div class="text-5xl font-bold text-green-600">85</div>
+                        <div>
+                            <p class="text-sm text-gray-600">安全等级：<span class="font-semibold text-green-600">良好</span></p>
+                            <p class="text-xs text-gray-500">建议继续完善安全设置</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="relative w-32 h-32">
+                    <svg class="transform -rotate-90 w-32 h-32">
+                        <circle cx="64" cy="64" r="56" stroke="#e5e7eb" stroke-width="8" fill="none"/>
+                        <circle cx="64" cy="64" r="56" stroke="#10b981" stroke-width="8" fill="none"
+                                stroke-dasharray="351.86" stroke-dashoffset="52.78" stroke-linecap="round"/>
+                    </svg>
+                    <div class="absolute inset-0 flex items-center justify-center">
+                        <span class="text-2xl">🛡️</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 安全设置项 -->
+        <div class="space-y-4 mb-6">
+            <!-- 登录密码 -->
+            <div class="qc-card">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                            <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="font-semibold text-gray-900 mb-1">登录密码</h4>
+                            <p class="text-sm text-gray-600">安全性强的密码可以使账号更安全</p>
+                            <p class="text-xs text-green-600 mt-1">✓ 上次修改：2024-01-10</p>
+                        </div>
+                    </div>
+                    <button onclick="changePassword()" class="qc-btn qc-btn-secondary">修改密码</button>
+                </div>
+            </div>
+
+            <!-- 手机绑定 -->
+            <div class="qc-card border-2 border-green-300">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                            <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="font-semibold text-gray-900 mb-1">手机绑定 ✓</h4>
+                            <p class="text-sm text-gray-600">已绑定手机：138****8888</p>
+                            <p class="text-xs text-green-600 mt-1">✓ 已启用 | 绑定时间：2023-06-15</p>
+                        </div>
+                    </div>
+                    <button onclick="changePhone()" class="qc-btn qc-btn-secondary">更换手机</button>
+                </div>
+            </div>
+
+            <!-- 双因素认证 -->
+            <div class="qc-card border-2 border-green-300">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                            <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="font-semibold text-gray-900 mb-1">双因素认证（2FA）✓</h4>
+                            <p class="text-sm text-gray-600">登录时需要额外的验证码，更安全</p>
+                            <p class="text-xs text-green-600 mt-1">✓ 已启用 | 验证方式：短信验证码</p>
+                        </div>
+                    </div>
+                    <button onclick="disable2FA()" class="qc-btn qc-btn-secondary">关闭</button>
+                </div>
+            </div>
+
+            <!-- 微信绑定 -->
+            <div class="qc-card border-2 border-green-300">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                            <span class="text-2xl">💬</span>
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="font-semibold text-gray-900 mb-1">微信绑定 ✓</h4>
+                            <p class="text-sm text-gray-600">已绑定微信，可快捷登录</p>
+                            <p class="text-xs text-green-600 mt-1">✓ 已绑定 | 绑定时间：2023-08-20</p>
+                        </div>
+                    </div>
+                    <button onclick="unbindWechat()" class="qc-btn qc-btn-secondary">解绑</button>
+                </div>
+            </div>
+
+            <!-- 邮箱绑定 -->
+            <div class="qc-card border-2 border-yellow-300 bg-yellow-50">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+                            <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="font-semibold text-gray-900 mb-1">邮箱绑定 ⚠️</h4>
+                            <p class="text-sm text-gray-600">未绑定邮箱，建议绑定以便找回密码</p>
+                            <p class="text-xs text-yellow-600 mt-1">⚠️ 建议绑定</p>
+                        </div>
+                    </div>
+                    <button onclick="bindEmail()" class="qc-btn qc-btn-primary">立即绑定</button>
+                </div>
+            </div>
+
+            <!-- 实名认证 -->
+            <div class="qc-card border-2 border-green-300">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                            <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2"/>
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="font-semibold text-gray-900 mb-1">实名认证 ✓</h4>
+                            <p class="text-sm text-gray-600">已完成实名认证：张** （370***********1234）</p>
+                            <p class="text-xs text-green-600 mt-1">✓ 已认证 | 认证时间：2023-06-15</p>
+                        </div>
+                    </div>
+                    <span class="qc-badge bg-green-500 text-white">已认证</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 安全记录 -->
+        <div class="qc-card mb-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">🔍 最近安全活动</h3>
+            <div class="space-y-3">
+                <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div class="flex items-center gap-3">
+                        <span class="text-2xl">✅</span>
+                        <div>
+                            <p class="text-sm font-medium text-gray-900">登录成功</p>
+                            <p class="text-xs text-gray-500">2024-01-15 10:23:45 | IP: 120.**.**.** | 地点：北京</p>
+                        </div>
+                    </div>
+                    <span class="text-xs text-green-600">正常</span>
+                </div>
+                <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div class="flex items-center gap-3">
+                        <span class="text-2xl">✅</span>
+                        <div>
+                            <p class="text-sm font-medium text-gray-900">修改推广计划</p>
+                            <p class="text-xs text-gray-500">2024-01-15 09:15:32 | IP: 120.**.**.** | 地点：北京</p>
+                        </div>
+                    </div>
+                    <span class="text-xs text-green-600">正常</span>
+                </div>
+                <div class="flex items-center justify-between p-3 bg-red-50 rounded-lg border border-red-200">
+                    <div class="flex items-center gap-3">
+                        <span class="text-2xl">⚠️</span>
+                        <div>
+                            <p class="text-sm font-medium text-red-900">异常登录尝试</p>
+                            <p class="text-xs text-red-600">2024-01-14 02:34:21 | IP: 45.**.**.** | 地点：美国 | 已拦截</p>
+                        </div>
+                    </div>
+                    <span class="text-xs text-red-600 font-semibold">异常</span>
+                </div>
+                <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div class="flex items-center gap-3">
+                        <span class="text-2xl">✅</span>
+                        <div>
+                            <p class="text-sm font-medium text-gray-900">修改密码</p>
+                            <p class="text-xs text-gray-500">2024-01-10 15:42:18 | IP: 120.**.**.** | 地点：北京</p>
+                        </div>
+                    </div>
+                    <span class="text-xs text-green-600">正常</span>
+                </div>
+            </div>
+            <div class="mt-4 text-center">
+                <a href="account-operation-log.html" class="text-sm text-blue-600 hover:text-blue-700">查看完整操作日志 →</a>
+            </div>
+        </div>
+
+        <!-- 安全建议 -->
+        <div class="bg-gradient-to-r from-blue-50 to-cyan-50 border-l-4 border-blue-400 p-6 rounded-lg mb-6">
+            <div class="flex items-start">
+                <svg class="h-6 w-6 text-blue-500 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"/>
+                </svg>
+                <div>
+                    <h4 class="font-semibold text-blue-900 mb-2">💡 安全建议</h4>
+                    <ul class="text-sm text-blue-800 space-y-1">
+                        <li>• 建议绑定邮箱，可用于密码找回和重要通知</li>
+                        <li>• 定期修改密码（建议每3个月更换一次）</li>
+                        <li>• 不要在公共设备上登录，注意保护账号信息</li>
+                        <li>• 如发现异常活动，请立即修改密码并联系客服</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- 紧急操作 -->
+        <div class="qc-card bg-red-50 border-2 border-red-200">
+            <h3 class="text-lg font-semibold text-red-900 mb-4">🚨 紧急操作</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <button onclick="freezeAccount()" class="qc-btn bg-orange-500 hover:bg-orange-600 text-white">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/>
+                    </svg>
+                    冻结账户
+                </button>
+                <button onclick="logoutAll()" class="qc-btn bg-red-500 hover:bg-red-600 text-white">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                    </svg>
+                    登出所有设备
+                </button>
+            </div>
+            <p class="text-xs text-red-600 mt-3">⚠️ 如账户被盗或发现异常，请立即执行紧急操作并联系客服</p>
+        </div>
+          </div>
+    </div>
+        </div>
+    </div>
+  </main>
+  </div>
+  </div>
+
+    <script>
+        function changePassword() {
+            alert('🔐 修改密码\n\n请输入当前密码和新密码');
+        }
+
+        function changePhone() {
+            alert('📱 更换手机号\n\n需要验证当前手机号');
+        }
+
+        function disable2FA() {
+            if(confirm('确认关闭双因素认证？\n\n关闭后账户安全性将降低')) {
+                alert('⚠️ 双因素认证已关闭');
+            }
+        }
+
+        function unbindWechat() {
+            if(confirm('确认解绑微信？\n\n解绑后将无法使用微信登录')) {
+                alert('✅ 微信已解绑');
+            }
+        }
+
+        function bindEmail() {
+            alert('📧 绑定邮箱\n\n请输入您的邮箱地址');
+        }
+
+        function freezeAccount() {
+            if(confirm('⚠️ 确认冻结账户？\n\n冻结后需要联系客服才能解冻')) {
+                alert('🚨 账户已冻结，请联系客服处理');
+            }
+        }
+
+        function logoutAll() {
+            if(confirm('确认登出所有设备？\n\n您将需要重新登录')) {
+                alert('✅ 已登出所有设备');
+            }
+        }
+    </script>
+  <script src="nav-component.js"></script>
+</body>
+</html>

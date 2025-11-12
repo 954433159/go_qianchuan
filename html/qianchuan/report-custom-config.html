@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>自定义报表配置 - 巨量千川</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="./design-system.css">
+</head>
+<body class="bg-gray-50">
+  <div id="qc-header"></div>
+  <div class="flex">
+    <div id="qc-sidebar" data-active="reports"></div>
+    <main id="main-content" class="flex-1 ml-64 mt-16 p-8">
+      <div id="qc-page-header"></div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- 可用维度 -->
+        <div class="qc-card">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-semibold text-gray-900">可用维度</h3>
+            <span class="qc-badge qc-badge-info" id="dimension-count">0 个</span>
+          </div>
+          <div class="space-y-2" id="dimensions-list">
+            <div class="flex items-center justify-center py-12">
+              <div class="qc-loading-spinner"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 可用指标 -->
+        <div class="qc-card lg:col-span-2">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-semibold text-gray-900">可用指标</h3>
+            <div class="flex items-center gap-3">
+              <input
+                type="text"
+                id="metric-search"
+                placeholder="搜索指标..."
+                class="qc-input w-64"
+              >
+              <span class="qc-badge qc-badge-info" id="metric-count">0 个</span>
+            </div>
+          </div>
+
+          <!-- 指标分类 -->
+          <div class="flex gap-2 mb-4 flex-wrap">
+            <button class="qc-btn qc-btn-secondary qc-btn-sm active" data-category="all">全部</button>
+            <button class="qc-btn qc-btn-ghost qc-btn-sm" data-category="exposure">曝光</button>
+            <button class="qc-btn qc-btn-ghost qc-btn-sm" data-category="click">点击</button>
+            <button class="qc-btn qc-btn-ghost qc-btn-sm" data-category="convert">转化</button>
+            <button class="qc-btn qc-btn-ghost qc-btn-sm" data-category="cost">成本</button>
+            <button class="qc-btn qc-btn-ghost qc-btn-sm" data-category="roi">ROI</button>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3" id="metrics-list">
+            <div class="flex items-center justify-center py-12 col-span-2">
+              <div class="qc-loading-spinner"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 已选配置 -->
+      <div class="qc-card mt-6">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">已选配置</h3>
+        <div class="grid grid-cols-2 gap-6">
+          <div>
+            <h4 class="text-sm font-medium text-gray-700 mb-3">已选维度</h4>
+            <div id="selected-dimensions" class="space-y-2 min-h-[100px]"></div>
+          </div>
+          <div>
+            <h4 class="text-sm font-medium text-gray-700 mb-3">已选指标</h4>
+            <div id="selected-metrics" class="space-y-2 min-h-[100px]"></div>
+          </div>
+        </div>
+        <div class="flex items-center justify-end gap-3 mt-6 pt-6 border-t">
+          <button onclick="clearSelection()" class="qc-btn qc-btn-secondary">清空选择</button>
+          <button onclick="generateReport()" class="qc-btn qc-btn-primary">生成自定义报表</button>
+        </div>
+      </div>
+          </div>
+    </div>
+        </div>
+    </div>
+  </main>
+  </div>
+  </div>
+  </div>
+
+  <script src="./assets/js/common.js"></script>
+  <script src="./assets/js/api.js"></script>
+  <script src="./assets/js/validate.js"></script>
+
+  <script>
+    document.getElementById('qc-page-header').innerHTML = QC.renderPageHeader({
+      title: '自定义报表配置',
+      description: '选择维度和指标创建个性化报表',
+      breadcrumbs: [
+        { label: '数据报表', url: './reports.html' },
+        { label: '自定义报表', url: './report-custom.html' },
+        { label: '配置' }
+      ]
+    });
+
+    const selectedDimensions = new Set();
+    const selectedMetrics = new Set();
+
+    // 加载配置
+    QC.showLoading('加载配置中...');
+    api.get('/report/custom/config/get', { 
+      advertiser_id: 123456 
+    })
+      .then(data => {
+        QC.hideLoading();
+        renderDimensions(data.dimensions || []);
+        renderMetrics(data.metrics || []);
+      })
+      .catch(error => {
+        QC.hideLoading();
+        alert('加载失败：' + error.message);
+      });
+
+    function renderDimensions(dimensions) {
+      document.getElementById('dimension-count').textContent = `${dimensions.length} 个`;
+      
+      const html = dimensions.map(dim => `
+        <div class="flex items-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer transition"
+             onclick="toggleDimension('${dim.field}', '${dim.name}')">
+          <div class="flex-1">
+            <p class="text-sm font-medium text-gray-900">${dim.name}</p>
+            <p class="text-xs text-gray-500">${dim.field}</p>
+          </div>
+          <input type="checkbox" id="dim-${dim.field}" class="w-4 h-4 text-red-600">
+        </div>
+      `).join('');
+      
+      document.getElementById('dimensions-list').innerHTML = html || '<div class="qc-empty-state"><div class="qc-empty-title">暂无可用维度</div></div>';
+    }
+
+    function renderMetrics(metrics) {
+      document.getElementById('metric-count').textContent = `${metrics.length} 个`;
+      
+      const html = metrics.map(metric => `
+        <div class="flex items-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer transition"
+             data-category="${metric.category || 'other'}"
+             onclick="toggleMetric('${metric.field}', '${metric.name}')">
+          <div class="flex-1">
+            <p class="text-sm font-medium text-gray-900">${metric.name}</p>
+            <p class="text-xs text-gray-500">${metric.field}</p>
+          </div>
+          <input type="checkbox" id="metric-${metric.field}" class="w-4 h-4 text-red-600">
+        </div>
+      `).join('');
+      
+      document.getElementById('metrics-list').innerHTML = html || '<div class="qc-empty-state col-span-2"><div class="qc-empty-title">暂无可用指标</div></div>';
+    }
+
+    function toggleDimension(field, name) {
+      if (selectedDimensions.has(field)) {
+        selectedDimensions.delete(field);
+        document.getElementById(`dim-${field}`).checked = false;
+      } else {
+        selectedDimensions.add(field);
+        document.getElementById(`dim-${field}`).checked = true;
+      }
+      updateSelection();
+    }
+
+    function toggleMetric(field, name) {
+      if (selectedMetrics.has(field)) {
+        selectedMetrics.delete(field);
+        document.getElementById(`metric-${field}`).checked = false;
+      } else {
+        selectedMetrics.add(field);
+        document.getElementById(`metric-${field}`).checked = true;
+      }
+      updateSelection();
+    }
+
+    function updateSelection() {
+      // 更新已选维度
+      const dimHtml = Array.from(selectedDimensions).map(field => `
+        <div class="flex items-center justify-between p-2 bg-blue-50 border border-blue-200 rounded">
+          <span class="text-sm text-blue-900">${field}</span>
+          <button onclick="toggleDimension('${field}')" class="text-blue-600 hover:text-blue-800">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+          </button>
+        </div>
+      `).join('');
+      document.getElementById('selected-dimensions').innerHTML = dimHtml || '<p class="text-sm text-gray-500 py-4">尚未选择维度</p>';
+
+      // 更新已选指标
+      const metricHtml = Array.from(selectedMetrics).map(field => `
+        <div class="flex items-center justify-between p-2 bg-green-50 border border-green-200 rounded">
+          <span class="text-sm text-green-900">${field}</span>
+          <button onclick="toggleMetric('${field}')" class="text-green-600 hover:text-green-800">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+          </button>
+        </div>
+      `).join('');
+      document.getElementById('selected-metrics').innerHTML = metricHtml || '<p class="text-sm text-gray-500 py-4">尚未选择指标</p>';
+    }
+
+    function clearSelection() {
+      selectedDimensions.clear();
+      selectedMetrics.clear();
+      document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+      updateSelection();
+    }
+
+    function generateReport() {
+      if (selectedDimensions.size === 0 || selectedMetrics.size === 0) {
+        alert('请至少选择一个维度和一个指标');
+        return;
+      }
+
+      const config = {
+        dimensions: Array.from(selectedDimensions),
+        metrics: Array.from(selectedMetrics)
+      };
+
+      const params = new URLSearchParams({
+        config: JSON.stringify(config)
+      });
+      
+      window.location.href = `./report-custom.html?${params.toString()}`;
+    }
+
+    // 分类筛选
+    document.querySelectorAll('[data-category]').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        document.querySelectorAll('[data-category]').forEach(b => {
+          b.classList.remove('active', 'qc-btn-secondary');
+          b.classList.add('qc-btn-ghost');
+        });
+        e.target.classList.add('active', 'qc-btn-secondary');
+        e.target.classList.remove('qc-btn-ghost');
+
+        const category = e.target.dataset.category;
+        document.querySelectorAll('#metrics-list > div').forEach(item => {
+          if (category === 'all' || item.dataset.category === category) {
+            item.style.display = 'flex';
+          } else {
+            item.style.display = 'none';
+          }
+        });
+      });
+    });
+
+    // 搜索
+    document.getElementById('metric-search').addEventListener('input', (e) => {
+      const query = e.target.value.toLowerCase();
+      document.querySelectorAll('#metrics-list > div').forEach(item => {
+        const text = item.textContent.toLowerCase();
+        item.style.display = text.includes(query) ? 'flex' : 'none';
+      });
+    });
+  </script>
+  <script src="nav-component.js"></script>
+</body>
+</html>

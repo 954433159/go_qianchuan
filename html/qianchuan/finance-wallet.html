@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>钱包管理 - 千川直播带货平台</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="design-system.css">
+</head>
+<body class="bg-gray-50">
+
+  <!-- 顶部导航栏 -->
+    <!-- Header -->
+  <header class="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-gray-200">
+    <div class="flex h-16 items-center justify-between px-6">
+      <div class="flex items-center gap-3">
+        <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-red-500 to-orange-500">
+          <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+          </svg>
+        </div>
+        <div class="hidden md:block">
+          <h1 class="text-lg font-bold text-gray-900">千川直播带货</h1>
+          <p class="text-xs text-gray-500">Qianchuan Live E-commerce</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <button class="relative flex items-center justify-center w-10 h-10 rounded-lg hover:bg-gray-100 transition-colors">
+          <svg class="h-5 w-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+          </svg>
+          <span class="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-red-500"></span>
+        </button>
+        <div class="relative">
+          <button class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors">
+            <div class="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-red-500 to-orange-500 text-white">
+              <span class="text-sm font-medium">商</span>
+            </div>
+            <span class="hidden text-sm font-medium md:inline-block">商家中心</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="flex">
+    <aside class="w-64 bg-white border-r border-gray-200 min-h-[calc(100vh-64px)] sticky top-16">
+      <nav id="main-nav" class="p-4 space-y-6"></nav>
+    </aside>
+
+    <main class="flex-1 p-8">
+      <div class="max-w-7xl mx-auto space-y-6">
+<!-- 主内容 -->
+  
+    
+    <!-- 页面标题 -->
+    <div class="mb-8">
+      <div class="flex items-center justify-between">
+        <div>
+          <h2 class="text-3xl font-bold text-gray-900">💰 钱包管理</h2>
+          <p class="mt-2 text-gray-600">管理您的广告账户余额与充值</p>
+        </div>
+        <div class="flex gap-3">
+          <button class="qc-btn qc-btn-secondary">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            账单详情
+          </button>
+          <button onclick="openRechargeModal()" class="qc-btn qc-btn-primary">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+            </svg>
+            立即充值
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 钱包余额卡片 -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+      
+      <!-- 现金账户 -->
+      <div class="qc-card lg:col-span-2" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; color: white;">
+        <div class="flex items-start justify-between mb-6">
+          <div>
+            <h3 class="text-white text-opacity-90 text-sm font-medium mb-2">现金账户余额</h3>
+            <div class="text-5xl font-bold font-mono mb-1">¥<span id="cash-balance">156,823.50</span></div>
+            <p class="text-white text-opacity-75 text-sm">可用余额</p>
+          </div>
+          <div class="w-16 h-16 bg-white bg-opacity-20 rounded-2xl flex items-center justify-center">
+            <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+            </svg>
+          </div>
+        </div>
+        
+        <div class="grid grid-cols-3 gap-4 pt-6 border-t border-white border-opacity-20">
+          <div>
+            <p class="text-white text-opacity-75 text-xs mb-1">冻结金额</p>
+            <p class="text-white text-lg font-semibold font-mono">¥12,500</p>
+          </div>
+          <div>
+            <p class="text-white text-opacity-75 text-xs mb-1">今日消耗</p>
+            <p class="text-white text-lg font-semibold font-mono">¥8,456</p>
+          </div>
+          <div>
+            <p class="text-white text-opacity-75 text-xs mb-1">预计可用天数</p>
+            <p class="text-white text-lg font-semibold font-mono">18.5 天</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 赠款账户 -->
+      <div class="qc-card qc-card-highlight">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="font-semibold text-gray-900">赠款账户</h3>
+          <span class="qc-badge qc-badge-warning">限定用途</span>
+        </div>
+        <div class="mb-4">
+          <div class="text-3xl font-bold font-mono text-gray-900">¥5,200.00</div>
+          <p class="text-sm text-gray-600 mt-1">可用赠款余额</p>
+        </div>
+        <div class="bg-white rounded-lg p-3">
+          <div class="flex items-center justify-between text-xs mb-2">
+            <span class="text-gray-600">有效期至</span>
+            <span class="font-medium text-gray-900">2025-12-31</span>
+          </div>
+          <div class="flex items-center justify-between text-xs">
+            <span class="text-gray-600">适用场景</span>
+            <span class="font-medium text-red-600">直播推广</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 余额趋势与操作 -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+      
+      <!-- 余额趋势图 -->
+      <div class="qc-card lg:col-span-2">
+        <h3 class="font-semibold text-gray-900 mb-4">余额变化趋势（近30天）</h3>
+        <div class="h-64 flex items-end justify-between gap-2">
+          <div class="flex-1 bg-gradient-to-t from-red-500 to-orange-400 rounded-t" style="height: 45%;"></div>
+          <div class="flex-1 bg-gradient-to-t from-red-500 to-orange-400 rounded-t" style="height: 52%;"></div>
+          <div class="flex-1 bg-gradient-to-t from-red-500 to-orange-400 rounded-t" style="height: 48%;"></div>
+          <div class="flex-1 bg-gradient-to-t from-red-500 to-orange-400 rounded-t" style="height: 61%;"></div>
+          <div class="flex-1 bg-gradient-to-t from-red-500 to-orange-400 rounded-t" style="height: 55%;"></div>
+          <div class="flex-1 bg-gradient-to-t from-red-500 to-orange-400 rounded-t" style="height: 68%;"></div>
+          <div class="flex-1 bg-gradient-to-t from-red-500 to-orange-400 rounded-t" style="height: 72%;"></div>
+          <div class="flex-1 bg-gradient-to-t from-red-500 to-orange-400 rounded-t" style="height: 65%;"></div>
+          <div class="flex-1 bg-gradient-to-t from-red-500 to-orange-400 rounded-t" style="height: 78%;"></div>
+          <div class="flex-1 bg-gradient-to-t from-red-500 to-orange-400 rounded-t" style="height: 85%;"></div>
+          <div class="flex-1 bg-gradient-to-t from-red-500 to-orange-400 rounded-t" style="height: 80%;"></div>
+          <div class="flex-1 bg-gradient-to-t from-red-500 to-orange-400 rounded-t" style="height: 92%;"></div>
+          <div class="flex-1 bg-gradient-to-t from-red-500 to-orange-400 rounded-t" style="height: 88%;"></div>
+          <div class="flex-1 bg-gradient-to-t from-red-500 to-orange-400 rounded-t" style="height: 95%;"></div>
+          <div class="flex-1 bg-gradient-to-t from-red-500 to-orange-400 rounded-t" style="height: 100%;"></div>
+        </div>
+        <div class="flex justify-between mt-4 text-xs text-gray-500">
+          <span>10/17</span>
+          <span>10/24</span>
+          <span>10/31</span>
+          <span>11/07</span>
+          <span class="font-medium text-gray-900">今天</span>
+        </div>
+      </div>
+
+      <!-- 快捷操作 -->
+      <div class="space-y-4">
+        <div class="qc-card qc-card-interactive" onclick="window.location.href='finance-transactions.html'">
+          <div class="flex items-center">
+            <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mr-4">
+              <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+              </svg>
+            </div>
+            <div class="flex-1">
+              <h4 class="font-semibold text-gray-900">财务流水</h4>
+              <p class="text-xs text-gray-600">查看所有交易记录</p>
+            </div>
+            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+          </div>
+        </div>
+
+        <div class="qc-card qc-card-interactive" onclick="window.location.href='finance-balance.html'">
+          <div class="flex items-center">
+            <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mr-4">
+              <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+              </svg>
+            </div>
+            <div class="flex-1">
+              <h4 class="font-semibold text-gray-900">余额查询</h4>
+              <p class="text-xs text-gray-600">实时余额与统计</p>
+            </div>
+            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+          </div>
+        </div>
+
+        <div class="qc-card" style="background: linear-gradient(135deg, #FEF2F2 0%, #FFF7ED 100%); border-color: #FED7AA;">
+          <div class="flex items-start">
+            <svg class="w-5 h-5 text-orange-500 mr-3 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+            <div>
+              <p class="text-sm font-medium text-orange-900">余额预警</p>
+              <p class="text-xs text-orange-700 mt-1">当前余额预计可用18.5天，建议及时充值</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 最近交易记录 -->
+    <div class="qc-card">
+      <div class="flex items-center justify-between mb-6">
+        <h3 class="font-semibold text-gray-900">最近交易记录</h3>
+        <a href="finance-transactions.html" class="text-sm text-red-600 hover:text-red-700 font-medium">
+          查看全部 →
+        </a>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="qc-table">
+          <thead>
+            <tr>
+              <th>交易时间</th>
+              <th>交易类型</th>
+              <th>金额</th>
+              <th>余额</th>
+              <th>备注</th>
+              <th>状态</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="font-mono text-sm">2025-11-11 07:30</td>
+              <td>
+                <span class="qc-badge qc-badge-danger">消耗</span>
+              </td>
+              <td class="font-mono font-semibold text-red-600">-¥2,345.00</td>
+              <td class="font-mono text-sm">¥156,823.50</td>
+              <td class="text-gray-600">推广计划消耗</td>
+              <td><span class="qc-badge qc-badge-success">已完成</span></td>
+            </tr>
+            <tr>
+              <td class="font-mono text-sm">2025-11-10 18:22</td>
+              <td>
+                <span class="qc-badge qc-badge-success">充值</span>
+              </td>
+              <td class="font-mono font-semibold text-green-600">+¥50,000.00</td>
+              <td class="font-mono text-sm">¥159,168.50</td>
+              <td class="text-gray-600">在线充值</td>
+              <td><span class="qc-badge qc-badge-success">已完成</span></td>
+            </tr>
+            <tr>
+              <td class="font-mono text-sm">2025-11-10 15:45</td>
+              <td>
+                <span class="qc-badge qc-badge-danger">消耗</span>
+              </td>
+              <td class="font-mono font-semibold text-red-600">-¥6,111.00</td>
+              <td class="font-mono text-sm">¥109,168.50</td>
+              <td class="text-gray-600">推广计划消耗</td>
+              <td><span class="qc-badge qc-badge-success">已完成</span></td>
+            </tr>
+            <tr>
+              <td class="font-mono text-sm">2025-11-10 12:30</td>
+              <td>
+                <span class="qc-badge qc-badge-warning">退款</span>
+              </td>
+              <td class="font-mono font-semibold text-green-600">+¥1,234.00</td>
+              <td class="font-mono text-sm">¥115,279.50</td>
+              <td class="text-gray-600">计划取消退款</td>
+              <td><span class="qc-badge qc-badge-success">已完成</span></td>
+            </tr>
+            <tr>
+              <td class="font-mono text-sm">2025-11-09 09:15</td>
+              <td>
+                <span class="qc-badge qc-badge-success">充值</span>
+              </td>
+              <td class="font-mono font-semibold text-green-600">+¥100,000.00</td>
+              <td class="font-mono text-sm">¥114,045.50</td>
+              <td class="text-gray-600">对公转账</td>
+              <td><span class="qc-badge qc-badge-success">已完成</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+        </div>
+    </div>
+  </main>
+  </div>
+
+  <!-- 充值模态框 -->
+  <div id="recharge-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full mx-4 p-8">
+      <div class="flex items-center justify-between mb-6">
+        <h3 class="text-2xl font-bold text-gray-900">账户充值</h3>
+        <button onclick="closeRechargeModal()" class="text-gray-400 hover:text-gray-600">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <div class="mb-6">
+        <label class="block text-sm font-medium text-gray-700 mb-2">充值金额</label>
+        <input type="number" class="qc-input text-2xl font-bold" placeholder="请输入充值金额" value="10000">
+        
+        <div class="grid grid-cols-4 gap-2 mt-3">
+          <button class="px-4 py-2 border border-gray-300 rounded-lg hover:border-red-500 hover:text-red-500 transition-colors">¥5,000</button>
+          <button class="px-4 py-2 border border-gray-300 rounded-lg hover:border-red-500 hover:text-red-500 transition-colors">¥10,000</button>
+          <button class="px-4 py-2 border border-gray-300 rounded-lg hover:border-red-500 hover:text-red-500 transition-colors">¥50,000</button>
+          <button class="px-4 py-2 border border-gray-300 rounded-lg hover:border-red-500 hover:text-red-500 transition-colors">¥100,000</button>
+        </div>
+      </div>
+
+      <div class="mb-6">
+        <label class="block text-sm font-medium text-gray-700 mb-3">支付方式</label>
+        <div class="space-y-3">
+          <label class="flex items-center p-4 border-2 border-red-500 rounded-xl cursor-pointer bg-red-50">
+            <input type="radio" name="payment" class="w-4 h-4 text-red-500" checked>
+            <span class="ml-3 flex-1 font-medium text-gray-900">在线支付</span>
+            <span class="text-sm text-red-600">推荐</span>
+          </label>
+          <label class="flex items-center p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-gray-300">
+            <input type="radio" name="payment" class="w-4 h-4 text-red-500">
+            <span class="ml-3 flex-1 font-medium text-gray-900">对公转账</span>
+            <span class="text-sm text-gray-500">1-3个工作日到账</span>
+          </label>
+        </div>
+      </div>
+
+      <button class="qc-btn qc-btn-primary w-full py-3 text-base font-semibold">
+        确认充值
+      </button>
+    </div>
+  </div>
+
+  <script>
+    function openRechargeModal() {
+      document.getElementById('recharge-modal').classList.remove('hidden');
+    }
+
+    function closeRechargeModal() {
+      document.getElementById('recharge-modal').classList.add('hidden');
+    }
+
+    // ESC键关闭模态框
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeRechargeModal();
+      }
+    });
+  </script>
+
+  <script src="nav-component.js"></script>
+</body>
+</html>

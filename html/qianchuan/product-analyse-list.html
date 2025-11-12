@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>商品竞争分析 - 千川数据分析</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="design-system.css">
+</head>
+<body class="bg-gray-50">
+      <!-- Header -->
+  <header class="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-gray-200">
+    <div class="flex h-16 items-center justify-between px-6">
+      <div class="flex items-center gap-3">
+        <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-red-500 to-orange-500">
+          <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+          </svg>
+        </div>
+        <div class="hidden md:block">
+          <h1 class="text-lg font-bold text-gray-900">千川直播带货</h1>
+          <p class="text-xs text-gray-500">Qianchuan Live E-commerce</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <button class="relative flex items-center justify-center w-10 h-10 rounded-lg hover:bg-gray-100 transition-colors">
+          <svg class="h-5 w-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+          </svg>
+          <span class="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-red-500"></span>
+        </button>
+        <div class="relative">
+          <button class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors">
+            <div class="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-red-500 to-orange-500 text-white">
+              <span class="text-sm font-medium">商</span>
+            </div>
+            <span class="hidden text-sm font-medium md:inline-block">商家中心</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="flex">
+    <aside class="w-64 bg-white border-r border-gray-200 min-h-[calc(100vh-64px)] sticky top-16">
+      <nav id="main-nav" class="p-4 space-y-6"></nav>
+    </aside>
+
+    <main class="flex-1 p-8">
+      <div class="max-w-7xl mx-auto space-y-6">
+
+        <div class="mb-8">
+            <div class="flex items-center text-sm text-gray-500 mb-2">
+                <a href="dashboard.html" class="hover:text-red-600">首页</a>
+                <span class="mx-2">/</span>
+                <a href="reports.html" class="hover:text-red-600">数据分析</a>
+                <span class="mx-2">/</span>
+                <span class="text-gray-900">商品竞争分析</span>
+            </div>
+            <h2 class="text-3xl font-bold text-gray-900">🔍 商品竞争分析</h2>
+            <p class="mt-2 text-gray-600">对比分析商品的投放效果、创意表现和竞争态势</p>
+        </div>
+
+        <!-- 筛选栏 -->
+        <div class="qc-card mb-6">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">商品名称</label>
+                    <input type="text" class="qc-input" placeholder="搜索商品">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">时间范围</label>
+                    <select class="qc-input">
+                        <option>最近7天</option>
+                        <option>最近14天</option>
+                        <option>最近30天</option>
+                        <option>自定义</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">商品类目</label>
+                    <select class="qc-input">
+                        <option value="">全部类目</option>
+                        <option>美妆个护</option>
+                        <option>服饰鞋包</option>
+                        <option>食品饮料</option>
+                        <option>数码家电</option>
+                    </select>
+                </div>
+                <div class="flex items-end">
+                    <button class="qc-btn qc-btn-primary w-full">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                        </svg>
+                        查询
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 数据概览 -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+            <div class="qc-card">
+                <p class="text-sm text-gray-600 mb-1">分析商品数</p>
+                <p class="text-3xl font-bold text-gray-900">128</p>
+                <p class="text-xs text-gray-500 mt-1">累计商品</p>
+            </div>
+            <div class="qc-card">
+                <p class="text-sm text-gray-600 mb-1">平均GMV</p>
+                <p class="text-2xl font-bold qc-text-gradient">¥85.6K</p>
+                <p class="text-xs text-green-600 mt-1">环比 +12.5%</p>
+            </div>
+            <div class="qc-card">
+                <p class="text-sm text-gray-600 mb-1">平均ROI</p>
+                <p class="text-3xl font-bold qc-roi-excellent">5.8</p>
+                <p class="text-xs text-green-600 mt-1">环比 +0.6</p>
+            </div>
+            <div class="qc-card">
+                <p class="text-sm text-gray-600 mb-1">平均转化率</p>
+                <p class="text-3xl font-bold text-gray-900">6.2%</p>
+                <p class="text-xs text-green-600 mt-1">环比 +0.8%</p>
+            </div>
+        </div>
+
+        <!-- 商品列表 -->
+        <div class="qc-card">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-lg font-semibold text-gray-900">商品分析列表</h3>
+                <div class="flex gap-2">
+                    <select class="qc-input text-sm w-40">
+                        <option>按GMV排序</option>
+                        <option>按ROI排序</option>
+                        <option>按消耗排序</option>
+                        <option>按转化率排序</option>
+                    </select>
+                    <button class="qc-btn qc-btn-secondary text-sm">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                        导出报表
+                    </button>
+                </div>
+            </div>
+
+            <div class="space-y-4">
+                <!-- 商品卡片 1 -->
+                <div class="border-2 border-orange-200 rounded-lg p-6 bg-gradient-to-r from-orange-50 to-red-50 qc-hover-lift">
+                    <div class="flex items-start gap-4">
+                        <div class="w-24 h-24 rounded-lg overflow-hidden bg-white flex-shrink-0">
+                            <div class="w-full h-full flex items-center justify-center text-gray-400 text-xs">
+                                商品图片
+                            </div>
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex items-start justify-between mb-3">
+                                <div>
+                                    <div class="flex items-center gap-3 mb-2">
+                                        <h4 class="text-lg font-bold text-gray-900">[爆款] 秋冬羽绒服女加厚保暖</h4>
+                                        <span class="qc-badge qc-badge-danger">🔥 热卖</span>
+                                    </div>
+                                    <p class="text-sm text-gray-600">商品ID: 1234567890 | 类目: 服饰鞋包 > 女装 > 羽绒服</p>
+                                </div>
+                                <a href="product-analyse-compare-stats.html?id=1234567890" class="qc-btn qc-btn-primary text-sm">
+                                    查看详情
+                                </a>
+                            </div>
+
+                            <div class="grid grid-cols-6 gap-4 mb-4">
+                                <div class="text-center p-3 bg-white rounded-lg">
+                                    <p class="text-xs text-gray-600 mb-1">近7日GMV</p>
+                                    <p class="text-xl font-bold qc-text-gradient">¥385K</p>
+                                </div>
+                                <div class="text-center p-3 bg-white rounded-lg">
+                                    <p class="text-xs text-gray-600 mb-1">投放消耗</p>
+                                    <p class="text-xl font-bold text-red-600">¥52.3K</p>
+                                </div>
+                                <div class="text-center p-3 bg-white rounded-lg">
+                                    <p class="text-xs text-gray-600 mb-1">ROI</p>
+                                    <p class="text-2xl font-bold qc-roi-excellent">7.4</p>
+                                </div>
+                                <div class="text-center p-3 bg-white rounded-lg">
+                                    <p class="text-xs text-gray-600 mb-1">点击率</p>
+                                    <p class="text-xl font-bold text-gray-900">8.5%</p>
+                                </div>
+                                <div class="text-center p-3 bg-white rounded-lg">
+                                    <p class="text-xs text-gray-600 mb-1">转化率</p>
+                                    <p class="text-xl font-bold text-gray-900">12.3%</p>
+                                </div>
+                                <div class="text-center p-3 bg-white rounded-lg">
+                                    <p class="text-xs text-gray-600 mb-1">创意数量</p>
+                                    <p class="text-xl font-bold text-gray-900">45</p>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center justify-between pt-3 border-t border-orange-200">
+                                <div class="flex items-center gap-4 text-sm">
+                                    <span class="text-gray-600">优势：</span>
+                                    <span class="px-2 py-1 bg-green-100 text-green-700 rounded text-xs">ROI优秀</span>
+                                    <span class="px-2 py-1 bg-green-100 text-green-700 rounded text-xs">转化率高</span>
+                                    <span class="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs">创意丰富</span>
+                                </div>
+                                <div class="flex gap-2">
+                                    <a href="product-analyse-compare-stats.html?id=1234567890" class="text-sm text-blue-600 hover:text-blue-700">效果对比</a>
+                                    <a href="product-analyse-compare-creative.html?id=1234567890" class="text-sm text-blue-600 hover:text-blue-700">创意比对</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 商品卡片 2 -->
+                <div class="border border-gray-200 rounded-lg p-6 bg-white qc-hover-lift">
+                    <div class="flex items-start gap-4">
+                        <div class="w-24 h-24 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
+                            <div class="w-full h-full flex items-center justify-center text-gray-400 text-xs">
+                                商品图片
+                            </div>
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex items-start justify-between mb-3">
+                                <div>
+                                    <div class="flex items-center gap-3 mb-2">
+                                        <h4 class="text-lg font-bold text-gray-900">高端护肤套装 补水保湿礼盒</h4>
+                                        <span class="qc-badge qc-badge-success">稳定</span>
+                                    </div>
+                                    <p class="text-sm text-gray-600">商品ID: 9876543210 | 类目: 美妆个护 > 护肤 > 套装</p>
+                                </div>
+                                <a href="product-analyse-compare-stats.html?id=9876543210" class="qc-btn qc-btn-secondary text-sm">
+                                    查看详情
+                                </a>
+                            </div>
+
+                            <div class="grid grid-cols-6 gap-4 mb-4">
+                                <div class="text-center p-3 bg-gray-50 rounded-lg">
+                                    <p class="text-xs text-gray-600 mb-1">近7日GMV</p>
+                                    <p class="text-xl font-bold text-gray-900">¥215K</p>
+                                </div>
+                                <div class="text-center p-3 bg-gray-50 rounded-lg">
+                                    <p class="text-xs text-gray-600 mb-1">投放消耗</p>
+                                    <p class="text-xl font-bold text-red-600">¥38.5K</p>
+                                </div>
+                                <div class="text-center p-3 bg-gray-50 rounded-lg">
+                                    <p class="text-xs text-gray-600 mb-1">ROI</p>
+                                    <p class="text-2xl font-bold qc-roi-good">5.6</p>
+                                </div>
+                                <div class="text-center p-3 bg-gray-50 rounded-lg">
+                                    <p class="text-xs text-gray-600 mb-1">点击率</p>
+                                    <p class="text-xl font-bold text-gray-900">6.8%</p>
+                                </div>
+                                <div class="text-center p-3 bg-gray-50 rounded-lg">
+                                    <p class="text-xs text-gray-600 mb-1">转化率</p>
+                                    <p class="text-xl font-bold text-gray-900">9.2%</p>
+                                </div>
+                                <div class="text-center p-3 bg-gray-50 rounded-lg">
+                                    <p class="text-xs text-gray-600 mb-1">创意数量</p>
+                                    <p class="text-xl font-bold text-gray-900">28</p>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center justify-between pt-3 border-t border-gray-200">
+                                <div class="flex items-center gap-4 text-sm">
+                                    <span class="text-gray-600">优势：</span>
+                                    <span class="px-2 py-1 bg-green-100 text-green-700 rounded text-xs">ROI良好</span>
+                                    <span class="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs">数据稳定</span>
+                                </div>
+                                <div class="flex gap-2">
+                                    <a href="product-analyse-compare-stats.html?id=9876543210" class="text-sm text-blue-600 hover:text-blue-700">效果对比</a>
+                                    <a href="product-analyse-compare-creative.html?id=9876543210" class="text-sm text-blue-600 hover:text-blue-700">创意比对</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 商品卡片 3 -->
+                <div class="border border-gray-200 rounded-lg p-6 bg-white">
+                    <div class="flex items-start gap-4">
+                        <div class="w-24 h-24 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
+                            <div class="w-full h-full flex items-center justify-center text-gray-400 text-xs">
+                                商品图片
+                            </div>
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex items-start justify-between mb-3">
+                                <div>
+                                    <div class="flex items-center gap-3 mb-2">
+                                        <h4 class="text-lg font-bold text-gray-900">坚果零食礼盒 混合装1500g</h4>
+                                        <span class="qc-badge qc-badge-warning">待优化</span>
+                                    </div>
+                                    <p class="text-sm text-gray-600">商品ID: 5556667788 | 类目: 食品饮料 > 休闲零食 > 坚果</p>
+                                </div>
+                                <a href="product-analyse-compare-stats.html?id=5556667788" class="qc-btn qc-btn-secondary text-sm">
+                                    查看详情
+                                </a>
+                            </div>
+
+                            <div class="grid grid-cols-6 gap-4 mb-4">
+                                <div class="text-center p-3 bg-gray-50 rounded-lg">
+                                    <p class="text-xs text-gray-600 mb-1">近7日GMV</p>
+                                    <p class="text-xl font-bold text-gray-900">¥98K</p>
+                                </div>
+                                <div class="text-center p-3 bg-gray-50 rounded-lg">
+                                    <p class="text-xs text-gray-600 mb-1">投放消耗</p>
+                                    <p class="text-xl font-bold text-red-600">¥28.6K</p>
+                                </div>
+                                <div class="text-center p-3 bg-gray-50 rounded-lg">
+                                    <p class="text-xs text-gray-600 mb-1">ROI</p>
+                                    <p class="text-2xl font-bold qc-roi-poor">3.4</p>
+                                </div>
+                                <div class="text-center p-3 bg-gray-50 rounded-lg">
+                                    <p class="text-xs text-gray-600 mb-1">点击率</p>
+                                    <p class="text-xl font-bold text-gray-900">4.2%</p>
+                                </div>
+                                <div class="text-center p-3 bg-gray-50 rounded-lg">
+                                    <p class="text-xs text-gray-600 mb-1">转化率</p>
+                                    <p class="text-xl font-bold text-gray-900">5.8%</p>
+                                </div>
+                                <div class="text-center p-3 bg-gray-50 rounded-lg">
+                                    <p class="text-xs text-gray-600 mb-1">创意数量</p>
+                                    <p class="text-xl font-bold text-gray-900">15</p>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center justify-between pt-3 border-t border-gray-200">
+                                <div class="flex items-center gap-4 text-sm">
+                                    <span class="text-gray-600">改进点：</span>
+                                    <span class="px-2 py-1 bg-red-100 text-red-700 rounded text-xs">ROI偏低</span>
+                                    <span class="px-2 py-1 bg-yellow-100 text-yellow-700 rounded text-xs">点击率低</span>
+                                    <span class="px-2 py-1 bg-yellow-100 text-yellow-700 rounded text-xs">创意不足</span>
+                                </div>
+                                <div class="flex gap-2">
+                                    <a href="product-analyse-compare-stats.html?id=5556667788" class="text-sm text-blue-600 hover:text-blue-700">效果对比</a>
+                                    <a href="product-analyse-compare-creative.html?id=5556667788" class="text-sm text-blue-600 hover:text-blue-700">创意比对</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 分页 -->
+            <div class="flex items-center justify-between mt-6 pt-6 border-t border-gray-200">
+                <div class="text-sm text-gray-600">
+                    显示 <span class="font-medium">1-3</span> 条，共 <span class="font-medium">128</span> 条记录
+                </div>
+                <div class="flex items-center space-x-2">
+                    <button class="px-3 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50 disabled:opacity-50" disabled>
+                        上一页
+                    </button>
+                    <button class="px-3 py-2 bg-red-500 text-white rounded-lg text-sm font-medium">1</button>
+                    <button class="px-3 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50">2</button>
+                    <button class="px-3 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50">3</button>
+                    <span class="px-2 text-gray-500">...</span>
+                    <button class="px-3 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50">43</button>
+                    <button class="px-3 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50">
+                        下一页
+                    </button>
+                </div>
+            </div>
+        </div>
+          </div>
+    </div>
+  </main>
+  </div>
+  <script src="nav-component.js"></script>
+</body>
+</html>

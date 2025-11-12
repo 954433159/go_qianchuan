@@ -1,0 +1,441 @@
+import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
+import PageHeader from '../components/ui/PageHeader'
+import Loading from '../components/ui/Loading'
+import { LiveRoom } from '../api/report'
+import { useToast } from '../hooks/useToast'
+import {
+  Users,
+  TrendingUp,
+  DollarSign,
+  Eye,
+  Search,
+  SlidersHorizontal,
+  BarChart3,
+  Filter
+} from 'lucide-react'
+
+// 生成模拟数据
+const generateMockLiveRooms = (): LiveRoom[] => {
+  const rooms: LiveRoom[] = []
+  const roomNames = [
+    '潮流服饰专场',
+    '美妆护肤直播间',
+    '数码3C好物分享',
+    '零食小吃优选',
+    '家居生活馆',
+    '运动健身装备',
+    '母婴用品专场',
+    '珠宝首饰精选',
+    '图书文具店',
+    '宠物用品专区',
+    '汽车用品',
+    '户外装备',
+    '箱包皮具',
+    '茶叶特产',
+    '鲜花园艺'
+  ]
+
+  const statuses: ('LIVE' | 'END' | 'PAUSE')[] = ['LIVE', 'END', 'PAUSE']
+
+  for (let i = 0; i < 15; i++) {
+    const status = statuses[i % 3]
+    const isLive = status === 'LIVE'
+    
+    rooms.push({
+      room_id: `room_${1000 + i}`,
+      room_title: roomNames[i],
+      anchor_name: `主播${String.fromCharCode(65 + i)}`,
+      aweme_name: `抖音号${i + 1}`,
+      status,
+      start_time: new Date(Date.now() - Math.random() * 3600000 * (isLive ? 2 : 24)).toISOString(),
+      end_time: status === 'END' ? new Date(Date.now() - Math.random() * 3600000).toISOString() : undefined,
+      watch_ucnt: Math.floor(Math.random() * 50000) + 1000,
+      online_user_count: isLive ? Math.floor(Math.random() * 5000) + 100 : 0,
+      gmv: Math.floor(Math.random() * 1000000) + 10000,
+      order_count: Math.floor(Math.random() * 5000) + 50
+    })
+  }
+
+  return rooms.sort((a, b) => {
+    const statusOrder = { LIVE: 0, PAUSE: 1, END: 2 }
+    return statusOrder[a.status] - statusOrder[b.status]
+  })
+}
+
+export default function LiveRooms() {
+  const navigate = useNavigate()
+  const { error: showError } = useToast()
+  const [loading, setLoading] = useState(false)
+  const [rooms, setRooms] = useState<LiveRoom[]>([])
+  const [filteredRooms, setFilteredRooms] = useState<LiveRoom[]>([])
+  const [searchQuery, setSearchQuery] = useState('')
+  const [statusFilter, setStatusFilter] = useState<string>('全部')
+  const [sortBy, setSortBy] = useState<'watch_ucnt' | 'gmv' | 'order_count'>('watch_ucnt')
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc')
+
+  useEffect(() => {
+    fetchLiveRooms()
+  }, [])
+
+  useEffect(() => {
+    filterAndSortRooms()
+  }, [rooms, searchQuery, statusFilter, sortBy, sortOrder])
+
+  const fetchLiveRooms = async () => {
+    setLoading(true)
+    try {
+      // 使用模拟数据
+      await new Promise(resolve => setTimeout(resolve, 800))
+      const mockData = generateMockLiveRooms()
+      setRooms(mockData)
+      
+      // 真实API调用（注释掉）
+      // const data = await getLiveRooms({ advertiserId: 'xxx', dateRange: [startDate, endDate] })
+      // setRooms(data)
+    } catch (error) {
+      showError('获取直播间列表失败')
+      console.error('Failed to fetch live rooms:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const filterAndSortRooms = () => {
+    let filtered = [...rooms]
+
+    // 状态过滤
+    if (statusFilter !== '全部') {
+      filtered = filtered.filter(room => room.status === statusFilter)
+    }
+
+    // 搜索过滤
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase()
+      filtered = filtered.filter(
+        room =>
+          room.room_title.toLowerCase().includes(query) ||
+          room.anchor_name.toLowerCase().includes(query) ||
+          room.room_id.toLowerCase().includes(query)
+      )
+    }
+
+    // 排序
+    filtered.sort((a, b) => {
+      let aValue: number, bValue: number
+
+      switch (sortBy) {
+        case 'watch_ucnt':
+          aValue = a.watch_ucnt
+          bValue = b.watch_ucnt
+          break
+        case 'gmv':
+          aValue = a.gmv
+          bValue = b.gmv
+          break
+        case 'order_count':
+          aValue = a.order_count
+          bValue = b.order_count
+          break
+        default:
+          aValue = a.watch_ucnt
+          bValue = b.watch_ucnt
+      }
+
+      return sortOrder === 'desc' ? bValue - aValue : aValue - bValue
+    })
+
+    setFilteredRooms(filtered)
+  }
+
+  const handleRoomClick = (roomId: string) => {
+    navigate(`/live-rooms/${roomId}`)
+  }
+
+  const formatNumber = (num: number): string => {
+    if (num >= 10000) {
+      return (num / 10000).toFixed(1) + '万'
+    }
+    return num.toLocaleString()
+  }
+
+
+  const getStatusColor = (status: 'LIVE' | 'END' | 'PAUSE') => {
+    switch (status) {
+      case 'LIVE':
+        return 'text-green-600 bg-green-50 border-green-200'
+      case 'PAUSE':
+        return 'text-blue-600 bg-blue-50 border-blue-200'
+      case 'END':
+        return 'text-gray-600 bg-gray-50 border-gray-200'
+      default:
+        return 'text-gray-600 bg-gray-50 border-gray-200'
+    }
+  }
+
+  const getStatusLabel = (status: 'LIVE' | 'END' | 'PAUSE') => {
+    switch (status) {
+      case 'LIVE':
+        return '直播中'
+      case 'PAUSE':
+        return '预告中'
+      case 'END':
+        return '已结束'
+    }
+  }
+
+  if (loading) {
+    return <Loading fullScreen size="lg" text="加载直播间列表..." />
+  }
+
+  // 统计数据
+  const stats = {
+    total: rooms.length,
+    live: rooms.filter(r => r.status === 'LIVE').length,
+    totalGMV: rooms.reduce((sum, r) => sum + r.gmv, 0),
+    totalWatchCount: rooms.reduce((sum, r) => sum + r.watch_ucnt, 0)
+  }
+
+  return (
+    <div className="space-y-6">
+      <PageHeader
+        title="直播间管理"
+        description="查看和管理所有直播间数据"
+        actions={
+          <button
+            onClick={() => navigate('/live-data')}
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2"
+          >
+            <BarChart3 className="w-4 h-4" />
+            今日数据概览
+          </button>
+        }
+      />
+
+      {/* 统计卡片 */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="bg-white rounded-lg border border-gray-200 p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-gray-600">总直播间数</p>
+              <p className="text-2xl font-bold text-gray-900 mt-1">{stats.total}</p>
+            </div>
+            <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+              <Users className="w-6 h-6 text-blue-600" />
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-lg border border-gray-200 p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-gray-600">正在直播</p>
+              <p className="text-2xl font-bold text-green-600 mt-1">{stats.live}</p>
+            </div>
+            <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+              <TrendingUp className="w-6 h-6 text-green-600" />
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-lg border border-gray-200 p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-gray-600">总GMV</p>
+              <p className="text-2xl font-bold text-gray-900 mt-1">¥{formatNumber(stats.totalGMV)}</p>
+            </div>
+            <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+              <DollarSign className="w-6 h-6 text-purple-600" />
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-lg border border-gray-200 p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-gray-600">总观看人次</p>
+              <p className="text-2xl font-bold text-gray-900 mt-1">{formatNumber(stats.totalWatchCount)}</p>
+            </div>
+            <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
+              <Eye className="w-6 h-6 text-orange-600" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* 搜索和过滤 */}
+      <div className="bg-white rounded-lg border border-gray-200 p-4">
+        <div className="flex flex-col md:flex-row gap-4">
+          {/* 搜索框 */}
+          <div className="flex-1">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <input
+                type="text"
+                placeholder="搜索直播间名称、主播或ID..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+          </div>
+
+          {/* 状态过滤 */}
+          <div className="flex items-center gap-2">
+            <Filter className="w-5 h-5 text-gray-400" />
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="全部">全部状态</option>
+              <option value="LIVE">直播中</option>
+              <option value="PAUSE">预告中</option>
+              <option value="END">已结束</option>
+            </select>
+          </div>
+
+          {/* 排序 */}
+          <div className="flex items-center gap-2">
+            <SlidersHorizontal className="w-5 h-5 text-gray-400" />
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value as any)}
+              className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="watch_ucnt">观看人次</option>
+              <option value="gmv">GMV</option>
+              <option value="order_count">订单数</option>
+            </select>
+            <button
+              onClick={() => setSortOrder(sortOrder === 'desc' ? 'asc' : 'desc')}
+              className="px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+            >
+              {sortOrder === 'desc' ? '↓' : '↑'}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* 直播间列表 */}
+      <div className="bg-white rounded-lg border border-gray-200">
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead className="bg-gray-50 border-b border-gray-200">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  直播间信息
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  状态
+                </th>
+                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  观看人次
+                </th>
+                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  GMV
+                </th>
+                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  订单数
+                </th>
+                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  操作
+                </th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {filteredRooms.length === 0 ? (
+                <tr>
+                  <td colSpan={6} className="px-6 py-12 text-center text-gray-500">
+                    暂无数据
+                  </td>
+                </tr>
+              ) : (
+                filteredRooms.map((room) => (
+                  <tr
+                    key={room.room_id}
+                    className="hover:bg-gray-50 cursor-pointer transition-colors"
+                    onClick={() => handleRoomClick(room.room_id)}
+                  >
+                    <td className="px-6 py-4">
+                      <div className="flex items-start gap-3">
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-gray-900 truncate">
+                            {room.room_title}
+                          </p>
+                          <p className="text-sm text-gray-500 mt-1">
+                            主播：{room.anchor_name}
+                          </p>
+                          <p className="text-xs text-gray-400 mt-1">
+                            ID: {room.room_id}
+                          </p>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getStatusColor(room.status)}`}>
+                        {room.status === 'LIVE' && <span className="w-2 h-2 bg-green-600 rounded-full mr-1.5 animate-pulse" />}
+                        {getStatusLabel(room.status)}
+                      </span>
+                      {room.status === 'LIVE' && (
+                        <p className="text-xs text-gray-500 mt-1 flex items-center gap-1">
+                          <Users className="w-3 h-3" />
+                          {formatNumber(room.online_user_count)}在线
+                        </p>
+                      )}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-right">
+                      <div className="flex flex-col items-end">
+                        <span className="text-sm font-medium text-gray-900">
+                          {formatNumber(room.watch_ucnt)}
+                        </span>
+                        <span className="text-xs text-gray-500 flex items-center gap-1 mt-1">
+                          <Eye className="w-3 h-3" />
+                          观看
+                        </span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-right">
+                      <div className="flex flex-col items-end">
+                        <span className="text-sm font-medium text-gray-900">
+                          ¥{formatNumber(room.gmv)}
+                        </span>
+                        <span className="text-xs text-gray-500 flex items-center gap-1 mt-1">
+                          <DollarSign className="w-3 h-3" />
+                          成交额
+                        </span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-right">
+                      <span className="text-sm font-medium text-gray-900">
+                        {formatNumber(room.order_count)}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-center">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          handleRoomClick(room.room_id)
+                        }}
+                        className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                      >
+                        查看详情
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* 结果统计 */}
+      {filteredRooms.length > 0 && (
+        <div className="text-sm text-gray-600 text-center">
+          显示 {filteredRooms.length} 个直播间，共 {rooms.length} 个
+        </div>
+      )}
+    </div>
+  )
+}

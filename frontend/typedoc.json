@@ -1,0 +1,35 @@
+{
+  "entryPoints": [
+    "src/api/ad.ts",
+    "src/api/advertiser.ts",
+    "src/api/file.ts",
+    "src/api/finance.ts",
+    "src/api/aweme.ts",
+    "src/api/uniPromotion.ts"
+  ],
+  "out": "docs/api",
+  "exclude": [
+    "**/node_modules/**",
+    "**/__tests__/**"
+  ],
+  "excludePrivate": true,
+  "excludeProtected": true,
+  "plugin": [],
+  "readme": "docs/API_COMPLETION_SUMMARY.md",
+  "name": "千川SDK管理平台 - API文档",
+  "includeVersion": true,
+  "theme": "default",
+  "hideGenerator": false,
+  "navigation": {
+    "includeCategories": true,
+    "includeFolders": true
+  },
+  "categorizeByGroup": true,
+  "sort": ["source-order"],
+  "visibilityFilters": {
+    "protected": false,
+    "private": false,
+    "inherited": true,
+    "external": false
+  }
+}

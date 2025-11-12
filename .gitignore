@@ -1,0 +1,55 @@
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# OS files
+.DS_Store
+Thumbs.db
+*~
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Logs
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
+
+# Build artifacts (子目录有自己的gitignore)
+dist/
+build/
+
+# Node modules (子目录有自己的gitignore)
+node_modules/
+
+# Go binaries
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+server
+main
+
+# Test coverage
+coverage/
+*.out
+
+# Docker
+docker-compose.override.yml
+
+# Project specific
+PROJECT_ANALYSIS_*.md
+TODO.md
+NOTES.md

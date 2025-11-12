@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>创意比对分析 - 千川竞争分析</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="design-system.css">
+</head>
+<body class="bg-gray-50">
+      <!-- Header -->
+  <header class="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-gray-200">
+    <div class="flex h-16 items-center justify-between px-6">
+      <div class="flex items-center gap-3">
+        <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-red-500 to-orange-500">
+          <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+          </svg>
+        </div>
+        <div class="hidden md:block">
+          <h1 class="text-lg font-bold text-gray-900">千川直播带货</h1>
+          <p class="text-xs text-gray-500">Qianchuan Live E-commerce</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <button class="relative flex items-center justify-center w-10 h-10 rounded-lg hover:bg-gray-100 transition-colors">
+          <svg class="h-5 w-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+          </svg>
+          <span class="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-red-500"></span>
+        </button>
+        <div class="relative">
+          <button class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors">
+            <div class="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-red-500 to-orange-500 text-white">
+              <span class="text-sm font-medium">商</span>
+            </div>
+            <span class="hidden text-sm font-medium md:inline-block">商家中心</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="flex">
+    <aside class="w-64 bg-white border-r border-gray-200 min-h-[calc(100vh-64px)] sticky top-16">
+      <nav id="main-nav" class="p-4 space-y-6"></nav>
+    </aside>
+
+    <main class="flex-1 p-8">
+      <div class="max-w-7xl mx-auto space-y-6">
+
+        <!-- 商品信息 -->
+        <div class="qc-card mb-6">
+            <div class="flex items-start gap-6">
+                <div class="w-32 h-32 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
+                    <div class="w-full h-full flex items-center justify-center text-gray-400">
+                        商品图片
+                    </div>
+                </div>
+                <div class="flex-1">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-2">[爆款] 秋冬羽绒服女加厚保暖</h2>
+                    <p class="text-sm text-gray-600">商品ID: 1234567890 | 创意总数: 45个 | 分析周期: 最近7天</p>
+                    <div class="flex gap-4 mt-3">
+                        <div class="px-3 py-1 bg-green-100 text-green-700 rounded text-sm font-medium">
+                            优质创意: 12个
+                        </div>
+                        <div class="px-3 py-1 bg-blue-100 text-blue-700 rounded text-sm font-medium">
+                            普通创意: 28个
+                        </div>
+                        <div class="px-3 py-1 bg-red-100 text-red-700 rounded text-sm font-medium">
+                            低效创意: 5个
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 创意分类统计 -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+            <div class="qc-card">
+                <p class="text-sm text-gray-600 mb-1">创意总数</p>
+                <p class="text-3xl font-bold text-gray-900">45</p>
+                <p class="text-xs text-gray-500 mt-1">近7日活跃</p>
+            </div>
+            <div class="qc-card bg-gradient-to-br from-green-50 to-emerald-50 border-green-200">
+                <p class="text-sm text-gray-600 mb-1">优质创意</p>
+                <p class="text-3xl font-bold text-green-600">12</p>
+                <p class="text-xs text-green-600 mt-1">ROI > 8.0</p>
+            </div>
+            <div class="qc-card">
+                <p class="text-sm text-gray-600 mb-1">平均CTR</p>
+                <p class="text-3xl font-bold text-gray-900">8.5%</p>
+                <p class="text-xs text-green-600 mt-1">优于平均 +63%</p>
+            </div>
+            <div class="qc-card">
+                <p class="text-sm text-gray-600 mb-1">平均转化率</p>
+                <p class="text-3xl font-bold text-gray-900">12.3%</p>
+                <p class="text-xs text-green-600 mt-1">优于平均 +98%</p>
+            </div>
+        </div>
+
+        <!-- 优质创意TOP5 -->
+        <div class="qc-card mb-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-6">🏆 优质创意 TOP 5（按ROI排序）</h3>
+            <div class="space-y-4">
+                <!-- 创意1 -->
+                <div class="border-2 border-green-200 rounded-lg p-6 bg-gradient-to-r from-green-50 to-emerald-50">
+                    <div class="flex gap-6">
+                        <div class="w-48 h-36 rounded-lg overflow-hidden bg-white flex-shrink-0">
+                            <div class="w-full h-full flex items-center justify-center text-gray-400 text-xs">
+                                创意视频封面
+                            </div>
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex items-start justify-between mb-3">
+                                <div>
+                                    <div class="flex items-center gap-3 mb-2">
+                                        <span class="text-2xl">🥇</span>
+                                        <h4 class="text-lg font-bold text-gray-900">真人试穿+价格对比+限时优惠</h4>
+                                        <span class="qc-badge qc-badge-success">优质</span>
+                                    </div>
+                                    <p class="text-sm text-gray-600">创意ID: CR2025110001 | 格式: 竖版视频 | 时长: 15s</p>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-6 gap-3 mb-3">
+                                <div class="text-center p-2 bg-white rounded">
+                                    <p class="text-xs text-gray-500">ROI</p>
+                                    <p class="text-xl font-bold qc-roi-excellent">9.8</p>
+                                </div>
+                                <div class="text-center p-2 bg-white rounded">
+                                    <p class="text-xs text-gray-500">CTR</p>
+                                    <p class="text-lg font-bold text-gray-900">12.5%</p>
+                                </div>
+                                <div class="text-center p-2 bg-white rounded">
+                                    <p class="text-xs text-gray-500">转化率</p>
+                                    <p class="text-lg font-bold text-gray-900">18.3%</p>
+                                </div>
+                                <div class="text-center p-2 bg-white rounded">
+                                    <p class="text-xs text-gray-500">展示量</p>
+                                    <p class="text-sm font-bold text-gray-900">856K</p>
+                                </div>
+                                <div class="text-center p-2 bg-white rounded">
+                                    <p class="text-xs text-gray-500">点击量</p>
+                                    <p class="text-sm font-bold text-gray-900">107K</p>
+                                </div>
+                                <div class="text-center p-2 bg-white rounded">
+                                    <p class="text-xs text-gray-500">GMV</p>
+                                    <p class="text-sm font-bold text-orange-600">¥98K</p>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center justify-between text-sm">
+                                <div class="flex gap-2">
+                                    <span class="px-2 py-1 bg-green-100 text-green-700 rounded text-xs">真人出镜</span>
+                                    <span class="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs">价格锚点</span>
+                                    <span class="px-2 py-1 bg-purple-100 text-purple-700 rounded text-xs">限时优惠</span>
+                                </div>
+                                <button class="text-blue-600 hover:text-blue-700">查看详情 →</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 创意2 -->
+                <div class="border border-gray-200 rounded-lg p-6 bg-white">
+                    <div class="flex gap-6">
+                        <div class="w-48 h-36 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
+                            <div class="w-full h-full flex items-center justify-center text-gray-400 text-xs">
+                                创意视频封面
+                            </div>
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex items-start justify-between mb-3">
+                                <div>
+                                    <div class="flex items-center gap-3 mb-2">
+                                        <span class="text-2xl">🥈</span>
+                                        <h4 class="text-lg font-bold text-gray-900">场景化展示+用户评价+促销信息</h4>
+                                        <span class="qc-badge qc-badge-success">优质</span>
+                                    </div>
+                                    <p class="text-sm text-gray-600">创意ID: CR2025110008 | 格式: 竖版视频 | 时长: 20s</p>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-6 gap-3 mb-3">
+                                <div class="text-center p-2 bg-gray-50 rounded">
+                                    <p class="text-xs text-gray-500">ROI</p>
+                                    <p class="text-xl font-bold qc-roi-excellent">9.2</p>
+                                </div>
+                                <div class="text-center p-2 bg-gray-50 rounded">
+                                    <p class="text-xs text-gray-500">CTR</p>
+                                    <p class="text-lg font-bold text-gray-900">10.8%</p>
+                                </div>
+                                <div class="text-center p-2 bg-gray-50 rounded">
+                                    <p class="text-xs text-gray-500">转化率</p>
+                                    <p class="text-lg font-bold text-gray-900">15.6%</p>
+                                </div>
+                                <div class="text-center p-2 bg-gray-50 rounded">
+                                    <p class="text-xs text-gray-500">展示量</p>
+                                    <p class="text-sm font-bold text-gray-900">723K</p>
+                                </div>
+                                <div class="text-center p-2 bg-gray-50 rounded">
+                                    <p class="text-xs text-gray-500">点击量</p>
+                                    <p class="text-sm font-bold text-gray-900">78K</p>
+                                </div>
+                                <div class="text-center p-2 bg-gray-50 rounded">
+                                    <p class="text-xs text-gray-500">GMV</p>
+                                    <p class="text-sm font-bold text-orange-600">¥85K</p>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center justify-between text-sm">
+                                <div class="flex gap-2">
+                                    <span class="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs">场景化</span>
+                                    <span class="px-2 py-1 bg-green-100 text-green-700 rounded text-xs">用户评价</span>
+                                    <span class="px-2 py-1 bg-purple-100 text-purple-700 rounded text-xs">促销</span>
+                                </div>
+                                <button class="text-blue-600 hover:text-blue-700">查看详情 →</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 创意3 -->
+                <div class="border border-gray-200 rounded-lg p-6 bg-white">
+                    <div class="flex gap-6">
+                        <div class="w-48 h-36 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
+                            <div class="w-full h-full flex items-center justify-center text-gray-400 text-xs">
+                                创意视频封面
+                            </div>
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex items-start justify-between mb-3">
+                                <div>
+                                    <div class="flex items-center gap-3 mb-2">
+                                        <span class="text-2xl">🥉</span>
+                                        <h4 class="text-lg font-bold text-gray-900">产品细节特写+卖点罗列</h4>
+                                        <span class="qc-badge qc-badge-success">优质</span>
+                                    </div>
+                                    <p class="text-sm text-gray-600">创意ID: CR2025110015 | 格式: 竖版视频 | 时长: 12s</p>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-6 gap-3 mb-3">
+                                <div class="text-center p-2 bg-gray-50 rounded">
+                                    <p class="text-xs text-gray-500">ROI</p>
+                                    <p class="text-xl font-bold qc-roi-excellent">8.7</p>
+                                </div>
+                                <div class="text-center p-2 bg-gray-50 rounded">
+                                    <p class="text-xs text-gray-500">CTR</p>
+                                    <p class="text-lg font-bold text-gray-900">9.3%</p>
+                                </div>
+                                <div class="text-center p-2 bg-gray-50 rounded">
+                                    <p class="text-xs text-gray-500">转化率</p>
+                                    <p class="text-lg font-bold text-gray-900">14.2%</p>
+                                </div>
+                                <div class="text-center p-2 bg-gray-50 rounded">
+                                    <p class="text-xs text-gray-500">展示量</p>
+                                    <p class="text-sm font-bold text-gray-900">645K</p>
+                                </div>
+                                <div class="text-center p-2 bg-gray-50 rounded">
+                                    <p class="text-xs text-gray-500">点击量</p>
+                                    <p class="text-sm font-bold text-gray-900">60K</p>
+                                </div>
+                                <div class="text-center p-2 bg-gray-50 rounded">
+                                    <p class="text-xs text-gray-500">GMV</p>
+                                    <p class="text-sm font-bold text-orange-600">¥72K</p>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center justify-between text-sm">
+                                <div class="flex gap-2">
+                                    <span class="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs">细节展示</span>
+                                    <span class="px-2 py-1 bg-green-100 text-green-700 rounded text-xs">卖点突出</span>
+                                </div>
+                                <button class="text-blue-600 hover:text-blue-700">查看详情 →</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 低效创意分析 -->
+        <div class="qc-card mb-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-6">⚠️ 低效创意分析（ROI < 3.0）</h3>
+            <div class="space-y-4">
+                <div class="border border-red-200 rounded-lg p-6 bg-red-50">
+                    <div class="flex gap-6">
+                        <div class="w-48 h-36 rounded-lg overflow-hidden bg-white flex-shrink-0">
+                            <div class="w-full h-full flex items-center justify-center text-gray-400 text-xs">
+                                创意视频封面
+                            </div>
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex items-start justify-between mb-3">
+                                <div>
+                                    <div class="flex items-center gap-3 mb-2">
+                                        <h4 class="text-lg font-bold text-gray-900">纯图文展示+文字过多</h4>
+                                        <span class="qc-badge qc-badge-danger">低效</span>
+                                    </div>
+                                    <p class="text-sm text-gray-600">创意ID: CR2025110042 | 格式: 图文 | 建议: 暂停投放</p>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-6 gap-3 mb-3">
+                                <div class="text-center p-2 bg-white rounded">
+                                    <p class="text-xs text-gray-500">ROI</p>
+                                    <p class="text-xl font-bold qc-roi-poor">2.3</p>
+                                </div>
+                                <div class="text-center p-2 bg-white rounded">
+                                    <p class="text-xs text-gray-500">CTR</p>
+                                    <p class="text-lg font-bold text-gray-900">3.2%</p>
+                                </div>
+                                <div class="text-center p-2 bg-white rounded">
+                                    <p class="text-xs text-gray-500">转化率</p>
+                                    <p class="text-lg font-bold text-gray-900">4.8%</p>
+                                </div>
+                                <div class="text-center p-2 bg-white rounded">
+                                    <p class="text-xs text-gray-500">展示量</p>
+                                    <p class="text-sm font-bold text-gray-900">234K</p>
+                                </div>
+                                <div class="text-center p-2 bg-white rounded">
+                                    <p class="text-xs text-gray-500">点击量</p>
+                                    <p class="text-sm font-bold text-gray-900">7.5K</p>
+                                </div>
+                                <div class="text-center p-2 bg-white rounded">
+                                    <p class="text-xs text-gray-500">GMV</p>
+                                    <p class="text-sm font-bold text-gray-600">¥8.2K</p>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center justify-between text-sm">
+                                <div class="flex gap-2">
+                                    <span class="px-2 py-1 bg-red-100 text-red-700 rounded text-xs">CTR低</span>
+                                    <span class="px-2 py-1 bg-red-100 text-red-700 rounded text-xs">转化差</span>
+                                    <span class="px-2 py-1 bg-yellow-100 text-yellow-700 rounded text-xs">文字过多</span>
+                                </div>
+                                <button class="qc-btn qc-btn-danger text-sm">暂停投放</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 创意要素分析 -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="qc-card">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">📊 高效创意要素分布</h3>
+                <div class="space-y-3">
+                    <div>
+                        <div class="flex justify-between text-sm mb-1">
+                            <span>真人出镜</span>
+                            <span class="font-semibold">75% (9个)</span>
+                        </div>
+                        <div class="qc-progress">
+                            <div class="qc-progress-bar" style="width: 75%;"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between text-sm mb-1">
+                            <span>价格对比/优惠信息</span>
+                            <span class="font-semibold">67% (8个)</span>
+                        </div>
+                        <div class="qc-progress">
+                            <div class="qc-progress-bar" style="width: 67%;"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between text-sm mb-1">
+                            <span>场景化展示</span>
+                            <span class="font-semibold">58% (7个)</span>
+                        </div>
+                        <div class="qc-progress">
+                            <div class="qc-progress-bar" style="width: 58%;"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between text-sm mb-1">
+                            <span>用户评价/口碑</span>
+                            <span class="font-semibold">50% (6个)</span>
+                        </div>
+                        <div class="qc-progress">
+                            <div class="qc-progress-bar" style="width: 50%;"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between text-sm mb-1">
+                            <span>产品细节特写</span>
+                            <span class="font-semibold">42% (5个)</span>
+                        </div>
+                        <div class="qc-progress">
+                            <div class="qc-progress-bar" style="width: 42%;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="qc-card">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">💡 创意优化建议</h3>
+                <ul class="space-y-3">
+                    <li class="flex items-start gap-2">
+                        <span class="text-green-600">✓</span>
+                        <p class="text-sm text-gray-700"><strong>保持真人出镜</strong>：75%的高效创意采用真人出镜，更具信任感</p>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <span class="text-green-600">✓</span>
+                        <p class="text-sm text-gray-700"><strong>强化价格优势</strong>：价格对比和优惠信息显著提升转化率</p>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <span class="text-green-600">✓</span>
+                        <p class="text-sm text-gray-700"><strong>场景化表达</strong>：生活场景展示比纯产品展示效果好58%</p>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <span class="text-red-600">✗</span>
+                        <p class="text-sm text-gray-700"><strong>避免纯图文</strong>：图文创意CTR比视频创意低62%</p>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <span class="text-red-600">✗</span>
+                        <p class="text-sm text-gray-700"><strong>控制文字量</strong>：文字过多会降低用户观看意愿</p>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <span class="text-blue-600">→</span>
+                        <p class="text-sm text-gray-700"><strong>视频时长</strong>：建议控制在12-20秒，过长或过短效果均不佳</p>
+                    </li>
+                </ul>
+            </div>
+        </div>
+          </div>
+    </div>
+  </main>
+  </div>
+  <script src="nav-component.js"></script>
+</body>
+</html>

@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>账户操作日志 - 千川账户管理</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="design-system.css">
+</head>
+<body class="bg-gray-50">
+      <!-- Header -->
+  <header class="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-gray-200">
+    <div class="flex h-16 items-center justify-between px-6">
+      <div class="flex items-center gap-3">
+        <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-red-500 to-orange-500">
+          <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+          </svg>
+        </div>
+        <div class="hidden md:block">
+          <h1 class="text-lg font-bold text-gray-900">千川直播带货</h1>
+          <p class="text-xs text-gray-500">Qianchuan Live E-commerce</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <button class="relative flex items-center justify-center w-10 h-10 rounded-lg hover:bg-gray-100 transition-colors">
+          <svg class="h-5 w-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+          </svg>
+          <span class="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-red-500"></span>
+        </button>
+        <div class="relative">
+          <button class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors">
+            <div class="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-red-500 to-orange-500 text-white">
+              <span class="text-sm font-medium">商</span>
+            </div>
+            <span class="hidden text-sm font-medium md:inline-block">商家中心</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="flex">
+    <aside class="w-64 bg-white border-r border-gray-200 min-h-[calc(100vh-64px)] sticky top-16">
+      <nav id="main-nav" class="p-4 space-y-6"></nav>
+    </aside>
+
+    <main class="flex-1 p-8">
+      <div class="max-w-7xl mx-auto space-y-6">
+<div class="mb-8">
+            <h2 class="text-3xl font-bold text-gray-900">📋 账户操作日志</h2>
+            <p class="mt-2 text-gray-600">查看账户的所有操作记录，保障账户安全</p>
+        </div>
+
+        <!-- 统计信息 -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+            <div class="qc-card bg-gradient-to-br from-blue-50 to-cyan-50">
+                <p class="text-sm text-gray-600 mb-1">今日操作数</p>
+                <p class="text-3xl font-bold text-gray-900">47</p>
+                <p class="text-xs text-gray-500 mt-1">次操作</p>
+            </div>
+            <div class="qc-card bg-gradient-to-br from-green-50 to-emerald-50">
+                <p class="text-sm text-gray-600 mb-1">正常操作</p>
+                <p class="text-3xl font-bold text-green-600">46</p>
+                <p class="text-xs text-green-600 mt-1">98%</p>
+            </div>
+            <div class="qc-card bg-gradient-to-br from-red-50 to-orange-50">
+                <p class="text-sm text-gray-600 mb-1">异常操作</p>
+                <p class="text-3xl font-bold text-red-600">1</p>
+                <p class="text-xs text-red-600 mt-1">已拦截</p>
+            </div>
+            <div class="qc-card bg-gradient-to-br from-purple-50 to-pink-50">
+                <p class="text-sm text-gray-600 mb-1">活跃设备</p>
+                <p class="text-3xl font-bold text-gray-900">2</p>
+                <p class="text-xs text-gray-500 mt-1">台设备</p>
+            </div>
+        </div>
+
+        <!-- 筛选条件 -->
+        <div class="qc-card mb-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">🔍 筛选条件</h3>
+            <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+                <div>
+                    <label class="block text-sm text-gray-700 mb-2">时间范围</label>
+                    <select class="qc-input">
+                        <option>今日</option>
+                        <option selected>近7天</option>
+                        <option>近30天</option>
+                        <option>自定义</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm text-gray-700 mb-2">操作类型</label>
+                    <select class="qc-input">
+                        <option>全部类型</option>
+                        <option>登录/登出</option>
+                        <option>推广管理</option>
+                        <option>资金操作</option>
+                        <option>账户设置</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm text-gray-700 mb-2">操作状态</label>
+                    <select class="qc-input">
+                        <option>全部状态</option>
+                        <option>成功</option>
+                        <option>失败</option>
+                        <option>异常</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm text-gray-700 mb-2">设备/IP</label>
+                    <input type="text" class="qc-input" placeholder="输入IP地址">
+                </div>
+                <div>
+                    <label class="block text-sm text-gray-700 mb-2">&nbsp;</label>
+                    <button class="qc-btn qc-btn-primary w-full">查询</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 操作日志列表 -->
+        <div class="qc-card">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-semibold text-gray-900">📜 操作记录</h3>
+                <div class="flex gap-2">
+                    <button class="qc-btn qc-btn-secondary">导出日志</button>
+                    <button class="qc-btn qc-btn-secondary">刷新</button>
+                </div>
+            </div>
+
+            <div class="space-y-3">
+                <!-- 正常登录 -->
+                <div class="flex items-start gap-4 p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                    <div class="w-12 h-12 bg-green-100 rounded-lg flex-shrink-0 flex items-center justify-center">
+                        <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/>
+                        </svg>
+                    </div>
+                    <div class="flex-1">
+                        <div class="flex items-center justify-between mb-1">
+                            <h4 class="font-semibold text-gray-900">登录成功</h4>
+                            <span class="qc-badge bg-green-500 text-white">成功</span>
+                        </div>
+                        <p class="text-sm text-gray-600 mb-2">用户通过密码登录系统</p>
+                        <div class="grid grid-cols-4 gap-4 text-xs text-gray-500">
+                            <div>
+                                <span class="text-gray-400">时间：</span>
+                                <span class="font-medium">2024-01-15 10:23:45</span>
+                            </div>
+                            <div>
+                                <span class="text-gray-400">IP：</span>
+                                <span class="font-medium">120.**.**.156</span>
+                            </div>
+                            <div>
+                                <span class="text-gray-400">地点：</span>
+                                <span class="font-medium">北京市 海淀区</span>
+                            </div>
+                            <div>
+                                <span class="text-gray-400">设备：</span>
+                                <span class="font-medium">Chrome/Windows</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 修改计划 -->
+                <div class="flex items-start gap-4 p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                    <div class="w-12 h-12 bg-blue-100 rounded-lg flex-shrink-0 flex items-center justify-center">
+                        <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                        </svg>
+                    </div>
+                    <div class="flex-1">
+                        <div class="flex items-center justify-between mb-1">
+                            <h4 class="font-semibold text-gray-900">修改推广计划</h4>
+                            <span class="qc-badge bg-green-500 text-white">成功</span>
+                        </div>
+                        <p class="text-sm text-gray-600 mb-2">修改计划"双11美妆专场"的日预算：¥5000 → ¥8000</p>
+                        <div class="grid grid-cols-4 gap-4 text-xs text-gray-500">
+                            <div>
+                                <span class="text-gray-400">时间：</span>
+                                <span class="font-medium">2024-01-15 09:15:32</span>
+                            </div>
+                            <div>
+                                <span class="text-gray-400">IP：</span>
+                                <span class="font-medium">120.**.**.156</span>
+                            </div>
+                            <div>
+                                <span class="text-gray-400">地点：</span>
+                                <span class="font-medium">北京市 海淀区</span>
+                            </div>
+                            <div>
+                                <span class="text-gray-400">计划ID：</span>
+                                <span class="font-medium">P12345678</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 充值操作 -->
+                <div class="flex items-start gap-4 p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                    <div class="w-12 h-12 bg-purple-100 rounded-lg flex-shrink-0 flex items-center justify-center">
+                        <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/>
+                        </svg>
+                    </div>
+                    <div class="flex-1">
+                        <div class="flex items-center justify-between mb-1">
+                            <h4 class="font-semibold text-gray-900">账户充值</h4>
+                            <span class="qc-badge bg-green-500 text-white">成功</span>
+                        </div>
+                        <p class="text-sm text-gray-600 mb-2">充值金额：¥10,000 | 支付方式：微信支付</p>
+                        <div class="grid grid-cols-4 gap-4 text-xs text-gray-500">
+                            <div>
+                                <span class="text-gray-400">时间：</span>
+                                <span class="font-medium">2024-01-15 08:45:12</span>
+                            </div>
+                            <div>
+                                <span class="text-gray-400">订单号：</span>
+                                <span class="font-medium">202401150845****</span>
+                            </div>
+                            <div>
+                                <span class="text-gray-400">充值前：</span>
+                                <span class="font-medium">¥5,234</span>
+                            </div>
+                            <div>
+                                <span class="text-gray-400">充值后：</span>
+                                <span class="font-medium text-green-600">¥15,234</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 异常登录尝试 -->
+                <div class="flex items-start gap-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+                    <div class="w-12 h-12 bg-red-100 rounded-lg flex-shrink-0 flex items-center justify-center">
+                        <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                        </svg>
+                    </div>
+                    <div class="flex-1">
+                        <div class="flex items-center justify-between mb-1">
+                            <h4 class="font-semibold text-red-900">异常登录尝试</h4>
+                            <span class="qc-badge bg-red-500 text-white">已拦截</span>
+                        </div>
+                        <p class="text-sm text-red-800 mb-2">检测到异常登录行为，系统已自动拦截</p>
+                        <div class="grid grid-cols-4 gap-4 text-xs text-red-700">
+                            <div>
+                                <span class="text-red-500">时间：</span>
+                                <span class="font-medium">2024-01-14 02:34:21</span>
+                            </div>
+                            <div>
+                                <span class="text-red-500">IP：</span>
+                                <span class="font-medium">45.**.152.**</span>
+                            </div>
+                            <div>
+                                <span class="text-red-500">地点：</span>
+                                <span class="font-medium">美国</span>
+                            </div>
+                            <div>
+                                <span class="text-red-500">原因：</span>
+                                <span class="font-medium">异常地域</span>
+                            </div>
+                        </div>
+                        <div class="mt-2 flex gap-2">
+                            <button class="text-xs px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600">查看详情</button>
+                            <button class="text-xs px-3 py-1 bg-white text-red-600 border border-red-300 rounded hover:bg-red-50">标记安全</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 上传素材 -->
+                <div class="flex items-start gap-4 p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                    <div class="w-12 h-12 bg-orange-100 rounded-lg flex-shrink-0 flex items-center justify-center">
+                        <svg class="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                        </svg>
+                    </div>
+                    <div class="flex-1">
+                        <div class="flex items-center justify-between mb-1">
+                            <h4 class="font-semibold text-gray-900">上传素材</h4>
+                            <span class="qc-badge bg-green-500 text-white">成功</span>
+                        </div>
+                        <p class="text-sm text-gray-600 mb-2">上传视频素材：双11口红新品推广.mp4</p>
+                        <div class="grid grid-cols-4 gap-4 text-xs text-gray-500">
+                            <div>
+                                <span class="text-gray-400">时间：</span>
+                                <span class="font-medium">2024-01-14 16:28:53</span>
+                            </div>
+                            <div>
+                                <span class="text-gray-400">文件大小：</span>
+                                <span class="font-medium">45.6 MB</span>
+                            </div>
+                            <div>
+                                <span class="text-gray-400">时长：</span>
+                                <span class="font-medium">30秒</span>
+                            </div>
+                            <div>
+                                <span class="text-gray-400">素材ID：</span>
+                                <span class="font-medium">M12345678</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 修改密码 -->
+                <div class="flex items-start gap-4 p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                    <div class="w-12 h-12 bg-yellow-100 rounded-lg flex-shrink-0 flex items-center justify-center">
+                        <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                        </svg>
+                    </div>
+                    <div class="flex-1">
+                        <div class="flex items-center justify-between mb-1">
+                            <h4 class="font-semibold text-gray-900">修改登录密码</h4>
+                            <span class="qc-badge bg-green-500 text-white">成功</span>
+                        </div>
+                        <p class="text-sm text-gray-600 mb-2">用户修改了登录密码，通过短信验证</p>
+                        <div class="grid grid-cols-4 gap-4 text-xs text-gray-500">
+                            <div>
+                                <span class="text-gray-400">时间：</span>
+                                <span class="font-medium">2024-01-10 15:42:18</span>
+                            </div>
+                            <div>
+                                <span class="text-gray-400">IP：</span>
+                                <span class="font-medium">120.**.**.156</span>
+                            </div>
+                            <div>
+                                <span class="text-gray-400">地点：</span>
+                                <span class="font-medium">北京市 海淀区</span>
+                            </div>
+                            <div>
+                                <span class="text-gray-400">验证方式：</span>
+                                <span class="font-medium">短信验证码</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 创建计划 -->
+                <div class="flex items-start gap-4 p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                    <div class="w-12 h-12 bg-green-100 rounded-lg flex-shrink-0 flex items-center justify-center">
+                        <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                        </svg>
+                    </div>
+                    <div class="flex-1">
+                        <div class="flex items-center justify-between mb-1">
+                            <h4 class="font-semibold text-gray-900">创建推广计划</h4>
+                            <span class="qc-badge bg-green-500 text-white">成功</span>
+                        </div>
+                        <p class="text-sm text-gray-600 mb-2">创建计划：零食大礼包促销 | 日预算：¥3,000</p>
+                        <div class="grid grid-cols-4 gap-4 text-xs text-gray-500">
+                            <div>
+                                <span class="text-gray-400">时间：</span>
+                                <span class="font-medium">2024-01-09 11:23:45</span>
+                            </div>
+                            <div>
+                                <span class="text-gray-400">出价方式：</span>
+                                <span class="font-medium">支付ROI</span>
+                            </div>
+                            <div>
+                                <span class="text-gray-400">ROI目标：</span>
+                                <span class="font-medium">5.0</span>
+                            </div>
+                            <div>
+                                <span class="text-gray-400">计划ID：</span>
+                                <span class="font-medium">P12345679</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 分页 -->
+            <div class="mt-6 flex items-center justify-between text-sm text-gray-600">
+                <p>显示 1-10 条，共 247 条记录</p>
+                <div class="flex gap-2">
+                    <button class="px-3 py-1 border rounded hover:bg-gray-50 disabled:opacity-50" disabled>上一页</button>
+                    <button class="px-3 py-1 bg-red-500 text-white rounded">1</button>
+                    <button class="px-3 py-1 border rounded hover:bg-gray-50">2</button>
+                    <button class="px-3 py-1 border rounded hover:bg-gray-50">3</button>
+                    <button class="px-3 py-1 border rounded hover:bg-gray-50">...</button>
+                    <button class="px-3 py-1 border rounded hover:bg-gray-50">25</button>
+                    <button class="px-3 py-1 border rounded hover:bg-gray-50">下一页</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 日志保留说明 -->
+        <div class="mt-6 bg-blue-50 border-l-4 border-blue-400 p-4 rounded-lg">
+            <div class="flex items-start">
+                <svg class="h-5 w-5 text-blue-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"/>
+                </svg>
+                <div>
+                    <h4 class="text-sm font-medium text-blue-800 mb-1">💡 日志说明</h4>
+                    <ul class="text-sm text-blue-700 space-y-1">
+                        <li>• 操作日志保留90天，超过90天的日志将自动清理</li>
+                        <li>• 重要操作（资金、安全设置）日志将永久保留</li>
+                        <li>• 如需长期保存，请定期导出日志</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+          </div>
+    </div>
+        </div>
+    </div>
+  </main>
+  </div>
+  </div>
+  <script src="nav-component.js"></script>
+</body>
+</html>

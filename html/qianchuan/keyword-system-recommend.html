@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>系统推荐关键词 - 千川直播带货平台</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="design-system.css">
+</head>
+<body class="bg-gray-50">
+    <header class="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-gray-200">
+        <div class="px-6 py-4">
+            <h1 class="text-2xl font-bold bg-gradient-to-r from-red-500 to-orange-500 bg-clip-text text-transparent">
+                智能关键词推荐
+            </h1>
+        </div>
+    </header>
+
+    <div class="flex">
+        <aside class="w-64 bg-white border-r border-gray-200 h-screen sticky top-16 overflow-y-auto">
+            <nav id="main-nav"></nav>
+        </aside>
+
+        <main class="flex-1 p-8">
+            <div class="grid grid-cols-3 gap-6 mb-6">
+                <div class="bg-white rounded-xl p-6 border border-gray-200">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="text-sm text-gray-500">推荐关键词</span>
+                        <svg class="w-5 h-5 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/><path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"/>
+                        </svg>
+                    </div>
+                    <div class="text-2xl font-bold text-gray-900">128</div>
+                    <div class="text-xs text-gray-500 mt-1">基于您的商品</div>
+                </div>
+
+                <div class="bg-white rounded-xl p-6 border border-gray-200">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="text-sm text-gray-500">热门词汇</span>
+                        <svg class="w-5 h-5 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-4 1.25-4.5.5 1 .786 1.293 1.371 1.879A2.99 2.99 0 0113 13a2.99 2.99 0 01-.879 2.121z" clip-rule="evenodd"/>
+                        </svg>
+                    </div>
+                    <div class="text-2xl font-bold text-gray-900">56</div>
+                    <div class="text-xs text-gray-500 mt-1">行业流行趋势</div>
+                </div>
+
+                <div class="bg-white rounded-xl p-6 border border-gray-200">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="text-sm text-gray-500">已添加</span>
+                        <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                        </svg>
+                    </div>
+                    <div class="text-2xl font-bold text-gray-900" id="selectedCount">0</div>
+                    <div class="text-xs text-gray-500 mt-1">选中关键词</div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl border border-gray-200 p-6 mb-6">
+                <h2 class="text-lg font-semibold text-gray-900 mb-4">输入种子词</h2>
+                <div class="flex gap-3">
+                    <input type="text" id="seedKeyword" placeholder="输入商品名称或关键特征..." 
+                           class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500">
+                    <button onclick="getRecommendations()" class="btn-primary whitespace-nowrap">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                        </svg>
+                        获取推荐
+                    </button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- 高相关度推荐 -->
+                <div class="bg-white rounded-xl border border-gray-200 p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-semibold text-gray-900 flex items-center gap-2">
+                            <span class="w-2 h-2 bg-blue-500 rounded-full"></span>
+                            高相关度推荐
+                        </h3>
+                        <button onclick="selectAll('high')" class="text-sm text-blue-600 hover:text-blue-700">全选</button>
+                    </div>
+                    <div class="space-y-2" id="highRelevance">
+                        <label class="flex items-center gap-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
+                            <input type="checkbox" class="rounded keyword-checkbox" data-keyword="口红">
+                            <div class="flex-1">
+                                <div class="font-medium text-gray-900">口红</div>
+                                <div class="text-xs text-gray-500">搜索量: 128K | 竞争度: ★★★☆☆</div>
+                            </div>
+                            <span class="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">相关度 95%</span>
+                        </label>
+                        <label class="flex items-center gap-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
+                            <input type="checkbox" class="rounded keyword-checkbox" data-keyword="唇釉">
+                            <div class="flex-1">
+                                <div class="font-medium text-gray-900">唇釉</div>
+                                <div class="text-xs text-gray-500">搜索量: 86K | 竞争度: ★★★☆☆</div>
+                            </div>
+                            <span class="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">相关度 92%</span>
+                        </label>
+                        <label class="flex items-center gap-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
+                            <input type="checkbox" class="rounded keyword-checkbox" data-keyword="雾面口红">
+                            <div class="flex-1">
+                                <div class="font-medium text-gray-900">雾面口红</div>
+                                <div class="text-xs text-gray-500">搜索量: 45K | 竞争度: ★★☆☆☆</div>
+                            </div>
+                            <span class="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">相关度 88%</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- 热门趋势推荐 -->
+                <div class="bg-white rounded-xl border border-gray-200 p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-semibold text-gray-900 flex items-center gap-2">
+                            <span class="w-2 h-2 bg-orange-500 rounded-full"></span>
+                            热门趋势
+                        </h3>
+                        <button onclick="selectAll('trend')" class="text-sm text-orange-600 hover:text-orange-700">全选</button>
+                    </div>
+                    <div class="space-y-2" id="trendKeywords">
+                        <label class="flex items-center gap-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
+                            <input type="checkbox" class="rounded keyword-checkbox" data-keyword="国潮口红">
+                            <div class="flex-1">
+                                <div class="font-medium text-gray-900">国潮口红</div>
+                                <div class="text-xs text-gray-500">搜索量: 62K | 竞争度: ★★★★☆</div>
+                            </div>
+                            <span class="text-xs bg-red-100 text-red-700 px-2 py-1 rounded flex items-center gap-1">
+                                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M12 7a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0V8.414l-4.293 4.293a1 1 0 01-1.414 0L8 10.414l-4.293 4.293a1 1 0 01-1.414-1.414l5-5a1 1 0 011.414 0L11 10.586 14.586 7H12z" clip-rule="evenodd"/>
+                                </svg>
+                                上升32%
+                            </span>
+                        </label>
+                        <label class="flex items-center gap-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
+                            <input type="checkbox" class="rounded keyword-checkbox" data-keyword="长效不脱妆">
+                            <div class="flex-1">
+                                <div class="font-medium text-gray-900">长效不脱妆</div>
+                                <div class="text-xs text-gray-500">搜索量: 38K | 竞争度: ★★★☆☆</div>
+                            </div>
+                            <span class="text-xs bg-red-100 text-red-700 px-2 py-1 rounded flex items-center gap-1">
+                                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M12 7a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0V8.414l-4.293 4.293a1 1 0 01-1.414 0L8 10.414l-4.293 4.293a1 1 0 01-1.414-1.414l5-5a1 1 0 011.414 0L11 10.586 14.586 7H12z" clip-rule="evenodd"/>
+                                </svg>
+                                上升28%
+                            </span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- 长尾词推荐 -->
+                <div class="bg-white rounded-xl border border-gray-200 p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-semibold text-gray-900 flex items-center gap-2">
+                            <span class="w-2 h-2 bg-green-500 rounded-full"></span>
+                            长尾词推荐
+                        </h3>
+                        <button onclick="selectAll('longtail')" class="text-sm text-green-600 hover:text-green-700">全选</button>
+                    </div>
+                    <div class="space-y-2" id="longtailKeywords">
+                        <label class="flex items-center gap-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
+                            <input type="checkbox" class="rounded keyword-checkbox" data-keyword="平价学生党口红">
+                            <div class="flex-1">
+                                <div class="font-medium text-gray-900">平价学生党口红</div>
+                                <div class="text-xs text-gray-500">搜索量: 12K | 竞争度: ★☆☆☆☆</div>
+                            </div>
+                            <span class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded">低竞争</span>
+                        </label>
+                        <label class="flex items-center gap-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
+                            <input type="checkbox" class="rounded keyword-checkbox" data-keyword="适合黄皮的口红色号">
+                            <div class="flex-1">
+                                <div class="font-medium text-gray-900">适合黄皮的口红色号</div>
+                                <div class="text-xs text-gray-500">搜索量: 9K | 竞争度: ★☆☆☆☆</div>
+                            </div>
+                            <span class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded">低竞争</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- 品牌词推荐 -->
+                <div class="bg-white rounded-xl border border-gray-200 p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-semibold text-gray-900 flex items-center gap-2">
+                            <span class="w-2 h-2 bg-purple-500 rounded-full"></span>
+                            品牌词推荐
+                        </h3>
+                        <button onclick="selectAll('brand')" class="text-sm text-purple-600 hover:text-purple-700">全选</button>
+                    </div>
+                    <div class="space-y-2" id="brandKeywords">
+                        <label class="flex items-center gap-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
+                            <input type="checkbox" class="rounded keyword-checkbox" data-keyword="MAC口红">
+                            <div class="flex-1">
+                                <div class="font-medium text-gray-900">MAC口红</div>
+                                <div class="text-xs text-gray-500">搜索量: 156K | 竞争度: ★★★★★</div>
+                            </div>
+                            <span class="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded">高流量</span>
+                        </label>
+                        <label class="flex items-center gap-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
+                            <input type="checkbox" class="rounded keyword-checkbox" data-keyword="YSL小金条">
+                            <div class="flex-1">
+                                <div class="font-medium text-gray-900">YSL小金条</div>
+                                <div class="text-xs text-gray-500">搜索量: 132K | 竞争度: ★★★★★</div>
+                            </div>
+                            <span class="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded">高流量</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-6 flex justify-end gap-3">
+                <button onclick="history.back()" class="btn-secondary">取消</button>
+                <button onclick="addSelectedKeywords()" class="btn-primary">
+                    添加选中关键词 (<span id="btnCount">0</span>)
+                </button>
+            </div>
+        </main>
+    </div>
+
+    <script src="nav-component.js"></script>
+    <script>
+        function updateCount() {
+            const count = document.querySelectorAll('.keyword-checkbox:checked').length;
+            document.getElementById('selectedCount').textContent = count;
+            document.getElementById('btnCount').textContent = count;
+        }
+
+        document.querySelectorAll('.keyword-checkbox').forEach(cb => {
+            cb.addEventListener('change', updateCount);
+        });
+
+        function selectAll(category) {
+            const containerId = {
+                'high': 'highRelevance',
+                'trend': 'trendKeywords',
+                'longtail': 'longtailKeywords',
+                'brand': 'brandKeywords'
+            }[category];
+            
+            document.querySelectorAll(`#${containerId} .keyword-checkbox`).forEach(cb => {
+                cb.checked = true;
+            });
+            updateCount();
+        }
+
+        function getRecommendations() {
+            const seed = document.getElementById('seedKeyword').value;
+            if (!seed) {
+                alert('请输入种子词');
+                return;
+            }
+            alert(`正在为"${seed}"生成推荐关键词...`);
+        }
+
+        function addSelectedKeywords() {
+            const selected = Array.from(document.querySelectorAll('.keyword-checkbox:checked'))
+                .map(cb => cb.dataset.keyword);
+            
+            if (selected.length === 0) {
+                alert('请至少选择一个关键词');
+                return;
+            }
+
+            console.log('添加关键词:', selected);
+            alert(`成功添加 ${selected.length} 个关键词:\n${selected.join(', ')}`);
+        }
+    </script>
+</body>
+</html>

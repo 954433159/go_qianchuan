@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Token刷新 - 千川直播带货平台</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="design-system.css">
+</head>
+<body class="bg-gray-50">
+
+    <!-- Header -->
+  <header class="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-gray-200">
+    <div class="flex h-16 items-center justify-between px-6">
+      <div class="flex items-center gap-3">
+        <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-red-500 to-orange-500">
+          <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+          </svg>
+        </div>
+        <div class="hidden md:block">
+          <h1 class="text-lg font-bold text-gray-900">千川直播带货</h1>
+          <p class="text-xs text-gray-500">Qianchuan Live E-commerce</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <button class="relative flex items-center justify-center w-10 h-10 rounded-lg hover:bg-gray-100 transition-colors">
+          <svg class="h-5 w-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+          </svg>
+          <span class="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-red-500"></span>
+        </button>
+        <div class="relative">
+          <button class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors">
+            <div class="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-red-500 to-orange-500 text-white">
+              <span class="text-sm font-medium">商</span>
+            </div>
+            <span class="hidden text-sm font-medium md:inline-block">商家中心</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="flex">
+    <aside class="w-64 bg-white border-r border-gray-200 min-h-[calc(100vh-64px)] sticky top-16">
+      <nav id="main-nav" class="p-4 space-y-6"></nav>
+    </aside>
+
+    <main class="flex-1 p-8">
+      <div class="max-w-7xl mx-auto space-y-6">
+<main class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    
+    <div class="mb-8">
+      <h2 class="text-3xl font-bold text-gray-900">🔄 Token刷新管理</h2>
+      <p class="mt-2 text-gray-600">管理和刷新您的访问令牌，确保API调用权限持续有效</p>
+    </div>
+
+    <!-- Token状态卡片 -->
+    <div class="qc-card mb-6">
+      <div class="flex items-start justify-between mb-6">
+        <div class="flex-1">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">当前Token状态</h3>
+          <div class="grid md:grid-cols-2 gap-6">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Access Token</label>
+              <div class="flex items-center gap-2">
+                <input type="text" id="access-token" class="qc-input font-mono text-xs" readonly value="act_xxxxxxxxxxxxxxxxxxxx">
+                <button onclick="copyToken('access')" class="qc-btn qc-btn-secondary text-sm">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                  </svg>
+                </button>
+              </div>
+              <p class="text-xs text-gray-500 mt-1">有效期: 30天</p>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Refresh Token</label>
+              <div class="flex items-center gap-2">
+                <input type="text" id="refresh-token" class="qc-input font-mono text-xs" readonly value="rft_xxxxxxxxxxxxxxxxxxxx">
+                <button onclick="copyToken('refresh')" class="qc-btn qc-btn-secondary text-sm">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                  </svg>
+                </button>
+              </div>
+              <p class="text-xs text-gray-500 mt-1">永久有效</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid md:grid-cols-4 gap-4 p-4 bg-gray-50 rounded-xl">
+        <div>
+          <div class="text-xs text-gray-600 mb-1">Token状态</div>
+          <div class="flex items-center gap-2">
+            <span class="qc-badge qc-badge-success">有效</span>
+          </div>
+        </div>
+        <div>
+          <div class="text-xs text-gray-600 mb-1">创建时间</div>
+          <div class="font-medium text-gray-900">2025-11-01 10:30</div>
+        </div>
+        <div>
+          <div class="text-xs text-gray-600 mb-1">过期时间</div>
+          <div class="font-medium text-gray-900">2025-12-01 10:30</div>
+        </div>
+        <div>
+          <div class="text-xs text-gray-600 mb-1">剩余天数</div>
+          <div class="font-bold text-orange-600">20天</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 刷新操作 -->
+    <div class="qc-card mb-6">
+      <h3 class="text-lg font-semibold text-gray-900 mb-4">刷新Token</h3>
+      <p class="text-sm text-gray-600 mb-6">
+        使用Refresh Token可以获取新的Access Token，延长API访问权限有效期。建议在Token过期前7天进行刷新。
+      </p>
+
+      <div class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">
+            输入Refresh Token <span class="text-red-500">*</span>
+          </label>
+          <input type="text" id="input-refresh-token" class="qc-input font-mono" placeholder="请输入Refresh Token">
+        </div>
+
+        <div class="flex gap-3">
+          <button onclick="refreshToken()" class="qc-btn qc-btn-primary">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+            </svg>
+            立即刷新Token
+          </button>
+          <button onclick="autoRefresh()" class="qc-btn qc-btn-secondary">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            启用自动刷新
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 刷新历史 -->
+    <div class="qc-card">
+      <h3 class="text-lg font-semibold text-gray-900 mb-4">刷新历史</h3>
+      <div class="space-y-3">
+        <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+          <div class="flex-1">
+            <div class="font-medium text-gray-900">Token刷新成功</div>
+            <div class="text-sm text-gray-600 mt-1">2025-11-10 14:30:25</div>
+          </div>
+          <span class="qc-badge qc-badge-success">成功</span>
+        </div>
+        <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+          <div class="flex-1">
+            <div class="font-medium text-gray-900">Token刷新成功</div>
+            <div class="text-sm text-gray-600 mt-1">2025-11-05 09:15:10</div>
+          </div>
+          <span class="qc-badge qc-badge-success">成功</span>
+        </div>
+        <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+          <div class="flex-1">
+            <div class="font-medium text-gray-900">Token刷新成功</div>
+            <div class="text-sm text-gray-600 mt-1">2025-11-01 10:30:00</div>
+          </div>
+          <span class="qc-badge qc-badge-success">成功</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 提示信息 -->
+    <div class="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
+      <div class="flex items-start">
+        <svg class="w-5 h-5 text-blue-500 mr-3 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        <div class="flex-1">
+          <p class="text-sm font-medium text-blue-900 mb-2">Token管理说明</p>
+          <ul class="text-xs text-blue-700 space-y-1 list-disc list-inside">
+            <li>Access Token有效期为30天，建议在过期前刷新</li>
+            <li>Refresh Token永久有效，请妥善保管</li>
+            <li>刷新Token后，旧的Access Token将立即失效</li>
+            <li>支持设置自动刷新，系统会在Token过期前自动更新</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+        </div>
+    </div>
+  </main>
+  </div>
+
+  <script>
+    function copyToken(type) {
+      const tokenId = type === 'access' ? 'access-token' : 'refresh-token';
+      const input = document.getElementById(tokenId);
+      input.select();
+      document.execCommand('copy');
+      alert('Token已复制到剪贴板');
+    }
+
+    function refreshToken() {
+      const refreshToken = document.getElementById('input-refresh-token').value;
+      if (!refreshToken.trim()) {
+        alert('请输入Refresh Token');
+        return;
+      }
+
+      // 模拟API调用
+      const btn = event.target.closest('button');
+      btn.disabled = true;
+      btn.innerHTML = '<svg class="animate-spin h-5 w-5 mr-2 inline" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg>刷新中...';
+
+      setTimeout(() => {
+        btn.disabled = false;
+        btn.innerHTML = '<svg class="w-5 h-5 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>立即刷新Token';
+        
+        // 更新Token显示
+        document.getElementById('access-token').value = 'act_new_' + Date.now();
+        alert('Token刷新成功！新的Access Token已生成');
+      }, 2000);
+    }
+
+    function autoRefresh() {
+      alert('自动刷新功能已启用\n系统将在Token过期前7天自动刷新');
+    }
+  </script>
+
+  <script src="nav-component.js"></script>
+</body>
+</html>

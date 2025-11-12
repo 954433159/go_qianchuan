@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>随心推 - 千川直播带货平台</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="design-system.css">
+</head>
+<body class="bg-gray-50">
+
+    <!-- Header -->
+  <header class="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-gray-200">
+    <div class="flex h-16 items-center justify-between px-6">
+      <div class="flex items-center gap-3">
+        <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-red-500 to-orange-500">
+          <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+          </svg>
+        </div>
+        <div class="hidden md:block">
+          <h1 class="text-lg font-bold text-gray-900">千川直播带货</h1>
+          <p class="text-xs text-gray-500">Qianchuan Live E-commerce</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <button class="relative flex items-center justify-center w-10 h-10 rounded-lg hover:bg-gray-100 transition-colors">
+          <svg class="h-5 w-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+          </svg>
+          <span class="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-red-500"></span>
+        </button>
+        <div class="relative">
+          <button class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors">
+            <div class="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-red-500 to-orange-500 text-white">
+              <span class="text-sm font-medium">商</span>
+            </div>
+            <span class="hidden text-sm font-medium md:inline-block">商家中心</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="flex">
+    <aside class="w-64 bg-white border-r border-gray-200 min-h-[calc(100vh-64px)] sticky top-16">
+      <nav id="main-nav" class="p-4 space-y-6"></nav>
+    </aside>
+
+    <main class="flex-1 p-8">
+      <div class="max-w-7xl mx-auto space-y-6">
+
+
+    <div class="mb-8">
+      <h2 class="text-3xl font-bold text-gray-900">⚡ 随心推</h2>
+      <p class="mt-2 text-gray-600">2分钟开启推广，快速涨粉、带货、引流</p>
+    </div>
+
+    <!-- 数据概览 -->
+    <div class="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
+      <div class="qc-card qc-stat-card">
+        <div class="text-gray-600 text-sm mb-2">推广中</div>
+        <div class="text-3xl font-bold text-green-600">8</div>
+      </div>
+      <div class="qc-card qc-stat-card">
+        <div class="text-gray-600 text-sm mb-2">今日消耗</div>
+        <div class="text-3xl font-bold qc-text-gradient">¥2.1K</div>
+        <div class="text-xs text-green-500">↑ +12.5%</div>
+      </div>
+      <div class="qc-card qc-stat-card">
+        <div class="text-gray-600 text-sm mb-2">新增粉丝</div>
+        <div class="text-3xl font-bold text-pink-600">1,245</div>
+      </div>
+      <div class="qc-card qc-stat-card">
+        <div class="text-gray-600 text-sm mb-2">商品点击</div>
+        <div class="text-3xl font-bold text-orange-600">3.8K</div>
+        <div class="text-xs text-green-500">↑ +5.2%</div>
+      </div>
+      <div class="qc-card qc-stat-card">
+        <div class="text-gray-600 text-sm mb-2">平均CPM</div>
+        <div class="text-3xl font-bold text-blue-600">¥18</div>
+      </div>
+    </div>
+
+    <!-- 随心推介绍 -->
+    <div class="bg-gradient-to-r from-pink-50 to-purple-50 border-2 border-pink-200 rounded-xl p-6 mb-8">
+      <div class="flex items-start gap-4">
+        <div class="w-12 h-12 bg-gradient-to-r from-pink-500 to-purple-500 rounded-full flex items-center justify-center flex-shrink-0">
+          <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+          </svg>
+        </div>
+        <div class="flex-1">
+          <h3 class="text-lg font-semibold text-gray-900 mb-2">⚡ 什么是随心推？</h3>
+          <p class="text-sm text-gray-700 mb-3">随心推是抖音官方推出的轻量级推广工具，无需复杂设置，2分钟即可开启推广。适合中小商家和创作者快速提升内容曝光、涨粉和带货。</p>
+          <div class="grid md:grid-cols-4 gap-3">
+            <div class="bg-white rounded-lg p-3">
+              <div class="font-semibold text-gray-900 mb-1">🚀 快速开启</div>
+              <div class="text-xs text-gray-600">2分钟完成设置</div>
+            </div>
+            <div class="bg-white rounded-lg p-3">
+              <div class="font-semibold text-gray-900 mb-1">💰 低门槛</div>
+              <div class="text-xs text-gray-600">100元起投</div>
+            </div>
+            <div class="bg-white rounded-lg p-3">
+              <div class="font-semibold text-gray-900 mb-1">🎯 智能投放</div>
+              <div class="text-xs text-gray-600">AI自动优化</div>
+            </div>
+            <div class="bg-white rounded-lg p-3">
+              <div class="font-semibold text-gray-900 mb-1">📊 实时数据</div>
+              <div class="text-xs text-gray-600">效果随时可查</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab导航 -->
+    <div class="bg-white rounded-xl shadow-sm mb-6">
+      <div class="border-b border-gray-200">
+        <nav class="flex space-x-8 px-6" aria-label="Tabs">
+          <button onclick="switchTab('all')" id="tab-all" class="tab-btn active">
+            全部推广 <span class="qc-badge qc-badge-secondary ml-2">15</span>
+          </button>
+          <button onclick="switchTab('running')" id="tab-running" class="tab-btn">
+            推广中 <span class="qc-badge qc-badge-success ml-2">8</span>
+          </button>
+          <button onclick="switchTab('ended')" id="tab-ended" class="tab-btn">
+            已结束 <span class="qc-badge qc-badge-secondary ml-2">7</span>
+          </button>
+        </nav>
+      </div>
+    </div>
+
+    <!-- 筛选器 -->
+    <div class="qc-card mb-6">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div class="md:col-span-2">
+          <input type="text" class="qc-input" placeholder="搜索推广内容...">
+        </div>
+        <div>
+          <select class="qc-input">
+            <option>全部目标</option>
+            <option>涨粉</option>
+            <option>商品推广</option>
+            <option>直播推广</option>
+          </select>
+        </div>
+        <div>
+          <select class="qc-input">
+            <option>时间排序</option>
+            <option>按创建时间</option>
+            <option>按消耗金额</option>
+            <option>按涨粉数量</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- 推广卡片列表 -->
+    <div class="grid md:grid-cols-2 gap-6">
+
+      <!-- 推广卡片 1 -->
+      <div class="qc-card hover:shadow-lg transition-shadow">
+        <div class="flex gap-4 mb-4">
+          <img src="https://placehold.co/120x160/FF6B6B/FFF?text=Video" class="w-24 h-32 rounded-lg object-cover">
+          <div class="flex-1">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="qc-badge qc-badge-success">推广中</span>
+              <span class="px-2 py-1 bg-pink-100 text-pink-700 text-xs rounded-full">涨粉</span>
+            </div>
+            <h3 class="text-base font-semibold text-gray-900 mb-2 line-clamp-2">春季穿搭分享 - 显瘦显高搭配技巧</h3>
+            <p class="text-xs text-gray-500 mb-2">推广时间：还剩 2天3小时</p>
+            <div class="flex items-center gap-3 text-xs text-gray-600">
+              <span>💰 预算 ¥500</span>
+              <span>👥 智能定向</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-4 gap-2 mb-4 pb-4 border-b border-gray-200">
+          <div>
+            <div class="text-xs text-gray-500">消耗</div>
+            <div class="font-bold qc-text-gradient">¥245</div>
+          </div>
+          <div>
+            <div class="text-xs text-gray-500">涨粉</div>
+            <div class="font-bold text-pink-600">326</div>
+          </div>
+          <div>
+            <div class="text-xs text-gray-500">播放</div>
+            <div class="font-bold text-blue-600">8.2K</div>
+          </div>
+          <div>
+            <div class="text-xs text-gray-500">互动</div>
+            <div class="font-bold text-orange-600">452</div>
+          </div>
+        </div>
+
+        <div class="flex gap-2">
+          <button class="flex-1 qc-btn qc-btn-secondary text-sm">暂停</button>
+          <button class="flex-1 qc-btn qc-btn-primary text-sm" onclick="location.href='suixintui-detail.html'">查看详情</button>
+        </div>
+      </div>
+
+      <!-- 推广卡片 2 -->
+      <div class="qc-card hover:shadow-lg transition-shadow">
+        <div class="flex gap-4 mb-4">
+          <img src="https://placehold.co/120x160/4ECDC4/FFF?text=Live" class="w-24 h-32 rounded-lg object-cover">
+          <div class="flex-1">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="qc-badge qc-badge-success">推广中</span>
+              <span class="px-2 py-1 bg-purple-100 text-purple-700 text-xs rounded-full">直播</span>
+            </div>
+            <h3 class="text-base font-semibold text-gray-900 mb-2 line-clamp-2">美妆直播间 - 新品限时优惠</h3>
+            <p class="text-xs text-gray-500 mb-2">推广时间：还剩 1天8小时</p>
+            <div class="flex items-center gap-3 text-xs text-gray-600">
+              <span>💰 预算 ¥800</span>
+              <span>👥 女性18-35岁</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-4 gap-2 mb-4 pb-4 border-b border-gray-200">
+          <div>
+            <div class="text-xs text-gray-500">消耗</div>
+            <div class="font-bold qc-text-gradient">¥456</div>
+          </div>
+          <div>
+            <div class="text-xs text-gray-500">进入</div>
+            <div class="font-bold text-purple-600">1.2K</div>
+          </div>
+          <div>
+            <div class="text-xs text-gray-500">观看</div>
+            <div class="font-bold text-blue-600">15K</div>
+          </div>
+          <div>
+            <div class="text-xs text-gray-500">成交</div>
+            <div class="font-bold text-green-600">42</div>
+          </div>
+        </div>
+
+        <div class="flex gap-2">
+          <button class="flex-1 qc-btn qc-btn-secondary text-sm">暂停</button>
+          <button class="flex-1 qc-btn qc-btn-primary text-sm">查看详情</button>
+        </div>
+      </div>
+
+      <!-- 推广卡片 3 -->
+      <div class="qc-card hover:shadow-lg transition-shadow">
+        <div class="flex gap-4 mb-4">
+          <img src="https://placehold.co/120x160/FFD93D/333?text=Product" class="w-24 h-32 rounded-lg object-cover">
+          <div class="flex-1">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="qc-badge qc-badge-success">推广中</span>
+              <span class="px-2 py-1 bg-orange-100 text-orange-700 text-xs rounded-full">商品</span>
+            </div>
+            <h3 class="text-base font-semibold text-gray-900 mb-2 line-clamp-2">爆款连衣裙 - 春夏新款限量</h3>
+            <p class="text-xs text-gray-500 mb-2">推广时间：还剩 5天</p>
+            <div class="flex items-center gap-3 text-xs text-gray-600">
+              <span>💰 预算 ¥1,000</span>
+              <span>👥 智能定向</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-4 gap-2 mb-4 pb-4 border-b border-gray-200">
+          <div>
+            <div class="text-xs text-gray-500">消耗</div>
+            <div class="font-bold qc-text-gradient">¥684</div>
+          </div>
+          <div>
+            <div class="text-xs text-gray-500">点击</div>
+            <div class="font-bold text-blue-600">2.4K</div>
+          </div>
+          <div>
+            <div class="text-xs text-gray-500">加购</div>
+            <div class="font-bold text-purple-600">156</div>
+          </div>
+          <div>
+            <div class="text-xs text-gray-500">成交</div>
+            <div class="font-bold text-green-600">68</div>
+          </div>
+        </div>
+
+        <div class="flex gap-2">
+          <button class="flex-1 qc-btn qc-btn-secondary text-sm">暂停</button>
+          <button class="flex-1 qc-btn qc-btn-primary text-sm">查看详情</button>
+        </div>
+      </div>
+
+      <!-- 推广卡片 4 -->
+      <div class="qc-card hover:shadow-lg transition-shadow">
+        <div class="flex gap-4 mb-4">
+          <img src="https://placehold.co/120x160/6C5CE7/FFF?text=Video" class="w-24 h-32 rounded-lg object-cover">
+          <div class="flex-1">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="qc-badge qc-badge-success">推广中</span>
+              <span class="px-2 py-1 bg-pink-100 text-pink-700 text-xs rounded-full">涨粉</span>
+            </div>
+            <h3 class="text-base font-semibold text-gray-900 mb-2 line-clamp-2">健身教程 - 7天瘦身计划</h3>
+            <p class="text-xs text-gray-500 mb-2">推广时间：还剩 4天</p>
+            <div class="flex items-center gap-3 text-xs text-gray-600">
+              <span>💰 预算 ¥300</span>
+              <span>👥 一二线城市</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-4 gap-2 mb-4 pb-4 border-b border-gray-200">
+          <div>
+            <div class="text-xs text-gray-500">消耗</div>
+            <div class="font-bold qc-text-gradient">¥156</div>
+          </div>
+          <div>
+            <div class="text-xs text-gray-500">涨粉</div>
+            <div class="font-bold text-pink-600">218</div>
+          </div>
+          <div>
+            <div class="text-xs text-gray-500">播放</div>
+            <div class="font-bold text-blue-600">5.8K</div>
+          </div>
+          <div>
+            <div class="text-xs text-gray-500">互动</div>
+            <div class="font-bold text-orange-600">324</div>
+          </div>
+        </div>
+
+        <div class="flex gap-2">
+          <button class="flex-1 qc-btn qc-btn-secondary text-sm">暂停</button>
+          <button class="flex-1 qc-btn qc-btn-primary text-sm">查看详情</button>
+        </div>
+      </div>
+
+      <!-- 推广卡片 5 - 已结束 -->
+      <div class="qc-card hover:shadow-lg transition-shadow opacity-75">
+        <div class="flex gap-4 mb-4">
+          <img src="https://placehold.co/120x160/95A5A6/FFF?text=Video" class="w-24 h-32 rounded-lg object-cover grayscale">
+          <div class="flex-1">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="qc-badge qc-badge-secondary">已结束</span>
+              <span class="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-full">涨粉</span>
+            </div>
+            <h3 class="text-base font-semibold text-gray-900 mb-2 line-clamp-2">美食探店 - 本地特色小吃</h3>
+            <p class="text-xs text-gray-500 mb-2">推广时间：已结束</p>
+            <div class="flex items-center gap-3 text-xs text-gray-600">
+              <span>💰 预算 ¥200（已用完）</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-4 gap-2 mb-4 pb-4 border-b border-gray-200">
+          <div>
+            <div class="text-xs text-gray-500">消耗</div>
+            <div class="font-bold text-gray-600">¥200</div>
+          </div>
+          <div>
+            <div class="text-xs text-gray-500">涨粉</div>
+            <div class="font-bold text-gray-600">145</div>
+          </div>
+          <div>
+            <div class="text-xs text-gray-500">播放</div>
+            <div class="font-bold text-gray-600">4.2K</div>
+          </div>
+          <div>
+            <div class="text-xs text-gray-500">互动</div>
+            <div class="font-bold text-gray-600">268</div>
+          </div>
+        </div>
+
+        <div class="flex gap-2">
+          <button class="flex-1 qc-btn qc-btn-secondary text-sm">复用推广</button>
+          <button class="flex-1 qc-btn qc-btn-primary text-sm">查看报告</button>
+        </div>
+      </div>
+
+      <!-- 推广卡片 6 - 已结束 -->
+      <div class="qc-card hover:shadow-lg transition-shadow opacity-75">
+        <div class="flex gap-4 mb-4">
+          <img src="https://placehold.co/120x160/95A5A6/FFF?text=Product" class="w-24 h-32 rounded-lg object-cover grayscale">
+          <div class="flex-1">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="qc-badge qc-badge-secondary">已结束</span>
+              <span class="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-full">商品</span>
+            </div>
+            <h3 class="text-base font-semibold text-gray-900 mb-2 line-clamp-2">护肤套装 - 冬季补水保湿</h3>
+            <p class="text-xs text-gray-500 mb-2">推广时间：已结束</p>
+            <div class="flex items-center gap-3 text-xs text-gray-600">
+              <span>💰 预算 ¥600（剩余¥48）</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-4 gap-2 mb-4 pb-4 border-b border-gray-200">
+          <div>
+            <div class="text-xs text-gray-500">消耗</div>
+            <div class="font-bold text-gray-600">¥552</div>
+          </div>
+          <div>
+            <div class="text-xs text-gray-500">点击</div>
+            <div class="font-bold text-gray-600">1.8K</div>
+          </div>
+          <div>
+            <div class="text-xs text-gray-500">加购</div>
+            <div class="font-bold text-gray-600">98</div>
+          </div>
+          <div>
+            <div class="text-xs text-gray-500">成交</div>
+            <div class="font-bold text-gray-600">45</div>
+          </div>
+        </div>
+
+        <div class="flex gap-2">
+          <button class="flex-1 qc-btn qc-btn-secondary text-sm">复用推广</button>
+          <button class="flex-1 qc-btn qc-btn-primary text-sm">查看报告</button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 分页 -->
+    <div class="flex items-center justify-center mt-8 gap-2">
+      <button class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50" disabled>上一页</button>
+      <button class="px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-red-500 to-orange-500 rounded-lg">1</button>
+      <button class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50">2</button>
+      <button class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50">下一页</button>
+    </div>
+
+        </div>
+    </div>
+  </main>
+  </div>
+
+  <script>
+    function switchTab(tab) {
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      document.getElementById(`tab-${tab}`).classList.add('active');
+    }
+  </script>
+
+  <style>
+    .tab-btn {
+      padding: 1rem 0;
+      font-weight: 500;
+      color: #6b7280;
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s;
+    }
+    .tab-btn:hover {
+      color: #111827;
+    }
+    .tab-btn.active {
+      color: #ef4444;
+      border-bottom-color: #ef4444;
+    }
+    .line-clamp-2 {
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+  </style>
+
+  <script src="nav-component.js"></script>
+</body>
+</html>

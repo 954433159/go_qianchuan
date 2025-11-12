@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>财务对账 - 千川直播带货平台</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="design-system.css">
+</head>
+<body class="bg-gray-50">
+
+    <!-- Header -->
+  <header class="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-gray-200">
+    <div class="flex h-16 items-center justify-between px-6">
+      <div class="flex items-center gap-3">
+        <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-red-500 to-orange-500">
+          <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+          </svg>
+        </div>
+        <div class="hidden md:block">
+          <h1 class="text-lg font-bold text-gray-900">千川直播带货</h1>
+          <p class="text-xs text-gray-500">Qianchuan Live E-commerce</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <button class="relative flex items-center justify-center w-10 h-10 rounded-lg hover:bg-gray-100 transition-colors">
+          <svg class="h-5 w-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+          </svg>
+          <span class="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-red-500"></span>
+        </button>
+        <div class="relative">
+          <button class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors">
+            <div class="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-red-500 to-orange-500 text-white">
+              <span class="text-sm font-medium">商</span>
+            </div>
+            <span class="hidden text-sm font-medium md:inline-block">商家中心</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="flex">
+    <aside class="w-64 bg-white border-r border-gray-200 min-h-[calc(100vh-64px)] sticky top-16">
+      <nav id="main-nav" class="p-4 space-y-6"></nav>
+    </aside>
+
+    <main class="flex-1 p-8">
+      <div class="max-w-7xl mx-auto space-y-6">
+
+    
+    <div class="mb-8">
+      <h2 class="text-3xl font-bold text-gray-900">📊 财务对账</h2>
+      <p class="mt-2 text-gray-600">查看账户资金流水明细，核对转账、退款、消耗等交易记录</p>
+    </div>
+
+    <!-- 对账汇总 -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+      <div class="qc-card bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-sm text-gray-600">期初余额</span>
+          <svg class="w-8 h-8 text-blue-400 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+        <div class="text-2xl font-bold text-gray-900">¥ 150,000.00</div>
+        <div class="text-xs text-gray-500 mt-1">2024-10-01</div>
+      </div>
+
+      <div class="qc-card bg-gradient-to-br from-green-50 to-emerald-50 border border-green-200">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-sm text-gray-600">本期收入</span>
+          <svg class="w-8 h-8 text-green-400 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11l5-5m0 0l5 5m-5-5v12" />
+          </svg>
+        </div>
+        <div class="text-2xl font-bold text-green-600">+ ¥ 85,500.00</div>
+        <div class="text-xs text-gray-500 mt-1">转账充值</div>
+      </div>
+
+      <div class="qc-card bg-gradient-to-br from-red-50 to-orange-50 border border-red-200">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-sm text-gray-600">本期支出</span>
+          <svg class="w-8 h-8 text-red-400 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 13l-5 5m0 0l-5-5m5 5V6" />
+          </svg>
+        </div>
+        <div class="text-2xl font-bold text-red-600">- ¥ 107,200.00</div>
+        <div class="text-xs text-gray-500 mt-1">消耗+退款</div>
+      </div>
+
+      <div class="qc-card bg-gradient-to-br from-purple-50 to-pink-50 border border-purple-200">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-sm text-gray-600">期末余额</span>
+          <svg class="w-8 h-8 text-purple-400 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+          </svg>
+        </div>
+        <div class="text-2xl font-bold text-purple-600">¥ 128,300.00</div>
+        <div class="text-xs text-gray-500 mt-1">2024-11-11</div>
+      </div>
+    </div>
+
+    <!-- 筛选器 -->
+    <div class="qc-card mb-6">
+      <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">对账周期</label>
+          <select class="qc-input">
+            <option>本月 (2024-11)</option>
+            <option>上月 (2024-10)</option>
+            <option>近30天</option>
+            <option>近90天</option>
+            <option>自定义</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">交易类型</label>
+          <select class="qc-input">
+            <option value="">全部类型</option>
+            <option value="RECHARGE">充值</option>
+            <option value="TRANSFER">转账</option>
+            <option value="COST">消耗</option>
+            <option value="REFUND">退款</option>
+            <option value="ADJUST">调账</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">账户</label>
+          <select class="qc-input">
+            <option value="">全部账户</option>
+            <option value="1234567890">账户 1234567890</option>
+            <option value="9876543210">账户 9876543210</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">金额范围</label>
+          <select class="qc-input">
+            <option value="">不限</option>
+            <option value="0-1000">¥0 - ¥1,000</option>
+            <option value="1000-5000">¥1,000 - ¥5,000</option>
+            <option value="5000-10000">¥5,000 - ¥10,000</option>
+            <option value="10000+">¥10,000+</option>
+          </select>
+        </div>
+        <div class="flex items-end">
+          <button class="qc-btn qc-btn-primary w-full">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            查询
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 对账明细表 -->
+    <div class="qc-card">
+      <div class="flex items-center justify-between mb-6">
+        <h3 class="text-xl font-semibold text-gray-900">💼 对账明细</h3>
+        <div class="flex items-center gap-2 text-sm text-gray-600">
+          <span>共 <span class="font-semibold text-gray-900">156</span> 条记录</span>
+          <span class="mx-2">|</span>
+          <span>收入: <span class="font-semibold text-green-600">¥85,500</span></span>
+          <span class="mx-2">|</span>
+          <span>支出: <span class="font-semibold text-red-600">¥107,200</span></span>
+        </div>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full">
+          <thead class="bg-gray-50 border-b border-gray-200">
+            <tr>
+              <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">交易时间</th>
+              <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">交易号</th>
+              <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">类型</th>
+              <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">对方账户</th>
+              <th class="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">金额</th>
+              <th class="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">余额</th>
+              <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">说明</th>
+              <th class="px-4 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">操作</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-200" id="transactionList">
+            <!-- 数据由JS动态生成 -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 分页 -->
+      <div class="flex items-center justify-between mt-6 pt-4 border-t border-gray-200">
+        <div class="text-sm text-gray-600">
+          显示第 1-20 条，共 156 条
+        </div>
+        <div class="flex items-center gap-2">
+          <button class="px-3 py-1 border border-gray-300 rounded-lg hover:bg-gray-50 text-sm disabled:opacity-50" disabled>
+            上一页
+          </button>
+          <button class="px-3 py-1 bg-red-500 text-white rounded-lg text-sm">1</button>
+          <button class="px-3 py-1 border border-gray-300 rounded-lg hover:bg-gray-50 text-sm">2</button>
+          <button class="px-3 py-1 border border-gray-300 rounded-lg hover:bg-gray-50 text-sm">3</button>
+          <span class="px-2">...</span>
+          <button class="px-3 py-1 border border-gray-300 rounded-lg hover:bg-gray-50 text-sm">8</button>
+          <button class="px-3 py-1 border border-gray-300 rounded-lg hover:bg-gray-50 text-sm">
+            下一页
+          </button>
+        </div>
+      </div>
+    </div>
+
+        </div>
+    </div>
+  </main>
+  </div>
+
+  <script>
+    // 模拟交易数据
+    const transactions = [
+      { date: '2024-11-11 14:30:25', seq: 'TRF1731319825123', type: 'TRANSFER', typeLabel: '转账收入', counterparty: '代理商账户 9876543210', amount: 10000, balance: 128300, desc: '11月推广充值', isIncome: true },
+      { date: '2024-11-11 12:15:42', seq: 'CST1731312942456', type: 'COST', typeLabel: '广告消耗', counterparty: '推广计划 #12345', amount: -2850, balance: 118300, desc: '直播推广消耗', isIncome: false },
+      { date: '2024-11-11 10:05:18', seq: 'CST1731305118789', type: 'COST', typeLabel: '广告消耗', counterparty: '推广计划 #12346', amount: -1250, balance: 121150, desc: '商品推广消耗', isIncome: false },
+      { date: '2024-11-10 18:45:33', seq: 'TRF1731246333234', type: 'TRANSFER', typeLabel: '转账收入', counterparty: '代理商账户 9876543210', amount: 15000, balance: 122400, desc: '补充推广费用', isIncome: true },
+      { date: '2024-11-10 16:22:07', seq: 'RFD1731238927567', type: 'REFUND', typeLabel: '退款支出', counterparty: '退款至 代理商 9876543210', amount: -5000, balance: 107400, desc: '余额退还', isIncome: false },
+      { date: '2024-11-10 14:10:56', seq: 'CST1731230456890', type: 'COST', typeLabel: '广告消耗', counterparty: '推广计划 #12347', amount: -3420, balance: 112400, desc: '随心推消耗', isIncome: false },
+      { date: '2024-11-10 11:35:20', seq: 'CST1731221720123', type: 'COST', typeLabel: '广告消耗', counterparty: '推广计划 #12348', amount: -1680, balance: 115820, desc: '直播推广消耗', isIncome: false },
+      { date: '2024-11-09 19:20:45', seq: 'TRF1731162045456', type: 'TRANSFER', typeLabel: '转账收入', counterparty: '代理商账户 9876543210', amount: 20000, balance: 117500, desc: '月度充值', isIncome: true },
+      { date: '2024-11-09 16:55:12', seq: 'CST1731152112789', type: 'COST', typeLabel: '广告消耗', counterparty: '推广计划 #12349', amount: -2950, balance: 97500, desc: '全域推广消耗', isIncome: false },
+      { date: '2024-11-09 14:30:38', seq: 'ADJ1731143438234', type: 'ADJUST', typeLabel: '账户调整', counterparty: '系统调账', amount: 500, balance: 100450, desc: '优惠券补贴', isIncome: true },
+      { date: '2024-11-09 11:15:25', seq: 'CST1731131725567', type: 'COST', typeLabel: '广告消耗', counterparty: '推广计划 #12350', amount: -4120, balance: 99950, desc: '直播推广消耗', isIncome: false },
+      { date: '2024-11-08 17:40:50', seq: 'TRF1731075650890', type: 'TRANSFER', typeLabel: '转账收入', counterparty: '代理商账户 9876543210', amount: 25000, balance: 104070, desc: '大促充值', isIncome: true },
+      { date: '2024-11-08 15:22:33', seq: 'CST1731067353123', type: 'COST', typeLabel: '广告消耗', counterparty: '推广计划 #12351', amount: -5680, balance: 79070, desc: '商品推广消耗', isIncome: false },
+      { date: '2024-11-08 12:50:18', seq: 'CST1731058218456', type: 'COST', typeLabel: '广告消耗', counterparty: '推广计划 #12352', amount: -3200, balance: 84750, desc: '随心推消耗', isIncome: false },
+      { date: '2024-11-08 10:30:45', seq: 'RFD1731049845789', type: 'REFUND', typeLabel: '退款支出', counterparty: '退款至 代理商 9876543210', amount: -3000, balance: 87950, desc: '误充退款', isIncome: false },
+      { date: '2024-11-07 18:15:22', seq: 'TRF1730990122234', type: 'TRANSFER', typeLabel: '转账收入', counterparty: '代理商账户 9876543210', amount: 15500, balance: 90950, desc: '周度充值', isIncome: true },
+      { date: '2024-11-07 15:40:10', seq: 'CST1730980810567', type: 'COST', typeLabel: '广告消耗', counterparty: '推广计划 #12353', amount: -2850, balance: 75450, desc: '直播推广消耗', isIncome: false },
+      { date: '2024-11-07 13:25:55', seq: 'CST1730972755890', type: 'COST', typeLabel: '广告消耗', counterparty: '推广计划 #12354', amount: -1920, balance: 78300, desc: '全域推广消耗', isIncome: false },
+      { date: '2024-11-07 11:10:30', seq: 'CST1730964630123', type: 'COST', typeLabel: '广告消耗', counterparty: '推广计划 #12355', amount: -3540, balance: 80220, desc: '商品推广消耗', isIncome: false },
+      { date: '2024-11-06 16:50:15', seq: 'CST1730900215456', type: 'COST', typeLabel: '广告消耗', counterparty: '推广计划 #12356', amount: -2680, balance: 83760, desc: '随心推消耗', isIncome: false }
+    ];
+
+    // 渲染交易列表
+    function renderTransactions() {
+      const tbody = document.getElementById('transactionList');
+      tbody.innerHTML = transactions.map(tx => `
+        <tr class="hover:bg-gray-50 transition-colors">
+          <td class="px-4 py-3 text-sm text-gray-900">${tx.date}</td>
+          <td class="px-4 py-3">
+            <span class="font-mono text-xs text-gray-600">${tx.seq}</span>
+          </td>
+          <td class="px-4 py-3">
+            <span class="px-2 py-1 text-xs font-medium rounded-full ${
+              tx.type === 'TRANSFER' ? 'bg-green-100 text-green-800' :
+              tx.type === 'COST' ? 'bg-red-100 text-red-800' :
+              tx.type === 'REFUND' ? 'bg-orange-100 text-orange-800' :
+              'bg-blue-100 text-blue-800'
+            }">
+              ${tx.typeLabel}
+            </span>
+          </td>
+          <td class="px-4 py-3 text-sm text-gray-600">${tx.counterparty}</td>
+          <td class="px-4 py-3 text-right">
+            <span class="font-semibold ${tx.isIncome ? 'text-green-600' : 'text-red-600'}">
+              ${tx.isIncome ? '+' : ''} ¥ ${Math.abs(tx.amount).toLocaleString('zh-CN', {minimumFractionDigits: 2})}
+            </span>
+          </td>
+          <td class="px-4 py-3 text-right text-sm font-medium text-gray-900">
+            ¥ ${tx.balance.toLocaleString('zh-CN', {minimumFractionDigits: 2})}
+          </td>
+          <td class="px-4 py-3 text-sm text-gray-600">${tx.desc}</td>
+          <td class="px-4 py-3 text-center">
+            <button onclick="viewDetail('${tx.seq}')" class="text-blue-500 hover:text-blue-700 text-sm">
+              详情
+            </button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    // 查看详情
+    function viewDetail(seq) {
+      alert('查看交易详情：' + seq);
+    }
+
+    // 导出对账单
+    function exportReconciliation() {
+      alert('正在导出对账单...\n\n导出格式：Excel\n文件名：财务对账单_2024-11.xlsx');
+    }
+
+    // 页面加载时渲染
+    window.addEventListener('DOMContentLoaded', renderTransactions);
+  </script>
+
+  <script src="nav-component.js"></script>
+</body>
+</html>

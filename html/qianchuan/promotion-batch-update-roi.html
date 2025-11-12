@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>批量更新ROI目标 - 千川推广管理</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="design-system.css">
+</head>
+<body class="bg-gray-50">
+      <!-- Header -->
+  <header class="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-gray-200">
+    <div class="flex h-16 items-center justify-between px-6">
+      <div class="flex items-center gap-3">
+        <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-red-500 to-orange-500">
+          <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+          </svg>
+        </div>
+        <div class="hidden md:block">
+          <h1 class="text-lg font-bold text-gray-900">千川直播带货</h1>
+          <p class="text-xs text-gray-500">Qianchuan Live E-commerce</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <button class="relative flex items-center justify-center w-10 h-10 rounded-lg hover:bg-gray-100 transition-colors">
+          <svg class="h-5 w-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+          </svg>
+          <span class="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-red-500"></span>
+        </button>
+        <div class="relative">
+          <button class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors">
+            <div class="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-red-500 to-orange-500 text-white">
+              <span class="text-sm font-medium">商</span>
+            </div>
+            <span class="hidden text-sm font-medium md:inline-block">商家中心</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="flex">
+    <aside class="w-64 bg-white border-r border-gray-200 min-h-[calc(100vh-64px)] sticky top-16">
+      <nav id="main-nav" class="p-4 space-y-6"></nav>
+    </aside>
+
+    <main class="flex-1 p-8">
+      <div class="max-w-7xl mx-auto space-y-6">
+<main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="mb-8">
+            <h2 class="text-3xl font-bold text-gray-900">🎯 批量更新ROI目标</h2>
+            <p class="mt-2 text-gray-600">为控成本计划批量设置支付ROI目标</p>
+        </div>
+
+        <!-- 重要说明 -->
+        <div class="bg-gradient-to-r from-purple-50 to-pink-50 border-l-4 border-purple-400 p-6 mb-6 rounded-lg">
+            <div class="flex items-start">
+                <svg class="h-6 w-6 text-purple-500 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"/>
+                </svg>
+                <div>
+                    <h4 class="font-semibold text-purple-900 mb-2">关于ROI目标</h4>
+                    <ul class="text-sm text-purple-800 space-y-1">
+                        <li>• <strong>仅支持控成本模式</strong>：只有出价方式为"支付ROI"的计划才能设置ROI目标</li>
+                        <li>• <strong>ROI定义</strong>：ROI = GMV / 消耗，例如ROI=5表示每消耗1元带来5元GMV</li>
+                        <li>• <strong>系统优化</strong>：系统会基于ROI目标自动调整出价，优化投放效果</li>
+                        <li>• <strong>学习期影响</strong>：调整ROI目标可能导致计划重新进入学习期</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- 操作统计 -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+            <div class="qc-card">
+                <p class="text-sm text-gray-600 mb-1">已选计划</p>
+                <p class="text-3xl font-bold text-gray-900" id="selectedCount">0</p>
+                <p class="text-xs text-gray-500 mt-1">个控成本计划</p>
+            </div>
+            <div class="qc-card">
+                <p class="text-sm text-gray-600 mb-1">当前平均ROI</p>
+                <p class="text-3xl font-bold qc-roi-excellent">6.2</p>
+                <p class="text-xs text-green-600 mt-1">实际表现</p>
+            </div>
+            <div class="qc-card">
+                <p class="text-sm text-gray-600 mb-1">平均ROI目标</p>
+                <p class="text-3xl font-bold text-blue-600">5.0</p>
+                <p class="text-xs text-gray-500 mt-1">当前设置</p>
+            </div>
+            <div class="qc-card">
+                <p class="text-sm text-gray-600 mb-1">达成率</p>
+                <p class="text-3xl font-bold text-green-600">124%</p>
+                <p class="text-xs text-green-600 mt-1">超额完成</p>
+            </div>
+        </div>
+
+        <!-- ROI设置方式 -->
+        <div class="qc-card mb-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">📊 选择设置方式</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <label class="relative flex items-start p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-blue-400 transition-colors">
+                    <input type="radio" name="roiMethod" value="fixed" class="mt-1 mr-3" checked onchange="switchMethod('fixed')">
+                    <div class="flex-1">
+                        <p class="font-semibold text-gray-900 mb-1">固定ROI目标</p>
+                        <p class="text-sm text-gray-600">为所有选中计划设置相同的ROI目标</p>
+                    </div>
+                </label>
+                <label class="relative flex items-start p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-blue-400 transition-colors">
+                    <input type="radio" name="roiMethod" value="smart" class="mt-1 mr-3" onchange="switchMethod('smart')">
+                    <div class="flex-1">
+                        <p class="font-semibold text-gray-900 mb-1">智能推荐</p>
+                        <p class="text-sm text-gray-600">根据历史数据为每个计划推荐最优ROI</p>
+                    </div>
+                </label>
+            </div>
+        </div>
+
+        <!-- 固定ROI设置 -->
+        <div id="fixedMethod" class="qc-card mb-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">设置ROI目标值</h3>
+            <div class="max-w-lg">
+                <label class="block text-sm font-medium text-gray-700 mb-2">目标ROI值</label>
+                <input type="number" id="roiTarget" class="qc-input text-2xl font-bold text-center" placeholder="5.0" step="0.1" min="1" value="5.0">
+                <div class="mt-4 p-4 bg-gray-50 rounded-lg">
+                    <p class="text-sm text-gray-700 mb-2">
+                        <strong>含义</strong>：系统将优化投放，力争每消耗 ¥1 带来 ¥<span id="roiDisplay">5.0</span> GMV
+                    </p>
+                    <p class="text-xs text-gray-500">建议范围：3.0 - 8.0，根据行业和商品特性合理设置</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 智能推荐 -->
+        <div id="smartMethod" class="qc-card mb-6 hidden">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">智能推荐ROI目标</h3>
+            <p class="text-sm text-gray-600 mb-4">系统根据近7日数据为每个计划推荐最优ROI目标</p>
+            <div class="bg-blue-50 p-4 rounded-lg">
+                <p class="text-sm text-blue-800">💡 推荐逻辑：基于历史ROI表现、转化稳定性、竞争环境等因素综合计算</p>
+            </div>
+        </div>
+
+        <!-- 计划选择 -->
+        <div class="qc-card mb-6">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-semibold text-gray-900">📝 选择要更新的计划（仅控成本计划）</h3>
+                <div class="flex gap-2">
+                    <button onclick="selectAll()" class="text-sm text-blue-600 hover:text-blue-700">全选</button>
+                    <button onclick="deselectAll()" class="text-sm text-gray-600 hover:text-gray-700">取消全选</button>
+                </div>
+            </div>
+
+            <div class="space-y-3">
+                <label class="flex items-center p-4 border-2 border-green-200 bg-green-50 rounded-lg cursor-pointer">
+                    <input type="checkbox" class="plan-checkbox w-5 h-5 text-red-500 rounded mr-4" onchange="updateCount()">
+                    <div class="flex-1">
+                        <div class="flex items-center justify-between mb-2">
+                            <div>
+                                <h4 class="font-semibold text-gray-900">双11美妆专场 - 口红套装</h4>
+                                <p class="text-xs text-gray-500 mt-1">出价方式：支付ROI | 当前ROI目标：5.0</p>
+                            </div>
+                            <span class="qc-badge qc-badge-success">投放中</span>
+                        </div>
+                        <div class="grid grid-cols-5 gap-4 text-sm">
+                            <div>
+                                <span class="text-gray-500">实际ROI：</span>
+                                <span class="font-semibold qc-roi-excellent">6.8</span>
+                            </div>
+                            <div>
+                                <span class="text-gray-500">达成率：</span>
+                                <span class="font-semibold text-green-600">136%</span>
+                            </div>
+                            <div>
+                                <span class="text-gray-500">今日GMV：</span>
+                                <span class="font-semibold">¥23.5K</span>
+                            </div>
+                            <div>
+                                <span class="text-gray-500">今日消耗：</span>
+                                <span class="font-semibold">¥3,456</span>
+                            </div>
+                            <div>
+                                <span class="text-gray-500">建议：</span>
+                                <span class="text-green-600">可提高目标</span>
+                            </div>
+                        </div>
+                        <div class="mt-2 p-2 bg-white rounded text-xs text-gray-600">
+                            系统推荐ROI目标：<span class="font-semibold text-blue-600">6.0</span>（基于近7日表现）
+                        </div>
+                    </div>
+                </label>
+
+                <label class="flex items-center p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50">
+                    <input type="checkbox" class="plan-checkbox w-5 h-5 text-red-500 rounded mr-4" onchange="updateCount()">
+                    <div class="flex-1">
+                        <div class="flex items-center justify-between mb-2">
+                            <div>
+                                <h4 class="font-semibold text-gray-900">秋冬羽绒服推广计划</h4>
+                                <p class="text-xs text-gray-500 mt-1">出价方式：支付ROI | 当前ROI目标：4.5</p>
+                            </div>
+                            <span class="qc-badge qc-badge-success">投放中</span>
+                        </div>
+                        <div class="grid grid-cols-5 gap-4 text-sm">
+                            <div>
+                                <span class="text-gray-500">实际ROI：</span>
+                                <span class="font-semibold qc-roi-excellent">5.6</span>
+                            </div>
+                            <div>
+                                <span class="text-gray-500">达成率：</span>
+                                <span class="font-semibold text-green-600">124%</span>
+                            </div>
+                            <div>
+                                <span class="text-gray-500">今日GMV：</span>
+                                <span class="font-semibold">¥29.3K</span>
+                            </div>
+                            <div>
+                                <span class="text-gray-500">今日消耗：</span>
+                                <span class="font-semibold">¥5,234</span>
+                            </div>
+                            <div>
+                                <span class="text-gray-500">建议：</span>
+                                <span class="text-blue-600">保持</span>
+                            </div>
+                        </div>
+                        <div class="mt-2 p-2 bg-gray-50 rounded text-xs text-gray-600">
+                            系统推荐ROI目标：<span class="font-semibold text-blue-600">5.2</span>（基于近7日表现）
+                        </div>
+                    </div>
+                </label>
+
+                <label class="flex items-center p-4 border-2 border-yellow-200 bg-yellow-50 rounded-lg cursor-pointer">
+                    <input type="checkbox" class="plan-checkbox w-5 h-5 text-red-500 rounded mr-4" onchange="updateCount()">
+                    <div class="flex-1">
+                        <div class="flex items-center justify-between mb-2">
+                            <div>
+                                <h4 class="font-semibold text-gray-900">零食大礼包促销</h4>
+                                <p class="text-xs text-gray-500 mt-1">出价方式：支付ROI | 当前ROI目标：5.5</p>
+                            </div>
+                            <span class="qc-badge qc-badge-warning">学习期</span>
+                        </div>
+                        <div class="grid grid-cols-5 gap-4 text-sm">
+                            <div>
+                                <span class="text-gray-500">实际ROI：</span>
+                                <span class="font-semibold qc-roi-good">4.5</span>
+                            </div>
+                            <div>
+                                <span class="text-gray-500">达成率：</span>
+                                <span class="font-semibold text-orange-600">82%</span>
+                            </div>
+                            <div>
+                                <span class="text-gray-500">今日GMV：</span>
+                                <span class="font-semibold">¥9.6K</span>
+                            </div>
+                            <div>
+                                <span class="text-gray-500">今日消耗：</span>
+                                <span class="font-semibold">¥2,123</span>
+                            </div>
+                            <div>
+                                <span class="text-gray-500">建议：</span>
+                                <span class="text-orange-600">降低目标</span>
+                            </div>
+                        </div>
+                        <div class="mt-2 p-2 bg-white rounded text-xs text-gray-600">
+                            系统推荐ROI目标：<span class="font-semibold text-blue-600">4.0</span>（学习期，建议保守）
+                        </div>
+                    </div>
+                </label>
+            </div>
+        </div>
+
+        <!-- 风险提示 -->
+        <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6">
+            <div class="flex">
+                <svg class="h-5 w-5 text-yellow-400 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"/>
+                </svg>
+                <div>
+                    <h4 class="text-sm font-medium text-yellow-800 mb-1">⚠️ 重要提示</h4>
+                    <ul class="text-sm text-yellow-700 space-y-1">
+                        <li>• ROI目标设置过高可能导致流量不足，建议参考历史数据合理设置</li>
+                        <li>• 学习期计划不建议频繁调整ROI目标，可能延长学习周期</li>
+                        <li>• 如果实际ROI持续超过目标30%以上，建议适当提高目标获取更多流量</li>
+                        <li>• ROI达成率<80%持续3天，建议降低目标或优化计划</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- 操作按钮 -->
+        <div class="flex items-center justify-between">
+            <button onclick="window.history.back()" class="qc-btn qc-btn-secondary">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                </svg>
+                返回
+            </button>
+            <button onclick="previewUpdate()" class="qc-btn qc-btn-primary">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                确认更新
+            </button>
+        </div>
+          </div>
+    </div>
+  </main>
+  </div>
+
+    <script>
+        // 实时更新ROI显示
+        document.getElementById('roiTarget')?.addEventListener('input', function(e) {
+            document.getElementById('roiDisplay').textContent = e.target.value || '5.0';
+        });
+
+        function updateCount() {
+            const count = document.querySelectorAll('.plan-checkbox:checked').length;
+            document.getElementById('selectedCount').textContent = count;
+        }
+
+        function selectAll() {
+            document.querySelectorAll('.plan-checkbox').forEach(cb => cb.checked = true);
+            updateCount();
+        }
+
+        function deselectAll() {
+            document.querySelectorAll('.plan-checkbox').forEach(cb => cb.checked = false);
+            updateCount();
+        }
+
+        function switchMethod(method) {
+            document.getElementById('fixedMethod').classList.add('hidden');
+            document.getElementById('smartMethod').classList.add('hidden');
+            document.getElementById(method + 'Method').classList.remove('hidden');
+        }
+
+        function previewUpdate() {
+            const count = document.querySelectorAll('.plan-checkbox:checked').length;
+            if(count === 0) {
+                alert('请至少选择一个计划');
+                return;
+            }
+            const roi = document.getElementById('roiTarget').value;
+            if(confirm(`确认批量更新 ${count} 个计划的ROI目标为 ${roi} ？\n\n更新后立即生效，可能影响投放效果。`)) {
+                alert('✅ ROI目标更新成功！\n\n已更新 ' + count + ' 个计划的ROI目标');
+                window.location.href = 'promotions.html';
+            }
+        }
+    </script>
+  <script src="nav-component.js"></script>
+</body>
+</html>

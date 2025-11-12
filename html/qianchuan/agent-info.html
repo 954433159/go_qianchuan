@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>代理商信息 - 千川直播带货平台</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="design-system.css">
+</head>
+<body class="bg-gray-50">
+
+    <!-- Header -->
+  <header class="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-gray-200">
+    <div class="flex h-16 items-center justify-between px-6">
+      <div class="flex items-center gap-3">
+        <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-red-500 to-orange-500">
+          <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+          </svg>
+        </div>
+        <div class="hidden md:block">
+          <h1 class="text-lg font-bold text-gray-900">千川直播带货</h1>
+          <p class="text-xs text-gray-500">Qianchuan Live E-commerce</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <button class="relative flex items-center justify-center w-10 h-10 rounded-lg hover:bg-gray-100 transition-colors">
+          <svg class="h-5 w-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+          </svg>
+          <span class="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-red-500"></span>
+        </button>
+        <div class="relative">
+          <button class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors">
+            <div class="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-red-500 to-orange-500 text-white">
+              <span class="text-sm font-medium">商</span>
+            </div>
+            <span class="hidden text-sm font-medium md:inline-block">商家中心</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="flex">
+    <aside class="w-64 bg-white border-r border-gray-200 min-h-[calc(100vh-64px)] sticky top-16">
+      <nav id="main-nav" class="p-4 space-y-6"></nav>
+    </aside>
+
+    <main class="flex-1 p-8">
+      <div class="max-w-7xl mx-auto space-y-6">
+
+
+    <div class="mb-8">
+      <div class="flex items-center text-sm text-gray-500 mb-2">
+        <a href="accounts.html" class="hover:text-blue-600">账户管理</a>
+        <svg class="w-4 h-4 mx-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+        </svg>
+        <span class="text-gray-900">代理商信息</span>
+      </div>
+      <h2 class="text-3xl font-bold text-gray-900">🏢 代理商信息详情</h2>
+      <p class="mt-2 text-gray-600">查看和管理代理商账户信息</p>
+    </div>
+
+    <!-- 代理商基本信息 -->
+    <div class="qc-card mb-6">
+      <div class="flex items-start justify-between mb-6">
+        <div class="flex items-start gap-4">
+          <div class="w-20 h-20 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-xl flex items-center justify-center">
+            <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+            </svg>
+          </div>
+          <div>
+            <h3 class="text-2xl font-bold text-gray-900 mb-1">某某营销代理有限公司</h3>
+            <div class="flex items-center gap-3 text-sm text-gray-600">
+              <span>代理商ID: AG1234567890</span>
+              <span class="qc-badge qc-badge-success">认证代理商</span>
+              <span class="qc-badge qc-badge-info">A级资质</span>
+            </div>
+          </div>
+        </div>
+        <button class="qc-btn qc-btn-secondary text-sm">
+          <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+          </svg>
+          编辑信息
+        </button>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="p-4 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg border border-blue-200">
+          <div class="text-sm text-gray-600 mb-1">管理广告账户数</div>
+          <div class="text-3xl font-bold text-blue-600">156</div>
+          <div class="text-xs text-gray-500 mt-1">活跃账户: 128</div>
+        </div>
+        <div class="p-4 bg-gradient-to-br from-green-50 to-emerald-50 rounded-lg border border-green-200">
+          <div class="text-sm text-gray-600 mb-1">本月总消耗</div>
+          <div class="text-3xl font-bold text-green-600">¥1.85M</div>
+          <div class="text-xs text-gray-500 mt-1">环比上月 +15.3%</div>
+        </div>
+        <div class="p-4 bg-gradient-to-br from-orange-50 to-red-50 rounded-lg border border-orange-200">
+          <div class="text-sm text-gray-600 mb-1">账户总余额</div>
+          <div class="text-3xl font-bold text-orange-600">¥3.26M</div>
+          <div class="text-xs text-gray-500 mt-1">可用余额</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab导航 -->
+    <div class="qc-card mb-6">
+      <div class="flex border-b border-gray-200">
+        <button onclick="switchTab('basic')" class="agent-tab-btn active" data-tab="basic">基本信息</button>
+        <button onclick="switchTab('accounts')" class="agent-tab-btn" data-tab="accounts">管理账户</button>
+        <button onclick="switchTab('finance')" class="agent-tab-btn" data-tab="finance">财务信息</button>
+        <button onclick="switchTab('auth')" class="agent-tab-btn" data-tab="auth">权限管理</button>
+        <button onclick="switchTab('logs')" class="agent-tab-btn" data-tab="logs">操作日志</button>
+      </div>
+    </div>
+
+    <!-- 基本信息Tab -->
+    <div id="tab-basic" class="tab-content">
+      <div class="qc-card mb-6">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">公司信息</h3>
+        <div class="grid grid-cols-2 gap-4">
+          <div class="space-y-3">
+            <div class="flex items-center gap-3">
+              <span class="text-sm text-gray-600 w-32">公司全称:</span>
+              <span class="text-gray-900">某某营销代理有限公司</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="text-sm text-gray-600 w-32">统一社会信用代码:</span>
+              <span class="text-gray-900">91110000XXXXXXXX0X</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="text-sm text-gray-600 w-32">法人代表:</span>
+              <span class="text-gray-900">张三</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="text-sm text-gray-600 w-32">注册资本:</span>
+              <span class="text-gray-900">1000万元</span>
+            </div>
+          </div>
+          <div class="space-y-3">
+            <div class="flex items-center gap-3">
+              <span class="text-sm text-gray-600 w-32">成立日期:</span>
+              <span class="text-gray-900">2018-06-15</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="text-sm text-gray-600 w-32">公司地址:</span>
+              <span class="text-gray-900">北京市朝阳区XXX大厦</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="text-sm text-gray-600 w-32">联系电话:</span>
+              <span class="text-gray-900">010-12345678</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="text-sm text-gray-600 w-32">公司邮箱:</span>
+              <span class="text-gray-900">contact@agent.com</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="qc-card">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">资质认证</h3>
+        <div class="grid grid-cols-3 gap-4">
+          <div class="p-4 border-2 border-green-200 bg-green-50 rounded-lg">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-sm font-medium text-gray-900">营业执照</span>
+              <span class="qc-badge qc-badge-success">已认证</span>
+            </div>
+            <div class="text-xs text-gray-600">认证时间: 2023-01-15</div>
+            <button class="mt-2 text-xs text-blue-600 hover:underline">查看证件</button>
+          </div>
+          <div class="p-4 border-2 border-green-200 bg-green-50 rounded-lg">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-sm font-medium text-gray-900">代理资质</span>
+              <span class="qc-badge qc-badge-success">A级</span>
+            </div>
+            <div class="text-xs text-gray-600">有效期至: 2025-12-31</div>
+            <button class="mt-2 text-xs text-blue-600 hover:underline">查看证书</button>
+          </div>
+          <div class="p-4 border-2 border-green-200 bg-green-50 rounded-lg">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-sm font-medium text-gray-900">行业资质</span>
+              <span class="qc-badge qc-badge-success">已认证</span>
+            </div>
+            <div class="text-xs text-gray-600">涵盖: 电商/美妆/服饰</div>
+            <button class="mt-2 text-xs text-blue-600 hover:underline">查看详情</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 管理账户Tab -->
+    <div id="tab-accounts" class="tab-content hidden">
+      <div class="qc-card mb-6">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-lg font-semibold text-gray-900">管理的广告账户</h3>
+          <input type="text" class="qc-input w-64" placeholder="搜索账户名称或ID...">
+        </div>
+        
+        <div class="overflow-x-auto">
+          <table class="qc-table">
+            <thead>
+              <tr>
+                <th>账户ID</th>
+                <th>账户名称</th>
+                <th>账户类型</th>
+                <th>账户余额</th>
+                <th>本月消耗</th>
+                <th>状态</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="font-mono text-sm">1234567890</td>
+                <td>美妆店铺A</td>
+                <td><span class="qc-badge qc-badge-info">店铺账户</span></td>
+                <td class="font-mono font-semibold text-green-600">¥158,000</td>
+                <td class="font-mono">¥45,600</td>
+                <td><span class="qc-badge qc-badge-success">正常</span></td>
+                <td>
+                  <button class="text-blue-600 hover:underline text-sm">查看</button>
+                </td>
+              </tr>
+              <tr>
+                <td class="font-mono text-sm">9876543210</td>
+                <td>服饰直播间B</td>
+                <td><span class="qc-badge qc-badge-info">直播账户</span></td>
+                <td class="font-mono font-semibold text-green-600">¥89,500</td>
+                <td class="font-mono">¥32,100</td>
+                <td><span class="qc-badge qc-badge-success">正常</span></td>
+                <td>
+                  <button class="text-blue-600 hover:underline text-sm">查看</button>
+                </td>
+              </tr>
+              <tr>
+                <td class="font-mono text-sm">5555666677</td>
+                <td>数码专营店C</td>
+                <td><span class="qc-badge qc-badge-info">店铺账户</span></td>
+                <td class="font-mono font-semibold text-orange-600">¥8,200</td>
+                <td class="font-mono">¥28,900</td>
+                <td><span class="qc-badge qc-badge-warning">余额不足</span></td>
+                <td>
+                  <button class="text-blue-600 hover:underline text-sm">查看</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="mt-4 flex items-center justify-between">
+          <div class="text-sm text-gray-600">共156个账户</div>
+          <div class="flex gap-2">
+            <button class="px-3 py-1 border rounded hover:bg-gray-50">上一页</button>
+            <button class="px-3 py-1 bg-blue-500 text-white rounded">1</button>
+            <button class="px-3 py-1 border rounded hover:bg-gray-50">2</button>
+            <button class="px-3 py-1 border rounded hover:bg-gray-50">3</button>
+            <button class="px-3 py-1 border rounded hover:bg-gray-50">下一页</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 财务信息Tab -->
+    <div id="tab-finance" class="tab-content hidden">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <div class="qc-card">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">账户余额统计</h3>
+          <div class="space-y-3">
+            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+              <span class="text-gray-600">总余额</span>
+              <span class="text-xl font-bold text-gray-900">¥3,260,000</span>
+            </div>
+            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+              <span class="text-gray-600">可用余额</span>
+              <span class="text-xl font-bold text-green-600">¥3,180,000</span>
+            </div>
+            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+              <span class="text-gray-600">冻结金额</span>
+              <span class="text-xl font-bold text-orange-600">¥80,000</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="qc-card">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">消耗统计</h3>
+          <div class="space-y-3">
+            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+              <span class="text-gray-600">今日消耗</span>
+              <span class="text-xl font-bold text-red-600">¥65,800</span>
+            </div>
+            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+              <span class="text-gray-600">本月消耗</span>
+              <span class="text-xl font-bold text-gray-900">¥1,850,000</span>
+            </div>
+            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+              <span class="text-gray-600">累计消耗</span>
+              <span class="text-xl font-bold text-gray-900">¥18,500,000</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="qc-card">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">近期财务流水</h3>
+        <div class="overflow-x-auto">
+          <table class="qc-table">
+            <thead>
+              <tr>
+                <th>时间</th>
+                <th>类型</th>
+                <th>账户</th>
+                <th>金额</th>
+                <th>余额</th>
+                <th>备注</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>2025-11-11 10:30</td>
+                <td><span class="qc-badge qc-badge-danger">消耗</span></td>
+                <td>美妆店铺A</td>
+                <td class="text-red-600 font-semibold">-¥5,600</td>
+                <td class="font-mono">¥158,000</td>
+                <td class="text-sm text-gray-600">广告投放</td>
+              </tr>
+              <tr>
+                <td>2025-11-10 16:20</td>
+                <td><span class="qc-badge qc-badge-success">充值</span></td>
+                <td>服饰直播间B</td>
+                <td class="text-green-600 font-semibold">+¥50,000</td>
+                <td class="font-mono">¥89,500</td>
+                <td class="text-sm text-gray-600">账户充值</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- 权限管理Tab -->
+    <div id="tab-auth" class="tab-content hidden">
+      <div class="qc-card">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">代理商权限</h3>
+        <div class="grid grid-cols-2 gap-4">
+          <label class="flex items-center p-4 border rounded-lg cursor-pointer">
+            <input type="checkbox" class="w-4 h-4 text-blue-500 rounded mr-3" checked disabled>
+            <div>
+              <div class="font-medium text-gray-900">账户管理</div>
+              <div class="text-xs text-gray-600">管理下属广告账户</div>
+            </div>
+          </label>
+          <label class="flex items-center p-4 border rounded-lg cursor-pointer">
+            <input type="checkbox" class="w-4 h-4 text-blue-500 rounded mr-3" checked disabled>
+            <div>
+              <div class="font-medium text-gray-900">财务管理</div>
+              <div class="text-xs text-gray-600">充值、转账等财务操作</div>
+            </div>
+          </label>
+          <label class="flex items-center p-4 border rounded-lg cursor-pointer">
+            <input type="checkbox" class="w-4 h-4 text-blue-500 rounded mr-3" checked>
+            <div>
+              <div class="font-medium text-gray-900">数据查看</div>
+              <div class="text-xs text-gray-600">查看账户数据报表</div>
+            </div>
+          </label>
+          <label class="flex items-center p-4 border rounded-lg cursor-pointer">
+            <input type="checkbox" class="w-4 h-4 text-blue-500 rounded mr-3" checked>
+            <div>
+              <div class="font-medium text-gray-900">广告投放</div>
+              <div class="text-xs text-gray-600">创建和管理广告计划</div>
+            </div>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- 操作日志Tab -->
+    <div id="tab-logs" class="tab-content hidden">
+      <div class="qc-card">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">最近操作记录</h3>
+        <div class="space-y-3">
+          <div class="flex items-start gap-4 p-4 bg-gray-50 rounded-lg">
+            <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+              <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <div class="flex-1">
+              <div class="font-medium text-gray-900">账户充值</div>
+              <div class="text-sm text-gray-600">为账户"美妆店铺A"充值 ¥100,000</div>
+              <div class="text-xs text-gray-500 mt-1">2025-11-11 09:30:25 | 操作人: 张经理</div>
+            </div>
+          </div>
+          
+          <div class="flex items-start gap-4 p-4 bg-gray-50 rounded-lg">
+            <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
+              <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <div class="flex-1">
+              <div class="font-medium text-gray-900">创建广告计划</div>
+              <div class="text-sm text-gray-600">创建计划"双11大促"</div>
+              <div class="text-xs text-gray-500 mt-1">2025-11-10 14:20:18 | 操作人: 李主管</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+        </div>
+    </div>
+  </main>
+  </div>
+
+  <script>
+    function switchTab(tabName) {
+      document.querySelectorAll('.agent-tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+      document.querySelectorAll('.tab-content').forEach(content => content.classList.add('hidden'));
+      document.getElementById(`tab-${tabName}`).classList.remove('hidden');
+    }
+  </script>
+
+  <style>
+    .agent-tab-btn {
+      padding: 1rem 1.5rem;
+      font-weight: 500;
+      color: #6b7280;
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s;
+    }
+    .agent-tab-btn:hover { color: #374151; }
+    .agent-tab-btn.active {
+      color: #ef4444;
+      border-bottom-color: #ef4444;
+    }
+  </style>
+
+  <script src="nav-component.js"></script>
+</body>
+</html>

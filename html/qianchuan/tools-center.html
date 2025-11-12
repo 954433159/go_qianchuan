@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>工具中心 - 千川直播带货平台</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="design-system.css">
+</head>
+<body class="bg-gray-50">
+
+    <!-- Header -->
+  <header class="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-gray-200">
+    <div class="flex h-16 items-center justify-between px-6">
+      <div class="flex items-center gap-3">
+        <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-red-500 to-orange-500">
+          <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+          </svg>
+        </div>
+        <div class="hidden md:block">
+          <h1 class="text-lg font-bold text-gray-900">千川直播带货</h1>
+          <p class="text-xs text-gray-500">Qianchuan Live E-commerce</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <button class="relative flex items-center justify-center w-10 h-10 rounded-lg hover:bg-gray-100 transition-colors">
+          <svg class="h-5 w-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+          </svg>
+          <span class="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-red-500"></span>
+        </button>
+        <div class="relative">
+          <button class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors">
+            <div class="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-red-500 to-orange-500 text-white">
+              <span class="text-sm font-medium">商</span>
+            </div>
+            <span class="hidden text-sm font-medium md:inline-block">商家中心</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="flex">
+    <aside class="w-64 bg-white border-r border-gray-200 min-h-[calc(100vh-64px)] sticky top-16">
+      <nav id="main-nav" class="p-4 space-y-6"></nav>
+    </aside>
+
+    <main class="flex-1 p-8">
+      <div class="max-w-7xl mx-auto space-y-6">
+
+
+    <div class="mb-8">
+      <h2 class="text-3xl font-bold text-gray-900">🛠️ 工具中心</h2>
+      <p class="mt-2 text-gray-600">提供行业数据、日志查询、配额管理等实用工具</p>
+    </div>
+
+    <!-- 工具分类卡片 -->
+    <div class="grid md:grid-cols-3 gap-6 mb-8">
+      
+      <!-- 行业工具 -->
+      <div class="qc-card qc-card-interactive">
+        <div class="flex items-center gap-4 mb-4">
+          <div class="p-3 rounded-lg bg-blue-50">
+            <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+            </svg>
+          </div>
+          <div>
+            <h3 class="text-lg font-semibold text-gray-900">行业数据</h3>
+            <p class="text-sm text-gray-600">Industry</p>
+          </div>
+        </div>
+        <p class="text-sm text-gray-600 mb-4">查看行业分类列表，了解行业趋势和基准数据</p>
+        <div class="flex gap-2">
+          <button onclick="showIndustryList()" class="qc-btn qc-btn-primary text-sm flex-1">查看行业</button>
+        </div>
+      </div>
+
+      <!-- 日志工具 -->
+      <div class="qc-card qc-card-interactive">
+        <div class="flex items-center gap-4 mb-4">
+          <div class="p-3 rounded-lg bg-purple-50">
+            <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+            </svg>
+          </div>
+          <div>
+            <h3 class="text-lg font-semibold text-gray-900">日志查询</h3>
+            <p class="text-sm text-gray-600">Logs</p>
+          </div>
+        </div>
+        <p class="text-sm text-gray-600 mb-4">查询操作日志，追溯账户变更历史</p>
+        <div class="flex gap-2">
+          <button onclick="showLogSearch()" class="qc-btn qc-btn-primary text-sm flex-1">查询日志</button>
+        </div>
+      </div>
+
+      <!-- 配额工具 -->
+      <div class="qc-card qc-card-interactive">
+        <div class="flex items-center gap-4 mb-4">
+          <div class="p-3 rounded-lg bg-green-50">
+            <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+            </svg>
+          </div>
+          <div>
+            <h3 class="text-lg font-semibold text-gray-900">计划配额</h3>
+            <p class="text-sm text-gray-600">Quota</p>
+          </div>
+        </div>
+        <p class="text-sm text-gray-600 mb-4">查看在投计划配额使用情况</p>
+        <div class="flex gap-2">
+          <button onclick="showQuotaInfo()" class="qc-btn qc-btn-primary text-sm flex-1">查看配额</button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 行业列表 -->
+    <div id="industry-section" class="qc-card mb-8 hidden">
+      <h3 class="text-lg font-semibold text-gray-900 mb-4">📂 行业分类列表</h3>
+      <div class="grid md:grid-cols-3 gap-4">
+        <div class="p-4 border border-gray-200 rounded-lg hover:border-blue-400 cursor-pointer transition-all">
+          <div class="flex items-center gap-3">
+            <div class="text-2xl">🛍️</div>
+            <div>
+              <div class="font-semibold text-gray-900">电商零售</div>
+              <div class="text-xs text-gray-500 mt-1">E-commerce</div>
+            </div>
+          </div>
+        </div>
+        <div class="p-4 border border-gray-200 rounded-lg hover:border-blue-400 cursor-pointer transition-all">
+          <div class="flex items-center gap-3">
+            <div class="text-2xl">💄</div>
+            <div>
+              <div class="font-semibold text-gray-900">美妆护肤</div>
+              <div class="text-xs text-gray-500 mt-1">Beauty & Skincare</div>
+            </div>
+          </div>
+        </div>
+        <div class="p-4 border border-gray-200 rounded-lg hover:border-blue-400 cursor-pointer transition-all">
+          <div class="flex items-center gap-3">
+            <div class="text-2xl">👗</div>
+            <div>
+              <div class="font-semibold text-gray-900">服饰鞋包</div>
+              <div class="text-xs text-gray-500 mt-1">Fashion</div>
+            </div>
+          </div>
+        </div>
+        <div class="p-4 border border-gray-200 rounded-lg hover:border-blue-400 cursor-pointer transition-all">
+          <div class="flex items-center gap-3">
+            <div class="text-2xl">🍔</div>
+            <div>
+              <div class="font-semibold text-gray-900">食品饮料</div>
+              <div class="text-xs text-gray-500 mt-1">Food & Beverage</div>
+            </div>
+          </div>
+        </div>
+        <div class="p-4 border border-gray-200 rounded-lg hover:border-blue-400 cursor-pointer transition-all">
+          <div class="flex items-center gap-3">
+            <div class="text-2xl">📱</div>
+            <div>
+              <div class="font-semibold text-gray-900">数码3C</div>
+              <div class="text-xs text-gray-500 mt-1">Electronics</div>
+            </div>
+          </div>
+        </div>
+        <div class="p-4 border border-gray-200 rounded-lg hover:border-blue-400 cursor-pointer transition-all">
+          <div class="flex items-center gap-3">
+            <div class="text-2xl">🏠</div>
+            <div>
+              <div class="font-semibold text-gray-900">居家生活</div>
+              <div class="text-xs text-gray-500 mt-1">Home & Living</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 日志查询 -->
+    <div id="log-section" class="qc-card mb-8 hidden">
+      <h3 class="text-lg font-semibold text-gray-900 mb-4">📋 操作日志查询</h3>
+      <div class="grid md:grid-cols-4 gap-4 mb-6">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">时间范围</label>
+          <select class="qc-input">
+            <option>近7天</option>
+            <option>近30天</option>
+            <option>自定义</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">操作类型</label>
+          <select class="qc-input">
+            <option>全部操作</option>
+            <option>创建计划</option>
+            <option>修改预算</option>
+            <option>更新状态</option>
+          </select>
+        </div>
+        <div class="md:col-span-2">
+          <label class="block text-sm font-medium text-gray-700 mb-2">搜索</label>
+          <input type="text" class="qc-input" placeholder="操作者、操作对象...">
+        </div>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="qc-table">
+          <thead>
+            <tr>
+              <th>时间</th>
+              <th>操作者</th>
+              <th>操作类型</th>
+              <th>操作对象</th>
+              <th>详情</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="text-sm">2024-01-20 14:25:30</td>
+              <td>admin@example.com</td>
+              <td><span class="qc-badge qc-badge-info">创建计划</span></td>
+              <td>春季美妆大促</td>
+              <td class="text-sm text-gray-600">创建广告计划，预算¥5000</td>
+            </tr>
+            <tr>
+              <td class="text-sm">2024-01-20 13:18:45</td>
+              <td>user@example.com</td>
+              <td><span class="qc-badge qc-badge-warning">修改预算</span></td>
+              <td>服饰推广计划</td>
+              <td class="text-sm text-gray-600">预算从¥3000调整至¥5000</td>
+            </tr>
+            <tr>
+              <td class="text-sm">2024-01-20 10:32:12</td>
+              <td>admin@example.com</td>
+              <td><span class="qc-badge qc-badge-danger">暂停计划</span></td>
+              <td>直播推广-A</td>
+              <td class="text-sm text-gray-600">手动暂停投放</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 配额信息 -->
+    <div id="quota-section" class="qc-card mb-8 hidden">
+      <h3 class="text-lg font-semibold text-gray-900 mb-4">📊 在投计划配额</h3>
+      <div class="grid md:grid-cols-3 gap-6 mb-6">
+        <div class="qc-card bg-gradient-to-br from-blue-50 to-indigo-50">
+          <div class="text-sm text-gray-600 mb-2">总配额</div>
+          <div class="text-3xl font-bold text-gray-900">100</div>
+          <div class="text-xs text-gray-500 mt-1">计划数量上限</div>
+        </div>
+        <div class="qc-card bg-gradient-to-br from-green-50 to-emerald-50">
+          <div class="text-sm text-gray-600 mb-2">已使用</div>
+          <div class="text-3xl font-bold text-green-600">72</div>
+          <div class="text-xs text-gray-500 mt-1">当前在投计划</div>
+        </div>
+        <div class="qc-card bg-gradient-to-br from-orange-50 to-red-50">
+          <div class="text-sm text-gray-600 mb-2">剩余配额</div>
+          <div class="text-3xl font-bold text-orange-600">28</div>
+          <div class="text-xs text-gray-500 mt-1">可创建计划数</div>
+        </div>
+      </div>
+      <div class="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+        <div class="flex items-start gap-3">
+          <svg class="w-5 h-5 text-blue-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          <div>
+            <div class="font-medium text-blue-900">配额使用率: 72%</div>
+            <div class="text-sm text-blue-700 mt-1">当前配额使用正常。配额不足时，请暂停或删除部分计划后再创建新计划。</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 白名单功能 -->
+    <div class="grid md:grid-cols-2 gap-6">
+      
+      <!-- 灰度能力查询 -->
+      <div class="qc-card">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">🔓 白名单能力</h3>
+        <div class="space-y-3">
+          <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+            <div>
+              <div class="font-medium text-gray-900">全域推广</div>
+              <div class="text-xs text-gray-500">UniPromotion</div>
+            </div>
+            <span class="qc-badge qc-badge-success">已开通</span>
+          </div>
+          <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+            <div>
+              <div class="font-medium text-gray-900">智能优化</div>
+              <div class="text-xs text-gray-500">Smart Optimization</div>
+            </div>
+            <span class="qc-badge qc-badge-success">已开通</span>
+          </div>
+          <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+            <div>
+              <div class="font-medium text-gray-900">A/B测试</div>
+              <div class="text-xs text-gray-500">A/B Testing</div>
+            </div>
+            <span class="qc-badge qc-badge-secondary">未开通</span>
+          </div>
+          <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+            <div>
+              <div class="font-medium text-gray-900">深度转化</div>
+              <div class="text-xs text-gray-500">Deep Conversion</div>
+            </div>
+            <span class="qc-badge qc-badge-success">已开通</span>
+          </div>
+        </div>
+        <button class="qc-btn qc-btn-secondary w-full mt-4 text-sm">申请更多权限</button>
+      </div>
+
+      <!-- 智能优惠券 -->
+      <div class="qc-card">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">🎟️ 智能优惠券白名单</h3>
+        <div class="p-4 bg-gradient-to-r from-orange-50 to-red-50 border-2 border-orange-200 rounded-lg mb-4">
+          <div class="flex items-center gap-3 mb-3">
+            <svg class="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/>
+            </svg>
+            <div>
+              <div class="font-semibold text-orange-900">白名单状态</div>
+              <div class="text-sm text-orange-700">已开通</div>
+            </div>
+          </div>
+          <div class="text-sm text-orange-800">
+            您已获得智能优惠券投放权限，可在广告中自动发放优惠券，提升转化效果。
+          </div>
+        </div>
+        <div class="space-y-2 text-sm">
+          <div class="flex items-center justify-between">
+            <span class="text-gray-600">累计发放优惠券</span>
+            <span class="font-semibold text-gray-900">12,345 张</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <span class="text-gray-600">核销率</span>
+            <span class="font-semibold text-green-600">68.5%</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <span class="text-gray-600">平均客单价提升</span>
+            <span class="font-semibold text-orange-600">+35%</span>
+          </div>
+        </div>
+        <button class="qc-btn qc-btn-primary w-full mt-4 text-sm">管理优惠券</button>
+      </div>
+
+    </div>
+
+        </div>
+    </div>
+  </main>
+  </div>
+
+  <script>
+    function showIndustryList() {
+      document.getElementById('industry-section').classList.remove('hidden');
+      document.getElementById('log-section').classList.add('hidden');
+      document.getElementById('quota-section').classList.add('hidden');
+    }
+
+    function showLogSearch() {
+      document.getElementById('industry-section').classList.add('hidden');
+      document.getElementById('log-section').classList.remove('hidden');
+      document.getElementById('quota-section').classList.add('hidden');
+    }
+
+    function showQuotaInfo() {
+      document.getElementById('industry-section').classList.add('hidden');
+      document.getElementById('log-section').classList.add('hidden');
+      document.getElementById('quota-section').classList.remove('hidden');
+    }
+  </script>
+
+  <script src="nav-component.js"></script>
+</body>
+</html>

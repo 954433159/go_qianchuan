@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>定向工具 - 千川直播带货平台</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="design-system.css">
+</head>
+<body class="bg-gray-50">
+
+    <!-- Header -->
+  <header class="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-gray-200">
+    <div class="flex h-16 items-center justify-between px-6">
+      <div class="flex items-center gap-3">
+        <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-red-500 to-orange-500">
+          <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+          </svg>
+        </div>
+        <div class="hidden md:block">
+          <h1 class="text-lg font-bold text-gray-900">千川直播带货</h1>
+          <p class="text-xs text-gray-500">Qianchuan Live E-commerce</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <button class="relative flex items-center justify-center w-10 h-10 rounded-lg hover:bg-gray-100 transition-colors">
+          <svg class="h-5 w-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+          </svg>
+          <span class="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-red-500"></span>
+        </button>
+        <div class="relative">
+          <button class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors">
+            <div class="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-red-500 to-orange-500 text-white">
+              <span class="text-sm font-medium">商</span>
+            </div>
+            <span class="hidden text-sm font-medium md:inline-block">商家中心</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="flex">
+    <aside class="w-64 bg-white border-r border-gray-200 min-h-[calc(100vh-64px)] sticky top-16">
+      <nav id="main-nav" class="p-4 space-y-6"></nav>
+    </aside>
+
+    <main class="flex-1 p-8">
+      <div class="max-w-7xl mx-auto space-y-6">
+
+
+    <div class="mb-8">
+      <h2 class="text-3xl font-bold text-gray-900">🎯 定向工具</h2>
+      <p class="mt-2 text-gray-600">精准定位目标受众，提升广告效果</p>
+    </div>
+
+    <div class="grid lg:grid-cols-3 gap-6">
+
+      <!-- 左侧：定向配置 -->
+      <div class="lg:col-span-2 space-y-6">
+
+        <!-- 地域定向 -->
+        <div class="qc-card">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-semibold text-gray-900">📍 地域定向</h3>
+            <label class="flex items-center">
+              <input type="checkbox" class="w-4 h-4 text-red-500 rounded" checked>
+              <span class="ml-2 text-sm text-gray-600">启用</span>
+            </label>
+          </div>
+
+          <div class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">投放地域</label>
+              <select class="qc-input">
+                <option>不限</option>
+                <option selected>省市</option>
+                <option>商圈</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">已选地域</label>
+              <div class="flex flex-wrap gap-2 mb-3">
+                <span class="px-3 py-1 bg-red-100 text-red-700 text-sm rounded-full flex items-center">
+                  北京
+                  <button class="ml-2 text-red-600">×</button>
+                </span>
+                <span class="px-3 py-1 bg-red-100 text-red-700 text-sm rounded-full flex items-center">
+                  上海
+                  <button class="ml-2 text-red-600">×</button>
+                </span>
+                <span class="px-3 py-1 bg-red-100 text-red-700 text-sm rounded-full flex items-center">
+                  广州
+                  <button class="ml-2 text-red-600">×</button>
+                </span>
+                <span class="px-3 py-1 bg-red-100 text-red-700 text-sm rounded-full flex items-center">
+                  深圳
+                  <button class="ml-2 text-red-600">×</button>
+                </span>
+              </div>
+              <button class="text-sm text-red-600 hover:text-red-700 font-medium">+ 添加更多城市</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 人口属性 -->
+        <div class="qc-card">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-semibold text-gray-900">👤 人口属性</h3>
+            <label class="flex items-center">
+              <input type="checkbox" class="w-4 h-4 text-red-500 rounded" checked>
+              <span class="ml-2 text-sm text-gray-600">启用</span>
+            </label>
+          </div>
+
+          <div class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">性别</label>
+              <div class="flex gap-4">
+                <label class="flex items-center">
+                  <input type="radio" name="gender" class="w-4 h-4 text-red-500" checked>
+                  <span class="ml-2 text-sm text-gray-700">不限</span>
+                </label>
+                <label class="flex items-center">
+                  <input type="radio" name="gender" class="w-4 h-4 text-red-500">
+                  <span class="ml-2 text-sm text-gray-700">男</span>
+                </label>
+                <label class="flex items-center">
+                  <input type="radio" name="gender" class="w-4 h-4 text-red-500">
+                  <span class="ml-2 text-sm text-gray-700">女</span>
+                </label>
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">年龄</label>
+              <div class="grid grid-cols-3 gap-2">
+                <label class="flex items-center">
+                  <input type="checkbox" class="w-4 h-4 text-red-500 rounded">
+                  <span class="ml-2 text-sm text-gray-700">18-23岁</span>
+                </label>
+                <label class="flex items-center">
+                  <input type="checkbox" class="w-4 h-4 text-red-500 rounded" checked>
+                  <span class="ml-2 text-sm text-gray-700">24-30岁</span>
+                </label>
+                <label class="flex items-center">
+                  <input type="checkbox" class="w-4 h-4 text-red-500 rounded" checked>
+                  <span class="ml-2 text-sm text-gray-700">31-40岁</span>
+                </label>
+                <label class="flex items-center">
+                  <input type="checkbox" class="w-4 h-4 text-red-500 rounded">
+                  <span class="ml-2 text-sm text-gray-700">41-49岁</span>
+                </label>
+                <label class="flex items-center">
+                  <input type="checkbox" class="w-4 h-4 text-red-500 rounded">
+                  <span class="ml-2 text-sm text-gray-700">50岁以上</span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 兴趣行为 -->
+        <div class="qc-card">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-semibold text-gray-900">💡 兴趣行为</h3>
+            <label class="flex items-center">
+              <input type="checkbox" class="w-4 h-4 text-red-500 rounded" checked>
+              <span class="ml-2 text-sm text-gray-600">启用</span>
+            </label>
+          </div>
+
+          <div class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">兴趣分类</label>
+              <div class="space-y-2">
+                <div class="p-3 bg-gray-50 rounded-lg">
+                  <div class="flex items-center justify-between mb-2">
+                    <label class="flex items-center">
+                      <input type="checkbox" class="w-4 h-4 text-red-500 rounded" checked>
+                      <span class="ml-2 text-sm font-medium text-gray-900">美妆护肤</span>
+                    </label>
+                    <button class="text-xs text-gray-500">展开 ▼</button>
+                  </div>
+                  <div class="flex flex-wrap gap-2 ml-6">
+                    <span class="qc-badge qc-badge-secondary">彩妆</span>
+                    <span class="qc-badge qc-badge-secondary">护肤品</span>
+                    <span class="qc-badge qc-badge-secondary">香水</span>
+                  </div>
+                </div>
+
+                <div class="p-3 bg-gray-50 rounded-lg">
+                  <div class="flex items-center justify-between mb-2">
+                    <label class="flex items-center">
+                      <input type="checkbox" class="w-4 h-4 text-red-500 rounded" checked>
+                      <span class="ml-2 text-sm font-medium text-gray-900">时尚穿搭</span>
+                    </label>
+                    <button class="text-xs text-gray-500">展开 ▼</button>
+                  </div>
+                  <div class="flex flex-wrap gap-2 ml-6">
+                    <span class="qc-badge qc-badge-secondary">女装</span>
+                    <span class="qc-badge qc-badge-secondary">男装</span>
+                    <span class="qc-badge qc-badge-secondary">鞋包</span>
+                  </div>
+                </div>
+
+                <button class="text-sm text-red-600 hover:text-red-700 font-medium">+ 添加更多兴趣</button>
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">行为意图</label>
+              <div class="grid grid-cols-2 gap-2">
+                <label class="flex items-center">
+                  <input type="checkbox" class="w-4 h-4 text-red-500 rounded" checked>
+                  <span class="ml-2 text-sm text-gray-700">电商互动用户</span>
+                </label>
+                <label class="flex items-center">
+                  <input type="checkbox" class="w-4 h-4 text-red-500 rounded" checked>
+                  <span class="ml-2 text-sm text-gray-700">高消费人群</span>
+                </label>
+                <label class="flex items-center">
+                  <input type="checkbox" class="w-4 h-4 text-red-500 rounded">
+                  <span class="ml-2 text-sm text-gray-700">新用户</span>
+                </label>
+                <label class="flex items-center">
+                  <input type="checkbox" class="w-4 h-4 text-red-500 rounded">
+                  <span class="ml-2 text-sm text-gray-700">活跃买家</span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 自定义人群 -->
+        <div class="qc-card">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-semibold text-gray-900">👥 自定义人群</h3>
+            <label class="flex items-center">
+              <input type="checkbox" class="w-4 h-4 text-red-500 rounded">
+              <span class="ml-2 text-sm text-gray-600">启用</span>
+            </label>
+          </div>
+
+          <div class="space-y-3">
+            <div class="p-3 border-2 border-dashed border-gray-300 rounded-lg text-center">
+              <p class="text-sm text-gray-500 mb-2">未选择自定义人群包</p>
+              <button class="qc-btn qc-btn-secondary text-sm">选择人群包</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 设备定向 -->
+        <div class="qc-card">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-semibold text-gray-900">📱 设备定向</h3>
+            <label class="flex items-center">
+              <input type="checkbox" class="w-4 h-4 text-red-500 rounded">
+              <span class="ml-2 text-sm text-gray-600">启用</span>
+            </label>
+          </div>
+
+          <div class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">设备类型</label>
+              <div class="grid grid-cols-3 gap-2">
+                <label class="flex items-center">
+                  <input type="checkbox" class="w-4 h-4 text-red-500 rounded">
+                  <span class="ml-2 text-sm text-gray-700">Android</span>
+                </label>
+                <label class="flex items-center">
+                  <input type="checkbox" class="w-4 h-4 text-red-500 rounded">
+                  <span class="ml-2 text-sm text-gray-700">iOS</span>
+                </label>
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">网络环境</label>
+              <div class="grid grid-cols-3 gap-2">
+                <label class="flex items-center">
+                  <input type="checkbox" class="w-4 h-4 text-red-500 rounded">
+                  <span class="ml-2 text-sm text-gray-700">WiFi</span>
+                </label>
+                <label class="flex items-center">
+                  <input type="checkbox" class="w-4 h-4 text-red-500 rounded">
+                  <span class="ml-2 text-sm text-gray-700">4G</span>
+                </label>
+                <label class="flex items-center">
+                  <input type="checkbox" class="w-4 h-4 text-red-500 rounded">
+                  <span class="ml-2 text-sm text-gray-700">5G</span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- 右侧：定向预览 -->
+      <div class="lg:col-span-1">
+        <div class="qc-card sticky top-24">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">📊 定向预览</h3>
+
+          <!-- 覆盖人数 -->
+          <div class="bg-gradient-to-r from-red-50 to-orange-50 rounded-xl p-6 mb-6 text-center">
+            <div class="text-sm text-gray-600 mb-2">预估覆盖人数</div>
+            <div class="text-4xl font-bold qc-text-gradient mb-1">3.2M</div>
+            <div class="text-xs text-gray-500">占总用户 15.6%</div>
+          </div>
+
+          <!-- 人群画像 -->
+          <div class="space-y-4 mb-6">
+            <div>
+              <div class="text-sm font-medium text-gray-700 mb-2">性别分布</div>
+              <div class="flex gap-2">
+                <div class="flex-1 bg-blue-500 h-8 rounded flex items-center justify-center text-white text-sm font-medium">
+                  男 45%
+                </div>
+                <div class="flex-1 bg-pink-500 h-8 rounded flex items-center justify-center text-white text-sm font-medium">
+                  女 55%
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <div class="text-sm font-medium text-gray-700 mb-2">年龄分布</div>
+              <div class="space-y-1">
+                <div class="flex items-center">
+                  <span class="text-xs text-gray-600 w-20">18-23岁</span>
+                  <div class="flex-1 bg-gray-200 h-4 rounded">
+                    <div class="bg-gradient-to-r from-red-400 to-orange-400 h-4 rounded" style="width: 18%"></div>
+                  </div>
+                  <span class="text-xs text-gray-600 w-12 text-right">18%</span>
+                </div>
+                <div class="flex items-center">
+                  <span class="text-xs text-gray-600 w-20">24-30岁</span>
+                  <div class="flex-1 bg-gray-200 h-4 rounded">
+                    <div class="bg-gradient-to-r from-red-400 to-orange-400 h-4 rounded" style="width: 35%"></div>
+                  </div>
+                  <span class="text-xs text-gray-600 w-12 text-right">35%</span>
+                </div>
+                <div class="flex items-center">
+                  <span class="text-xs text-gray-600 w-20">31-40岁</span>
+                  <div class="flex-1 bg-gray-200 h-4 rounded">
+                    <div class="bg-gradient-to-r from-red-400 to-orange-400 h-4 rounded" style="width: 28%"></div>
+                  </div>
+                  <span class="text-xs text-gray-600 w-12 text-right">28%</span>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <div class="text-sm font-medium text-gray-700 mb-2">活跃时段</div>
+              <div class="grid grid-cols-4 gap-1">
+                <div class="bg-gray-200 h-8 rounded"></div>
+                <div class="bg-gray-200 h-8 rounded"></div>
+                <div class="bg-orange-300 h-12 rounded"></div>
+                <div class="bg-red-400 h-16 rounded"></div>
+              </div>
+              <div class="flex justify-between text-xs text-gray-500 mt-1">
+                <span>0-6时</span>
+                <span>6-12时</span>
+                <span>12-18时</span>
+                <span>18-24时</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 预估效果 -->
+          <div class="border-t border-gray-200 pt-4">
+            <div class="text-sm font-medium text-gray-700 mb-3">预估效果</div>
+            <div class="space-y-2">
+              <div class="flex justify-between text-sm">
+                <span class="text-gray-600">预估曝光</span>
+                <span class="font-semibold text-gray-900">850K</span>
+              </div>
+              <div class="flex justify-between text-sm">
+                <span class="text-gray-600">预估点击</span>
+                <span class="font-semibold text-gray-900">27K</span>
+              </div>
+              <div class="flex justify-between text-sm">
+                <span class="text-gray-600">预估转化</span>
+                <span class="font-semibold text-green-600">864</span>
+              </div>
+              <div class="flex justify-between text-sm">
+                <span class="text-gray-600">预估成本</span>
+                <span class="font-semibold qc-text-gradient">¥12,450</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 操作按钮 -->
+          <div class="mt-6 space-y-2">
+            <button class="w-full qc-btn qc-btn-primary">应用定向</button>
+            <button class="w-full qc-btn qc-btn-secondary">保存为模板</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+        </div>
+    </div>
+  </main>
+  </div>
+
+  <script>
+    function saveTargeting() {
+      alert('定向方案已保存！\n\n已启用的定向条件：\n- 地域：北京、上海、广州、深圳\n- 年龄：24-40岁\n- 兴趣：美妆护肤、时尚穿搭\n- 行为：电商互动、高消费人群');
+    }
+  </script>
+
+  <script src="nav-component.js"></script>
+</body>
+</html>

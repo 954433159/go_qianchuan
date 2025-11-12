@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>授权登录 - 千川直播带货平台</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="design-system.css">
+  <style>
+    body {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  </style>
+</head>
+<body>
+  
+  <!-- 授权卡片 -->
+  <div class="max-w-md w-full mx-4">
+    <!-- 品牌Logo -->
+    <div class="text-center mb-8">
+      <div class="inline-flex items-center justify-center w-20 h-20 bg-white rounded-full shadow-lg mb-4">
+        <svg class="w-12 h-12 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+        </svg>
+      </div>
+      <h1 class="text-3xl font-bold text-white mb-2">千川直播带货平台</h1>
+      <p class="text-white text-opacity-90">巨量千川 · 直播电商推广</p>
+    </div>
+
+    <!-- 授权主卡片 -->
+    <div class="bg-white rounded-2xl shadow-2xl p-8">
+      <!-- 应用信息 -->
+      <div class="text-center mb-6">
+        <div class="flex items-center justify-center gap-4 mb-4">
+          <div class="w-16 h-16 bg-gradient-to-br from-red-50 to-orange-50 rounded-xl flex items-center justify-center border-2 border-red-200">
+            <svg class="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+            </svg>
+          </div>
+          <svg class="w-8 h-8 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+          </svg>
+          <div class="w-16 h-16 bg-gray-100 rounded-xl flex items-center justify-center">
+            <div class="text-2xl">🎯</div>
+          </div>
+        </div>
+        <h2 class="text-xl font-bold text-gray-900 mb-2">第三方应用请求授权</h2>
+        <p class="text-sm text-gray-600">
+          <span class="font-semibold text-red-600">营销管理工具</span> 
+          希望获得您千川账户的访问权限
+        </p>
+      </div>
+
+      <!-- 权限说明 -->
+      <div class="bg-gray-50 rounded-xl p-6 mb-6">
+        <h3 class="text-sm font-semibold text-gray-900 mb-4 flex items-center">
+          <svg class="w-5 h-5 mr-2 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          应用将获得以下权限
+        </h3>
+        <ul class="space-y-3">
+          <li class="flex items-start">
+            <input type="checkbox" id="perm-basic" checked disabled class="mt-1 mr-3 w-4 h-4 text-red-500 rounded">
+            <label for="perm-basic" class="flex-1">
+              <div class="font-medium text-gray-900">基础权限（必需）</div>
+              <div class="text-xs text-gray-600 mt-0.5">
+                读取账户信息、查看推广数据、管理推广计划
+              </div>
+            </label>
+          </li>
+          <li class="flex items-start">
+            <input type="checkbox" id="perm-material" checked class="mt-1 mr-3 w-4 h-4 text-red-500 rounded focus:ring-red-500">
+            <label for="perm-material" class="flex-1 cursor-pointer">
+              <div class="font-medium text-gray-900">素材权限（推荐）</div>
+              <div class="text-xs text-gray-600 mt-0.5">
+                上传、管理广告素材（图片、视频）
+              </div>
+            </label>
+          </li>
+        </ul>
+      </div>
+
+      <!-- 安全提示 -->
+      <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+        <div class="flex items-start">
+          <svg class="w-5 h-5 text-blue-500 mr-3 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          </svg>
+          <div class="flex-1">
+            <p class="text-sm font-medium text-blue-900 mb-1">安全提示</p>
+            <p class="text-xs text-blue-700 leading-relaxed">
+              授权后，应用将能够代表您进行广告投放操作。请确保您信任该应用。您可以随时在账户设置中撤销授权。
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 操作按钮 -->
+      <div class="space-y-3">
+        <button class="qc-btn qc-btn-primary w-full py-3 text-base font-semibold">
+          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          同意并授权
+        </button>
+        <button class="qc-btn qc-btn-secondary w-full py-3 text-base">
+          取消授权
+        </button>
+      </div>
+
+      <!-- 隐私说明 -->
+      <p class="text-xs text-center text-gray-500 mt-6">
+        授权即表示您同意 
+        <a href="#" class="text-red-500 hover:underline">《千川开放平台用户协议》</a> 和 
+        <a href="#" class="text-red-500 hover:underline">《隐私政策》</a>
+      </p>
+    </div>
+
+    <!-- 底部说明 -->
+    <div class="text-center mt-6">
+      <p class="text-white text-opacity-80 text-sm">
+        <svg class="w-4 h-4 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+        </svg>
+        256位SSL加密传输 · 数据安全保护
+      </p>
+    </div>
+  </div>
+
+  <script>
+    // 权限选择交互
+    document.getElementById('perm-material').addEventListener('change', function(e) {
+      if (!e.target.checked) {
+        if (!confirm('素材权限可以提升应用体验，确定要取消勾选吗？')) {
+          e.target.checked = true;
+        }
+      }
+    });
+
+    // 授权按钮点击
+    document.querySelector('.qc-btn-primary').addEventListener('click', function() {
+      const materialAuth = document.getElementById('perm-material').checked;
+      
+      // 显示加载状态
+      this.innerHTML = `
+        <svg class="animate-spin h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        授权中...
+      `;
+      this.disabled = true;
+      
+      // 模拟授权请求
+      setTimeout(() => {
+        // 构建授权参数
+        const params = new URLSearchParams({
+          app_id: '1234567890',
+          scope: materialAuth ? 'basic,material' : 'basic',
+          state: 'random_state_' + Date.now(),
+          redirect_uri: window.location.origin + '/oauth-callback.html'
+        });
+        
+        // 跳转到回调页面
+        window.location.href = '/html/qianchuan/oauth-callback.html?' + params.toString() + '&code=AUTH_CODE_SUCCESS';
+      }, 1500);
+    });
+
+    // 取消按钮
+    document.querySelector('.qc-btn-secondary').addEventListener('click', function() {
+      if (confirm('确定要取消授权吗？')) {
+        window.history.back();
+      }
+    });
+  </script>
+
+</body>
+</html>

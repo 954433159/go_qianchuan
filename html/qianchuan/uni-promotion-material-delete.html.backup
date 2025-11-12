@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <link rel="stylesheet" href="./design-system.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>全域推广素材删除 - 千川直播带货平台</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50">
+      <!-- Header -->
+  <header class="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-gray-200">
+    <div class="flex h-16 items-center justify-between px-6">
+      <div class="flex items-center gap-3">
+        <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-red-500 to-orange-500">
+          <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+          </svg>
+        </div>
+        <div class="hidden md:block">
+          <h1 class="text-lg font-bold text-gray-900">千川直播带货</h1>
+          <p class="text-xs text-gray-500">Qianchuan Live E-commerce</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <button class="relative flex items-center justify-center w-10 h-10 rounded-lg hover:bg-gray-100 transition-colors">
+          <svg class="h-5 w-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+          </svg>
+          <span class="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-red-500"></span>
+        </button>
+        <div class="relative">
+          <button class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors">
+            <div class="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-red-500 to-orange-500 text-white">
+              <span class="text-sm font-medium">商</span>
+            </div>
+            <span class="hidden text-sm font-medium md:inline-block">商家中心</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="flex">
+    <aside class="w-64 bg-white border-r border-gray-200 min-h-[calc(100vh-64px)] sticky top-16">
+      <nav id="main-nav" class="p-4 space-y-6"></nav>
+    </aside>
+
+    <main class="flex-1 p-8">
+      <div class="max-w-7xl mx-auto space-y-6">
+<div class="flex">
+        <aside class="w-64 bg-white border-r border-gray-200 min-h-[calc(100vh-64px)] sticky top-16">
+            <nav class="p-4 space-y-6">
+                <div>
+                    <h3 class="mb-3 px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">全域推广</h3>
+                    <ul class="space-y-1">
+                        <li>
+                            <a href="uni-promotions.html" class="group flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-700 hover:bg-gray-100 transition-all">
+                                <span>全域计划</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="uni-promotion-materials.html" class="group flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-700 hover:bg-gray-100 transition-all">
+                                <span>素材管理</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="uni-promotion-material-delete.html" class="group flex items-center gap-3 px-3 py-2.5 rounded-lg bg-gradient-to-r from-red-500 to-orange-500 text-white font-medium shadow-sm">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                </svg>
+                                <span>素材删除</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </aside>
+
+        <main class="flex-1 p-8">
+            <div class="max-w-7xl mx-auto space-y-6">
+                <div class="flex items-center text-sm text-gray-500">
+                    <a href="dashboard.html" class="hover:text-blue-600">数据中心</a>
+                    <svg class="w-4 h-4 mx-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                    </svg>
+                    <a href="uni-promotions.html" class="hover:text-blue-600">全域推广</a>
+                    <svg class="w-4 h-4 mx-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                    </svg>
+                    <span class="text-gray-900">素材删除</span>
+                </div>
+
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-900">全域推广素材删除</h1>
+                    <p class="mt-2 text-gray-600">删除全域推广计划下的素材 (api/qianchuan/uni_promotion/MaterialDelete)</p>
+                </div>
+
+                <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4">
+                    <div class="flex">
+                        <svg class="h-5 w-5 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                        </svg>
+                        <div class="ml-3">
+                            <h3 class="text-sm font-medium text-yellow-800">注意事项</h3>
+                            <div class="mt-2 text-sm text-yellow-700">
+                                <ul class="list-disc list-inside space-y-1">
+                                    <li>删除素材后无法恢复，请谨慎操作</li>
+                                    <li>素材删除后，全域推广计划将不再使用该素材</li>
+                                    <li>支持批量删除 (material_ids)</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg border border-gray-200 p-6">
+                    <h2 class="text-lg font-semibold text-gray-900 mb-4">查询条件</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">广告账户ID (advertiser_id)</label>
+                            <input type="text" placeholder="输入广告账户ID" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">全域推广计划ID (ad_id)</label>
+                            <input type="text" placeholder="输入全域推广计划ID" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500">
+                        </div>
+                    </div>
+                    <div class="mt-4 flex justify-end">
+                        <button class="px-4 py-2 bg-gradient-to-r from-red-500 to-orange-500 text-white rounded-lg hover:from-red-600 hover:to-orange-600 transition-all shadow-sm">
+                            查询素材
+                        </button>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg border border-gray-200 p-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <div>
+                            <h2 class="text-lg font-semibold text-gray-900">全域推广素材列表</h2>
+                            <p class="text-sm text-gray-600 mt-1">共找到 12 个素材</p>
+                        </div>
+                        <button class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50" disabled id="deleteBtn">
+                            删除选中 (0)
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                        <div class="border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow">
+                            <div class="relative">
+                                <input type="checkbox" class="material-checkbox absolute top-2 left-2 w-5 h-5 text-red-600 rounded focus:ring-red-500 z-10">
+                                <div class="aspect-[9/16] bg-gradient-to-br from-indigo-100 to-purple-100 flex items-center justify-center">
+                                    <svg class="w-12 h-12 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="p-3">
+                                <p class="text-xs font-medium text-gray-900 truncate">全域推广素材01</p>
+                                <p class="text-xs text-gray-500 mt-1">ID: UNI_MAT_001</p>
+                                <div class="mt-2 flex items-center justify-between">
+                                    <span class="px-2 py-0.5 bg-green-100 text-green-700 text-xs rounded">使用中</span>
+                                    <button class="text-xs text-red-600 hover:text-red-700">删除</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+              </div>
+    </div>
+  </main>
+  </div>
+    </div>
+
+    <script>
+        const checkboxes = document.querySelectorAll('.material-checkbox');
+        const deleteBtn = document.getElementById('deleteBtn');
+        
+        checkboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', () => {
+                const checkedCount = document.querySelectorAll('.material-checkbox:checked').length;
+                deleteBtn.textContent = `删除选中 (${checkedCount})`;
+                deleteBtn.disabled = checkedCount === 0;
+            });
+        });
+    </script>
+  <script src="nav-component.js"></script>
+</body>
+</html>

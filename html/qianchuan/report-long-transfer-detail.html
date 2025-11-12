@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>长周期转化订单明细 - 千川数据报表</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="design-system.css">
+</head>
+<body class="bg-gray-50">
+      <!-- Header -->
+  <header class="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-gray-200">
+    <div class="flex h-16 items-center justify-between px-6">
+      <div class="flex items-center gap-3">
+        <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-red-500 to-orange-500">
+          <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+          </svg>
+        </div>
+        <div class="hidden md:block">
+          <h1 class="text-lg font-bold text-gray-900">千川直播带货</h1>
+          <p class="text-xs text-gray-500">Qianchuan Live E-commerce</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <button class="relative flex items-center justify-center w-10 h-10 rounded-lg hover:bg-gray-100 transition-colors">
+          <svg class="h-5 w-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+          </svg>
+          <span class="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-red-500"></span>
+        </button>
+        <div class="relative">
+          <button class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors">
+            <div class="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-red-500 to-orange-500 text-white">
+              <span class="text-sm font-medium">商</span>
+            </div>
+            <span class="hidden text-sm font-medium md:inline-block">商家中心</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="flex">
+    <aside class="w-64 bg-white border-r border-gray-200 min-h-[calc(100vh-64px)] sticky top-16">
+      <nav id="main-nav" class="p-4 space-y-6"></nav>
+    </aside>
+
+    <main class="flex-1 p-8">
+      <div class="max-w-7xl mx-auto space-y-6">
+
+        <div class="mb-8">
+            <h2 class="text-3xl font-bold text-gray-900">⏳ 长周期转化订单明细</h2>
+            <p class="mt-2 text-gray-600">追踪点击后3-28天转化的订单，评估长期广告效果</p>
+        </div>
+
+        <!-- 重要说明 -->
+        <div class="bg-gradient-to-r from-indigo-50 to-purple-50 border-l-4 border-indigo-400 p-6 mb-6 rounded-lg">
+            <div class="flex items-start">
+                <svg class="h-6 w-6 text-indigo-500 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"/>
+                </svg>
+                <div>
+                    <h4 class="font-semibold text-indigo-900 mb-2">关于长周期转化</h4>
+                    <ul class="text-sm text-indigo-800 space-y-1">
+                        <li>• <strong>统计逻辑</strong>：用户点击广告后，在3-28天内产生的转化订单</li>
+                        <li>• <strong>归因模式</strong>：支持"最后点击"、"首次点击"、"线性归因"多种模式</li>
+                        <li>• <strong>应用场景</strong>：高客单价、决策周期长的商品（如家电、家具等）</li>
+                        <li>• <strong>数据延迟</strong>：数据有T+1延迟，建议次日查看完整数据</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- 高级筛选 -->
+        <div class="qc-card mb-6">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-semibold text-gray-900">🎯 高级筛选条件</h3>
+                <div class="flex gap-2">
+                    <button onclick="saveTemplate()" class="text-sm text-blue-600 hover:text-blue-700">保存为模板</button>
+                    <button onclick="loadTemplate()" class="text-sm text-gray-600 hover:text-gray-700">加载模板</button>
+                </div>
+            </div>
+
+            <!-- 时间筛选 -->
+            <div class="mb-6">
+                <h4 class="text-sm font-semibold text-gray-900 mb-3">📅 时间范围</h4>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-xs text-gray-600 mb-2">点击时间</label>
+                        <input type="date" class="qc-input" value="2024-01-01">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-gray-600 mb-2">至</label>
+                        <input type="date" class="qc-input" value="2024-01-31">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-gray-600 mb-2">转化周期</label>
+                        <select class="qc-input">
+                            <option>3-7天</option>
+                            <option>8-14天</option>
+                            <option selected>3-28天（全部）</option>
+                            <option>自定义</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 推广维度筛选 -->
+            <div class="mb-6">
+                <h4 class="text-sm font-semibold text-gray-900 mb-3">📊 推广维度</h4>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div>
+                        <label class="block text-xs text-gray-600 mb-2">推广计划</label>
+                        <select class="qc-input" multiple size="3">
+                            <option selected>双11美妆专场</option>
+                            <option>秋冬羽绒服</option>
+                            <option>零食大礼包</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs text-gray-600 mb-2">广告创意</label>
+                        <select class="qc-input">
+                            <option>全部创意</option>
+                            <option>视频创意</option>
+                            <option>图文创意</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs text-gray-600 mb-2">推广商品</label>
+                        <input type="text" class="qc-input" placeholder="输入商品名称或ID">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-gray-600 mb-2">出价方式</label>
+                        <select class="qc-input">
+                            <option>全部</option>
+                            <option>支付ROI</option>
+                            <option>转化成本</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 订单维度筛选 -->
+            <div class="mb-6">
+                <h4 class="text-sm font-semibold text-gray-900 mb-3">🛒 订单维度</h4>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div>
+                        <label class="block text-xs text-gray-600 mb-2">订单金额</label>
+                        <div class="flex gap-2">
+                            <input type="number" class="qc-input flex-1" placeholder="最小金额">
+                            <span class="text-gray-500 self-center">-</span>
+                            <input type="number" class="qc-input flex-1" placeholder="最大金额">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs text-gray-600 mb-2">订单状态</label>
+                        <select class="qc-input">
+                            <option selected>已支付</option>
+                            <option>已完成</option>
+                            <option>已退款</option>
+                            <option>全部</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs text-gray-600 mb-2">用户类型</label>
+                        <select class="qc-input">
+                            <option>全部用户</option>
+                            <option>新客户</option>
+                            <option>老客户</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs text-gray-600 mb-2">设备类型</label>
+                        <select class="qc-input">
+                            <option>全部设备</option>
+                            <option>iOS</option>
+                            <option>Android</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 归因设置 -->
+            <div class="mb-6">
+                <h4 class="text-sm font-semibold text-gray-900 mb-3">🔗 归因模式</h4>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <label class="flex items-start p-4 border-2 border-blue-400 bg-blue-50 rounded-lg cursor-pointer">
+                        <input type="radio" name="attribution" value="last" class="mt-1 mr-3" checked>
+                        <div>
+                            <p class="font-semibold text-gray-900 mb-1">最后点击归因</p>
+                            <p class="text-xs text-gray-600">将转化归因于用户最后一次点击的广告</p>
+                        </div>
+                    </label>
+                    <label class="flex items-start p-4 border border-gray-200 rounded-lg cursor-pointer hover:border-blue-400">
+                        <input type="radio" name="attribution" value="first" class="mt-1 mr-3">
+                        <div>
+                            <p class="font-semibold text-gray-900 mb-1">首次点击归因</p>
+                            <p class="text-xs text-gray-600">将转化归因于用户首次点击的广告</p>
+                        </div>
+                    </label>
+                    <label class="flex items-start p-4 border border-gray-200 rounded-lg cursor-pointer hover:border-blue-400">
+                        <input type="radio" name="attribution" value="linear" class="mt-1 mr-3">
+                        <div>
+                            <p class="font-semibold text-gray-900 mb-1">线性归因</p>
+                            <p class="text-xs text-gray-600">平均分配所有触点的转化贡献</p>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-2">
+                <button class="qc-btn qc-btn-secondary">重置</button>
+                <button onclick="applyFilter()" class="qc-btn qc-btn-primary">应用筛选</button>
+            </div>
+        </div>
+
+        <!-- 汇总数据 -->
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-6 mb-6">
+            <div class="qc-card bg-gradient-to-br from-blue-50 to-cyan-50">
+                <p class="text-xs text-gray-600 mb-1">总订单数</p>
+                <p class="text-2xl font-bold text-gray-900">1,248</p>
+                <p class="text-xs text-green-600 mt-1">↑ 12.3% vs上期</p>
+            </div>
+            <div class="qc-card bg-gradient-to-br from-green-50 to-emerald-50">
+                <p class="text-xs text-gray-600 mb-1">总GMV</p>
+                <p class="text-2xl font-bold text-gray-900">¥286K</p>
+                <p class="text-xs text-green-600 mt-1">↑ 18.5% vs上期</p>
+            </div>
+            <div class="qc-card bg-gradient-to-br from-purple-50 to-pink-50">
+                <p class="text-xs text-gray-600 mb-1">平均转化周期</p>
+                <p class="text-2xl font-bold text-gray-900">8.6天</p>
+                <p class="text-xs text-gray-500 mt-1">中位数：6天</p>
+            </div>
+            <div class="qc-card bg-gradient-to-br from-orange-50 to-red-50">
+                <p class="text-xs text-gray-600 mb-1">平均客单价</p>
+                <p class="text-2xl font-bold text-gray-900">¥229</p>
+                <p class="text-xs text-blue-600 mt-1">↑ ¥23 vs短期</p>
+            </div>
+            <div class="qc-card bg-gradient-to-br from-yellow-50 to-amber-50">
+                <p class="text-xs text-gray-600 mb-1">长周期转化率</p>
+                <p class="text-2xl font-bold text-gray-900">3.8%</p>
+                <p class="text-xs text-gray-500 mt-1">点击后3-28天</p>
+            </div>
+        </div>
+
+        <!-- 订单明细表 -->
+        <div class="qc-card">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-semibold text-gray-900">📋 订单明细列表</h3>
+                <div class="flex gap-2">
+                    <button class="qc-btn qc-btn-secondary">批量导出</button>
+                    <select class="qc-input text-sm">
+                        <option>按转化时间排序</option>
+                        <option>按订单金额排序</option>
+                        <option>按转化周期排序</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase">订单信息</th>
+                            <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase">推广计划</th>
+                            <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase">点击时间</th>
+                            <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase">转化时间</th>
+                            <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase">转化周期</th>
+                            <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase">订单金额</th>
+                            <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase">用户类型</th>
+                            <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase">状态</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200">
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-3 py-4">
+                                <p class="font-medium text-gray-900">订单#12345678</p>
+                                <p class="text-xs text-gray-500">商品：双11口红套装</p>
+                            </td>
+                            <td class="px-3 py-4">
+                                <p class="text-gray-900">双11美妆专场</p>
+                                <p class="text-xs text-gray-500">创意ID: 9876543</p>
+                            </td>
+                            <td class="px-3 py-4">
+                                <p>2024-01-05</p>
+                                <p class="text-xs text-gray-500">14:23:15</p>
+                            </td>
+                            <td class="px-3 py-4">
+                                <p>2024-01-12</p>
+                                <p class="text-xs text-gray-500">10:45:32</p>
+                            </td>
+                            <td class="px-3 py-4">
+                                <span class="qc-badge bg-orange-100 text-orange-700">7天</span>
+                            </td>
+                            <td class="px-3 py-4 font-semibold">¥299</td>
+                            <td class="px-3 py-4">
+                                <span class="qc-badge bg-green-100 text-green-700">新客</span>
+                            </td>
+                            <td class="px-3 py-4">
+                                <span class="qc-badge qc-badge-success">已完成</span>
+                            </td>
+                        </tr>
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-3 py-4">
+                                <p class="font-medium text-gray-900">订单#12345679</p>
+                                <p class="text-xs text-gray-500">商品：秋冬羽绒服</p>
+                            </td>
+                            <td class="px-3 py-4">
+                                <p class="text-gray-900">秋冬羽绒服</p>
+                                <p class="text-xs text-gray-500">创意ID: 9876544</p>
+                            </td>
+                            <td class="px-3 py-4">
+                                <p>2024-01-03</p>
+                                <p class="text-xs text-gray-500">09:15:42</p>
+                            </td>
+                            <td class="px-3 py-4">
+                                <p>2024-01-18</p>
+                                <p class="text-xs text-gray-500">16:22:11</p>
+                            </td>
+                            <td class="px-3 py-4">
+                                <span class="qc-badge bg-red-100 text-red-700">15天</span>
+                            </td>
+                            <td class="px-3 py-4 font-semibold">¥689</td>
+                            <td class="px-3 py-4">
+                                <span class="qc-badge bg-blue-100 text-blue-700">老客</span>
+                            </td>
+                            <td class="px-3 py-4">
+                                <span class="qc-badge qc-badge-success">已支付</span>
+                            </td>
+                        </tr>
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-3 py-4">
+                                <p class="font-medium text-gray-900">订单#12345680</p>
+                                <p class="text-xs text-gray-500">商品：零食大礼包</p>
+                            </td>
+                            <td class="px-3 py-4">
+                                <p class="text-gray-900">零食大礼包</p>
+                                <p class="text-xs text-gray-500">创意ID: 9876545</p>
+                            </td>
+                            <td class="px-3 py-4">
+                                <p>2024-01-08</p>
+                                <p class="text-xs text-gray-500">20:33:28</p>
+                            </td>
+                            <td class="px-3 py-4">
+                                <p>2024-01-13</p>
+                                <p class="text-xs text-gray-500">11:18:55</p>
+                            </td>
+                            <td class="px-3 py-4">
+                                <span class="qc-badge bg-yellow-100 text-yellow-700">5天</span>
+                            </td>
+                            <td class="px-3 py-4 font-semibold">¥129</td>
+                            <td class="px-3 py-4">
+                                <span class="qc-badge bg-green-100 text-green-700">新客</span>
+                            </td>
+                            <td class="px-3 py-4">
+                                <span class="qc-badge qc-badge-success">已完成</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="mt-4 flex items-center justify-between text-sm text-gray-600">
+                <p>显示 1-20 条，共 1,248 条记录</p>
+                <div class="flex gap-2">
+                    <button class="px-3 py-1 border rounded hover:bg-gray-50">上一页</button>
+                    <button class="px-3 py-1 bg-red-500 text-white rounded">1</button>
+                    <button class="px-3 py-1 border rounded hover:bg-gray-50">2</button>
+                    <button class="px-3 py-1 border rounded hover:bg-gray-50">3</button>
+                    <button class="px-3 py-1 border rounded hover:bg-gray-50">下一页</button>
+                </div>
+            </div>
+        </div>
+          </div>
+    </div>
+  </main>
+  </div>
+
+    <script>
+        function applyFilter() {
+            alert('✅ 筛选条件已应用！\n\n正在加载符合条件的订单数据...');
+        }
+
+        function saveTemplate() {
+            const name = prompt('请输入筛选模板名称：');
+            if(name) {
+                alert('✅ 模板已保存：' + name);
+            }
+        }
+
+        function loadTemplate() {
+            alert('请选择要加载的筛选模板');
+        }
+    </script>
+  <script src="nav-component.js"></script>
+</body>
+</html>

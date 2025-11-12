@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>店铺管理 - 千川直播带货平台</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="design-system.css">
+</head>
+<body class="bg-gray-50">
+
+    <!-- Header -->
+  <header class="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-gray-200">
+    <div class="flex h-16 items-center justify-between px-6">
+      <div class="flex items-center gap-3">
+        <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-red-500 to-orange-500">
+          <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+          </svg>
+        </div>
+        <div class="hidden md:block">
+          <h1 class="text-lg font-bold text-gray-900">千川直播带货</h1>
+          <p class="text-xs text-gray-500">Qianchuan Live E-commerce</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <button class="relative flex items-center justify-center w-10 h-10 rounded-lg hover:bg-gray-100 transition-colors">
+          <svg class="h-5 w-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+          </svg>
+          <span class="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-red-500"></span>
+        </button>
+        <div class="relative">
+          <button class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors">
+            <div class="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-red-500 to-orange-500 text-white">
+              <span class="text-sm font-medium">商</span>
+            </div>
+            <span class="hidden text-sm font-medium md:inline-block">商家中心</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="flex">
+    <aside class="w-64 bg-white border-r border-gray-200 min-h-[calc(100vh-64px)] sticky top-16">
+      <nav id="main-nav" class="p-4 space-y-6"></nav>
+    </aside>
+
+    <main class="flex-1 p-8">
+      <div class="max-w-7xl mx-auto space-y-6">
+
+    
+    <div class="mb-8">
+      <h2 class="text-3xl font-bold text-gray-900">🏪 店铺管理</h2>
+      <p class="mt-2 text-gray-600">管理已授权的店铺账户，查看店铺信息和关联的广告账户</p>
+    </div>
+
+    <!-- 统计卡片 -->
+    <div class="grid grid-cols-4 gap-6 mb-8">
+      <div class="qc-card qc-stat-card">
+        <div class="text-gray-600 text-sm mb-2">授权店铺总数</div>
+        <div class="text-3xl font-bold qc-text-gradient">12</div>
+      </div>
+      <div class="qc-card qc-stat-card">
+        <div class="text-gray-600 text-sm mb-2">激活店铺</div>
+        <div class="text-3xl font-bold text-green-600">10</div>
+      </div>
+      <div class="qc-card qc-stat-card">
+        <div class="text-gray-600 text-sm mb-2">关联广告账户</div>
+        <div class="text-3xl font-bold text-blue-600">25</div>
+      </div>
+      <div class="qc-card qc-stat-card">
+        <div class="text-gray-600 text-sm mb-2">本月消耗</div>
+        <div class="text-3xl font-bold text-orange-600">¥128K</div>
+      </div>
+    </div>
+
+    <!-- 筛选 -->
+    <div class="qc-card mb-6">
+      <div class="grid grid-cols-4 gap-4">
+        <input type="text" class="qc-input" placeholder="搜索店铺名称或ID...">
+        <select class="qc-input">
+          <option>全部状态</option>
+          <option>已激活</option>
+          <option>未激活</option>
+          <option>已过期</option>
+        </select>
+        <select class="qc-input">
+          <option>全部类型</option>
+          <option>抖音小店</option>
+          <option>第三方店铺</option>
+        </select>
+        <button class="qc-btn qc-btn-primary">搜索</button>
+      </div>
+    </div>
+
+    <!-- 店铺列表 -->
+    <div class="space-y-4">
+      
+      <div class="qc-card qc-hover-lift cursor-pointer" onclick="window.location.href='shop-detail.html?id=1'">
+        <div class="flex items-start justify-between">
+          <div class="flex items-start gap-4 flex-1">
+            <img src="https://placehold.co/80x80/FF6B6B/FFF?text=Shop" class="w-16 h-16 rounded-lg">
+            <div class="flex-1">
+              <div class="flex items-center gap-3 mb-2">
+                <h3 class="text-lg font-semibold text-gray-900">美妆旗舰店</h3>
+                <span class="qc-badge qc-badge-success">已激活</span>
+                <span class="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full">抖音小店</span>
+              </div>
+              <div class="grid grid-cols-4 gap-6 text-sm">
+                <div>
+                  <span class="text-gray-600">店铺ID:</span>
+                  <span class="font-medium text-gray-900 ml-1">8869457221</span>
+                </div>
+                <div>
+                  <span class="text-gray-600">授权时间:</span>
+                  <span class="font-medium text-gray-900 ml-1">2025-06-15</span>
+                </div>
+                <div>
+                  <span class="text-gray-600">关联账户:</span>
+                  <span class="font-medium text-blue-600 ml-1">5个</span>
+                </div>
+                <div>
+                  <span class="text-gray-600">本月消耗:</span>
+                  <span class="font-medium qc-text-gradient ml-1">¥45,680</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="flex gap-2">
+            <button onclick="event.stopPropagation(); viewAdvertisers(1)" class="qc-btn qc-btn-secondary text-sm">关联账户</button>
+            <button onclick="event.stopPropagation(); manageAuth(1)" class="qc-btn qc-btn-secondary text-sm">管理授权</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="qc-card qc-hover-lift cursor-pointer">
+        <div class="flex items-start justify-between">
+          <div class="flex items-start gap-4 flex-1">
+            <img src="https://placehold.co/80x80/4ECDC4/FFF?text=Shop" class="w-16 h-16 rounded-lg">
+            <div class="flex-1">
+              <div class="flex items-center gap-3 mb-2">
+                <h3 class="text-lg font-semibold text-gray-900">时尚女装店</h3>
+                <span class="qc-badge qc-badge-success">已激活</span>
+                <span class="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full">抖音小店</span>
+              </div>
+              <div class="grid grid-cols-4 gap-6 text-sm">
+                <div>
+                  <span class="text-gray-600">店铺ID:</span>
+                  <span class="font-medium text-gray-900 ml-1">8869457222</span>
+                </div>
+                <div>
+                  <span class="text-gray-600">授权时间:</span>
+                  <span class="font-medium text-gray-900 ml-1">2025-07-20</span>
+                </div>
+                <div>
+                  <span class="text-gray-600">关联账户:</span>
+                  <span class="font-medium text-blue-600 ml-1">3个</span>
+                </div>
+                <div>
+                  <span class="text-gray-600">本月消耗:</span>
+                  <span class="font-medium qc-text-gradient ml-1">¥32,450</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="flex gap-2">
+            <button onclick="event.stopPropagation();" class="qc-btn qc-btn-secondary text-sm">关联账户</button>
+            <button onclick="event.stopPropagation();" class="qc-btn qc-btn-secondary text-sm">管理授权</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="qc-card opacity-75">
+        <div class="flex items-start justify-between">
+          <div class="flex items-start gap-4 flex-1">
+            <img src="https://placehold.co/80x80/95A5A6/FFF?text=Shop" class="w-16 h-16 rounded-lg">
+            <div class="flex-1">
+              <div class="flex items-center gap-3 mb-2">
+                <h3 class="text-lg font-semibold text-gray-900">家居好物店</h3>
+                <span class="qc-badge qc-badge-secondary">未激活</span>
+                <span class="px-2 py-1 bg-purple-100 text-purple-700 text-xs rounded-full">第三方店铺</span>
+              </div>
+              <div class="grid grid-cols-4 gap-6 text-sm">
+                <div>
+                  <span class="text-gray-600">店铺ID:</span>
+                  <span class="font-medium text-gray-900 ml-1">8869457223</span>
+                </div>
+                <div>
+                  <span class="text-gray-600">授权时间:</span>
+                  <span class="font-medium text-gray-900 ml-1">2025-10-01</span>
+                </div>
+                <div>
+                  <span class="text-gray-600">关联账户:</span>
+                  <span class="font-medium text-gray-500 ml-1">0个</span>
+                </div>
+                <div>
+                  <span class="text-gray-600">状态:</span>
+                  <span class="font-medium text-gray-500 ml-1">等待激活</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="flex gap-2">
+            <button onclick="event.stopPropagation(); activateShop(3)" class="qc-btn qc-btn-primary text-sm">激活</button>
+            <button onclick="event.stopPropagation();" class="qc-btn qc-btn-secondary text-sm">管理授权</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 分页 -->
+    <div class="mt-6 flex items-center justify-between">
+      <div class="text-sm text-gray-600">
+        显示 1-10 条，共 12 条记录
+      </div>
+      <div class="flex gap-2">
+        <button class="qc-btn qc-btn-secondary text-sm" disabled>上一页</button>
+        <button class="px-4 py-2 bg-gradient-to-r from-red-500 to-orange-500 text-white text-sm font-medium rounded-lg">1</button>
+        <button class="qc-btn qc-btn-secondary text-sm">2</button>
+        <button class="qc-btn qc-btn-secondary text-sm">下一页</button>
+      </div>
+    </div>
+
+        </div>
+    </div>
+  </main>
+  </div>
+
+  <script>
+    function authorizeShop() {
+      alert('跳转到店铺授权页面');
+    }
+
+    function viewAdvertisers(shopId) {
+      alert('查看店铺 ' + shopId + ' 的关联广告账户');
+    }
+
+    function manageAuth(shopId) {
+      alert('管理店铺 ' + shopId + ' 的授权设置');
+    }
+
+    function activateShop(shopId) {
+      if (confirm('确认激活此店铺？')) {
+        alert('店铺激活成功');
+        location.reload();
+      }
+    }
+  </script>
+
+  <script src="nav-component.js"></script>
+</body>
+</html>

@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <link rel="stylesheet" href="./design-system.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>媒体库 - 千川直播带货平台</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        @keyframes live-pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .live-dot { animation: live-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+        
+        .media-item:hover .media-overlay {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Header -->
+  <header class="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-gray-200">
+    <div class="flex h-16 items-center justify-between px-6">
+      <div class="flex items-center gap-3">
+        <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-red-500 to-orange-500">
+          <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+          </svg>
+        </div>
+        <div class="hidden md:block">
+          <h1 class="text-lg font-bold text-gray-900">千川直播带货</h1>
+          <p class="text-xs text-gray-500">Qianchuan Live E-commerce</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <button class="relative flex items-center justify-center w-10 h-10 rounded-lg hover:bg-gray-100 transition-colors">
+          <svg class="h-5 w-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+          </svg>
+          <span class="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-red-500"></span>
+        </button>
+        <div class="relative">
+          <button class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors">
+            <div class="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-red-500 to-orange-500 text-white">
+              <span class="text-sm font-medium">商</span>
+            </div>
+            <span class="hidden text-sm font-medium md:inline-block">商家中心</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="flex">
+    <aside class="w-64 bg-white border-r border-gray-200 min-h-[calc(100vh-64px)] sticky top-16">
+      <nav id="main-nav" class="p-4 space-y-6"></nav>
+    </aside>
+
+    <main class="flex-1 p-8">
+      <div class="max-w-7xl mx-auto space-y-6">
+<div class="flex">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-white border-r border-gray-200 min-h-[calc(100vh-64px)] sticky top-16">
+            <nav class="p-4 space-y-6">
+                <div>
+                    <h3 class="mb-3 px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">数据中心</h3>
+                    <ul class="space-y-1">
+                        <li>
+                            <a href="dashboard.html" class="group flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-700 hover:bg-gray-100 transition-all">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                                </svg>
+                                <span>实时数据</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h3 class="mb-3 px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">账号管理</h3>
+                    <ul class="space-y-1">
+                        <li>
+                            <a href="aweme-accounts.html" class="group flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-700 hover:bg-gray-100 transition-all">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                                </svg>
+                                <span>抖音号管理</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h3 class="mb-3 px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">直播管理</h3>
+                    <ul class="space-y-1">
+                        <li>
+                            <a href="live-rooms.html" class="group flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-700 hover:bg-gray-100 transition-all">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                                </svg>
+                                <span>直播间</span>
+                                <span class="ml-auto px-2 py-0.5 text-xs font-medium bg-red-100 text-red-600 rounded-full">3</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="live-data.html" class="group flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-700 hover:bg-gray-100 transition-all">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"/>
+                                </svg>
+                                <span>直播数据</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h3 class="mb-3 px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">商品管理</h3>
+                    <ul class="space-y-1">
+                        <li>
+                            <a href="products.html" class="group flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-700 hover:bg-gray-100 transition-all">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+                                </svg>
+                                <span>商品库</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h3 class="mb-3 px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">推广投放</h3>
+                    <ul class="space-y-1">
+                        <li>
+                            <a href="promotions.html" class="group flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-700 hover:bg-gray-100 transition-all">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"/>
+                                </svg>
+                                <span>推广计划</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="creatives.html" class="group flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-700 hover:bg-gray-100 transition-all">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"/>
+                                </svg>
+                                <span>创意管理</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h3 class="mb-3 px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">素材中心</h3>
+                    <ul class="space-y-1">
+                        <li>
+                            <a href="media-library.html" class="group flex items-center gap-3 px-3 py-2.5 rounded-lg bg-gradient-to-r from-red-500 to-orange-500 text-white font-medium shadow-sm">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                </svg>
+                                <span>媒体库</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h3 class="mb-3 px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">定向工具</h3>
+                    <ul class="space-y-1">
+                        <li>
+                            <a href="audiences.html" class="group flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-700 hover:bg-gray-100 transition-all">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                                </svg>
+                                <span>人群包</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="tools-targeting.html" class="group flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-700 hover:bg-gray-100 transition-all">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                </svg>
+                                <span>定向工具</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-8">
+            <div class="max-w-7xl mx-auto space-y-6">
+                <!-- Page Header -->
+                <div class="flex items-center justify-between">
+                    <div>
+                        <div class="flex items-center text-sm text-gray-500 mb-2">
+                            <span>素材中心</span>
+                            <svg class="w-4 h-4 mx-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                            </svg>
+                            <span class="text-gray-900">媒体库</span>
+                        </div>
+                        <h1 class="text-3xl font-bold text-gray-900">媒体库</h1>
+                        <p class="mt-2 text-gray-600">管理图片和视频素材，用于创意制作和推广投放</p>
+                    </div>
+                    <button class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-red-500 to-orange-500 text-white rounded-lg hover:from-red-600 hover:to-orange-600 transition-all shadow-sm">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
+                        </svg>
+                        <span>上传素材</span>
+                    </button>
+                </div>
+
+                <!-- Summary Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                    <div class="bg-white rounded-lg border border-gray-200 p-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <p class="text-sm font-medium text-gray-600">全部素材</p>
+                            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                            </svg>
+                        </div>
+                        <p class="text-3xl font-bold text-gray-900">2,456</p>
+                        <p class="text-[10px] text-gray-400 mt-1">(total_materials)</p>
+                        <p class="text-xs text-gray-500 mt-1">总计文件数</p>
+                    </div>
+                    <div class="bg-white rounded-lg border border-gray-200 p-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <p class="text-sm font-medium text-gray-600">图片素材</p>
+                            <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                            </svg>
+                        </div>
+                        <p class="text-3xl font-bold text-gray-900">1,842</p>
+                        <p class="text-[10px] text-gray-400 mt-1">(image_count)</p>
+                        <p class="text-xs text-green-600 mt-1">JPG/PNG格式</p>
+                    </div>
+                    <div class="bg-white rounded-lg border border-gray-200 p-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <p class="text-sm font-medium text-gray-600">视频素材</p>
+                            <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                        </div>
+                        <p class="text-3xl font-bold text-gray-900">614</p>
+                        <p class="text-[10px] text-gray-400 mt-1">(video_count)</p>
+                        <p class="text-xs text-purple-600 mt-1">MP4格式</p>
+                    </div>
+                    <div class="bg-white rounded-lg border border-gray-200 p-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <p class="text-sm font-medium text-gray-600">存储空间</p>
+                            <svg class="w-5 h-5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"/>
+                            </svg>
+                        </div>
+                        <p class="text-3xl font-bold text-gray-900">28.6 GB</p>
+                        <p class="text-[10px] text-gray-400 mt-1">(storage_used)</p>
+                        <p class="text-xs text-gray-500 mt-1">已使用 / 50 GB</p>
+                    </div>
+                </div>
+
+                <!-- Batch Actions Bar -->
+                <div id="batchActionsBar" class="bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-300 rounded-lg p-4 hidden">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            <span class="text-sm font-medium text-blue-900">已选择 <span id="selectedCount">0</span> 个素材</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button class="flex items-center gap-2 px-4 py-2 bg-white border border-blue-300 text-blue-700 rounded-lg hover:bg-blue-50 transition-colors text-sm font-medium">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4-4m0 0l-4 4m4-4v12"/>
+                                </svg>
+                                批量下载
+                            </button>
+                            <button class="flex items-center gap-2 px-4 py-2 bg-white border border-red-300 text-red-700 rounded-lg hover:bg-red-50 transition-colors text-sm font-medium">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                </svg>
+                                批量删除
+                            </button>
+                            <button onclick="document.getElementById('batchActionsBar').classList.add('hidden')" class="px-3 py-2 text-gray-600 hover:text-gray-900 transition-colors">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Filters -->
+                <div class="bg-white rounded-lg border border-gray-200 p-4">
+                    <div class="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+                        <div class="flex flex-wrap gap-2">
+                            <label class="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors cursor-pointer">
+                                <input type="checkbox" id="selectAll" class="w-4 h-4 text-red-600 rounded focus:ring-2 focus:ring-red-500">
+                                <span class="text-sm font-medium">全选</span>
+                            </label>
+                            <button class="px-4 py-2 bg-gradient-to-r from-red-500 to-orange-500 text-white rounded-lg text-sm font-medium">
+                                全部 (2,456)
+                            </button>
+                            <button class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm font-medium">
+                                图片 (1,842)
+                            </button>
+                            <button class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm font-medium">
+                                视频 (614)
+                            </button>
+                        </div>
+                        <div class="flex gap-3 w-full sm:w-auto">
+                            <select class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 text-sm">
+                                <option>最新上传</option>
+                                <option>最早上传</option>
+                                <option>文件大小</option>
+                                <option>文件名称</option>
+                            </select>
+                            <div class="relative flex-1 sm:flex-initial">
+                                <input 
+                                    type="text" 
+                                    placeholder="搜索文件名..." 
+                                    class="w-full sm:w-64 pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                                >
+                                <svg class="absolute left-3 top-2.5 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Media Grid -->
+                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+                    <!-- Image Item 1 -->
+                    <div class="media-item bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-all cursor-pointer group">
+                        <div class="relative aspect-square">
+                            <input type="checkbox" class="media-checkbox absolute top-2 right-2 w-5 h-5 text-red-600 bg-white rounded border-2 border-gray-300 focus:ring-2 focus:ring-red-500 z-10 cursor-pointer">
+                            <img src="https://via.placeholder.com/300" alt="Media" class="w-full h-full object-cover">
+                            <div class="media-overlay absolute inset-0 bg-black/50 opacity-0 transition-opacity flex items-center justify-center gap-2">
+                                <button class="p-2 bg-white rounded-lg hover:bg-gray-100 transition-colors" title="预览">
+                                    <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                    </svg>
+                                </button>
+                                <button class="p-2 bg-white rounded-lg hover:bg-gray-100 transition-colors" title="下载">
+                                    <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4-4m0 0l-4 4m4-4v12"/>
+                                    </svg>
+                                </button>
+                                <button class="p-2 bg-white rounded-lg hover:bg-gray-100 transition-colors" title="删除">
+                                    <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                    </svg>
+                                </button>
+                            </div>
+                            <span class="absolute top-2 left-2 px-2 py-1 bg-green-500 text-white text-xs font-medium rounded">图片</span>
+                            <span class="absolute bottom-2 left-2 px-2 py-1 bg-blue-500 text-white text-[10px] font-medium rounded">已使用 23 次</span>
+                        </div>
+                        <div class="p-3">
+                            <p class="text-xs text-gray-400 mb-1">(material_id: IMG_2456842)</p>
+                            <p class="text-sm font-medium text-gray-900 truncate" title="美妆产品展示图.jpg">美妆产品展示图.jpg</p>
+                            <div class="flex items-center justify-between mt-2 text-xs text-gray-500">
+                                <span title="width × height">1920×1080</span>
+                                <span title="file_size">2.4 MB</span>
+                            </div>
+                            <div class="flex items-center justify-between mt-1 text-xs text-gray-500">
+                                <span title="format">JPG</span>
+                                <span title="usage_count" class="text-blue-600 font-medium">用 23 次</span>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-1">2024-06-20</p>
+                        </div>
+                    </div>
+
+                    <!-- Video Item 1 -->
+                    <div class="media-item bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-all cursor-pointer group">
+                        <div class="relative aspect-square bg-gray-900">
+                            <input type="checkbox" class="media-checkbox absolute top-2 right-2 w-5 h-5 text-red-600 bg-white rounded border-2 border-gray-300 focus:ring-2 focus:ring-red-500 z-10 cursor-pointer">
+                            <img src="https://via.placeholder.com/300" alt="Video" class="w-full h-full object-cover">
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <div class="w-16 h-16 bg-white/90 rounded-full flex items-center justify-center">
+                                    <svg class="w-8 h-8 text-red-500 ml-1" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M8 5v14l11-7z"/>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="media-overlay absolute inset-0 bg-black/50 opacity-0 transition-opacity flex items-center justify-center gap-2">
+                                <button class="p-2 bg-white rounded-lg hover:bg-gray-100 transition-colors" title="播放">
+                                    <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                </button>
+                                <button class="p-2 bg-white rounded-lg hover:bg-gray-100 transition-colors" title="下载">
+                                    <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4-4m0 0l-4 4m4-4v12"/>
+                                    </svg>
+                                </button>
+                                <button class="p-2 bg-white rounded-lg hover:bg-gray-100 transition-colors" title="删除">
+                                    <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                    </svg>
+                                </button>
+                            </div>
+                            <span class="absolute top-2 left-2 px-2 py-1 bg-purple-500 text-white text-xs font-medium rounded">视频</span>
+                            <span class="absolute bottom-2 right-2 px-2 py-1 bg-black/70 text-white text-xs font-medium rounded">00:15</span>
+                            <span class="absolute bottom-2 left-2 px-2 py-1 bg-blue-500 text-white text-[10px] font-medium rounded">已使用 45 次</span>
+                        </div>
+                        <div class="p-3">
+                            <p class="text-xs text-gray-400 mb-1">(material_id: VID_8756123)</p>
+                            <p class="text-sm font-medium text-gray-900 truncate" title="直播预告短视频.mp4">直播预告短视频.mp4</p>
+                            <div class="flex items-center justify-between mt-2 text-xs text-gray-500">
+                                <span title="width × height">1080×1920</span>
+                                <span title="file_size">15.8 MB</span>
+                            </div>
+                            <div class="flex items-center justify-between mt-1 text-xs text-gray-500">
+                                <span title="format / duration">MP4 · 15s</span>
+                                <span title="usage_count" class="text-blue-600 font-medium">用 45 次</span>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-1">2024-06-19</p>
+                        </div>
+                    </div>
+
+                    <!-- Image Item 2 -->
+                    <div class="media-item bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-all cursor-pointer group">
+                        <div class="relative aspect-square">
+                            <input type="checkbox" class="media-checkbox absolute top-2 right-2 w-5 h-5 text-red-600 bg-white rounded border-2 border-gray-300 focus:ring-2 focus:ring-red-500 z-10 cursor-pointer">
+                            <img src="https://via.placeholder.com/300/ff6b6b" alt="Media" class="w-full h-full object-cover">
+                            <div class="media-overlay absolute inset-0 bg-black/50 opacity-0 transition-opacity flex items-center justify-center gap-2">
+                                <button class="p-2 bg-white rounded-lg hover:bg-gray-100 transition-colors">
+                                    <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                    </svg>
+                                </button>
+                                <button class="p-2 bg-white rounded-lg hover:bg-gray-100 transition-colors">
+                                    <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4-4m0 0l-4 4m4-4v12"/>
+                                    </svg>
+                                </button>
+                                <button class="p-2 bg-white rounded-lg hover:bg-gray-100 transition-colors">
+                                    <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                    </svg>
+                                </button>
+                            </div>
+                            <span class="absolute top-2 left-2 px-2 py-1 bg-green-500 text-white text-xs font-medium rounded">图片</span>
+                            <span class="absolute bottom-2 left-2 px-2 py-1 bg-blue-500 text-white text-[10px] font-medium rounded">已使用 18 次</span>
+                        </div>
+                        <div class="p-3">
+                            <p class="text-xs text-gray-400 mb-1">(material_id: IMG_2456810)</p>
+                            <p class="text-sm font-medium text-gray-900 truncate" title="618大促海报.png">618大促海报.png</p>
+                            <div class="flex items-center justify-between mt-2 text-xs text-gray-500">
+                                <span title="width × height">1200×628</span>
+                                <span title="file_size">856 KB</span>
+                            </div>
+                            <div class="flex items-center justify-between mt-1 text-xs text-gray-500">
+                                <span title="format">PNG</span>
+                                <span title="usage_count" class="text-blue-600 font-medium">用 18 次</span>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-1">2024-06-18</p>
+                        </div>
+                    </div>
+
+                    <!-- Video Item 2 -->
+                    <div class="media-item bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-all cursor-pointer group">
+                        <div class="relative aspect-square bg-gray-900">
+                            <img src="https://via.placeholder.com/300/4a90e2" alt="Video" class="w-full h-full object-cover">
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <div class="w-16 h-16 bg-white/90 rounded-full flex items-center justify-center">
+                                    <svg class="w-8 h-8 text-red-500 ml-1" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M8 5v14l11-7z"/>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="media-overlay absolute inset-0 bg-black/50 opacity-0 transition-opacity flex items-center justify-center gap-2">
+                                <button class="p-2 bg-white rounded-lg hover:bg-gray-100 transition-colors">
+                                    <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                </button>
+                                <button class="p-2 bg-white rounded-lg hover:bg-gray-100 transition-colors">
+                                    <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4-4m0 0l-4 4m4-4v12"/>
+                                    </svg>
+                                </button>
+                                <button class="p-2 bg-white rounded-lg hover:bg-gray-100 transition-colors">
+                                    <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                    </svg>
+                                </button>
+                            </div>
+                            <span class="absolute top-2 left-2 px-2 py-1 bg-purple-500 text-white text-xs font-medium rounded">视频</span>
+                            <span class="absolute bottom-2 right-2 px-2 py-1 bg-black/70 text-white text-xs font-medium rounded">00:30</span>
+                        </div>
+                        <div class="p-3">
+                            <p class="text-sm font-medium text-gray-900 truncate">产品使用教程.mp4</p>
+                            <div class="flex items-center justify-between mt-2 text-xs text-gray-500">
+                                <span>1080×1920</span>
+                                <span>28.5 MB</span>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-1">2024-06-17</p>
+                        </div>
+                    </div>
+
+                    <!-- Image Item 3 -->
+                    <div class="media-item bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-all cursor-pointer group">
+                        <div class="relative aspect-square">
+                            <img src="https://via.placeholder.com/300/f39c12" alt="Media" class="w-full h-full object-cover">
+                            <div class="media-overlay absolute inset-0 bg-black/50 opacity-0 transition-opacity flex items-center justify-center gap-2">
+                                <button class="p-2 bg-white rounded-lg hover:bg-gray-100 transition-colors">
+                                    <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                    </svg>
+                                </button>
+                                <button class="p-2 bg-white rounded-lg hover:bg-gray-100 transition-colors">
+                                    <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4-4m0 0l-4 4m4-4v12"/>
+                                    </svg>
+                                </button>
+                                <button class="p-2 bg-white rounded-lg hover:bg-gray-100 transition-colors">
+                                    <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                    </svg>
+                                </button>
+                            </div>
+                            <span class="absolute top-2 left-2 px-2 py-1 bg-green-500 text-white text-xs font-medium rounded">图片</span>
+                        </div>
+                        <div class="p-3">
+                            <p class="text-sm font-medium text-gray-900 truncate">服装新款展示.jpg</p>
+                            <div class="flex items-center justify-between mt-2 text-xs text-gray-500">
+                                <span>1080×1080</span>
+                                <span>1.2 MB</span>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-1">2024-06-16</p>
+                        </div>
+                    </div>
+
+                    <!-- More items... (repeat pattern) -->
+                    <div class="media-item bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-all cursor-pointer group">
+                        <div class="relative aspect-square">
+                            <img src="https://via.placeholder.com/300/9b59b6" alt="Media" class="w-full h-full object-cover">
+                            <div class="media-overlay absolute inset-0 bg-black/50 opacity-0 transition-opacity flex items-center justify-center gap-2">
+                                <button class="p-2 bg-white rounded-lg hover:bg-gray-100 transition-colors">
+                                    <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                    </svg>
+                                </button>
+                                <button class="p-2 bg-white rounded-lg hover:bg-gray-100 transition-colors">
+                                    <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4-4m0 0l-4 4m4-4v12"/>
+                                    </svg>
+                                </button>
+                                <button class="p-2 bg-white rounded-lg hover:bg-gray-100 transition-colors">
+                                    <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                    </svg>
+                                </button>
+                            </div>
+                            <span class="absolute top-2 left-2 px-2 py-1 bg-green-500 text-white text-xs font-medium rounded">图片</span>
+                        </div>
+                        <div class="p-3">
+                            <p class="text-sm font-medium text-gray-900 truncate">品牌Logo设计.png</p>
+                            <div class="flex items-center justify-between mt-2 text-xs text-gray-500">
+                                <span>800×800</span>
+                                <span>562 KB</span>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-1">2024-06-15</p>
+                        </div>
+                    </div>
+
+                    <div class="media-item bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-all cursor-pointer group">
+                        <div class="relative aspect-square bg-gray-900">
+                            <img src="https://via.placeholder.com/300/16a085" alt="Video" class="w-full h-full object-cover">
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <div class="w-16 h-16 bg-white/90 rounded-full flex items-center justify-center">
+                                    <svg class="w-8 h-8 text-red-500 ml-1" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M8 5v14l11-7z"/>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="media-overlay absolute inset-0 bg-black/50 opacity-0 transition-opacity flex items-center justify-center gap-2">
+                                <button class="p-2 bg-white rounded-lg hover:bg-gray-100 transition-colors">
+                                    <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                </button>
+                                <button class="p-2 bg-white rounded-lg hover:bg-gray-100 transition-colors">
+                                    <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4-4m0 0l-4 4m4-4v12"/>
+                                    </svg>
+                                </button>
+                                <button class="p-2 bg-white rounded-lg hover:bg-gray-100 transition-colors">
+                                    <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                    </svg>
+                                </button>
+                            </div>
+                            <span class="absolute top-2 left-2 px-2 py-1 bg-purple-500 text-white text-xs font-medium rounded">视频</span>
+                            <span class="absolute bottom-2 right-2 px-2 py-1 bg-black/70 text-white text-xs font-medium rounded">01:25</span>
+                        </div>
+                        <div class="p-3">
+                            <p class="text-sm font-medium text-gray-900 truncate">客户见证视频.mp4</p>
+                            <div class="flex items-center justify-between mt-2 text-xs text-gray-500">
+                                <span>1920×1080</span>
+                                <span>42.3 MB</span>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-1">2024-06-14</p>
+                        </div>
+                    </div>
+
+                    <div class="media-item bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-all cursor-pointer group">
+                        <div class="relative aspect-square">
+                            <img src="https://via.placeholder.com/300/e74c3c" alt="Media" class="w-full h-full object-cover">
+                            <div class="media-overlay absolute inset-0 bg-black/50 opacity-0 transition-opacity flex items-center justify-center gap-2">
+                                <button class="p-2 bg-white rounded-lg hover:bg-gray-100 transition-colors">
+                                    <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                    </svg>
+                                </button>
+                                <button class="p-2 bg-white rounded-lg hover:bg-gray-100 transition-colors">
+                                    <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4-4m0 0l-4 4m4-4v12"/>
+                                    </svg>
+                                </button>
+                                <button class="p-2 bg-white rounded-lg hover:bg-gray-100 transition-colors">
+                                    <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                    </svg>
+                                </button>
+                            </div>
+                            <span class="absolute top-2 left-2 px-2 py-1 bg-green-500 text-white text-xs font-medium rounded">图片</span>
+                        </div>
+                        <div class="p-3">
+                            <p class="text-sm font-medium text-gray-900 truncate">促销活动背景图.jpg</p>
+                            <div class="flex items-center justify-between mt-2 text-xs text-gray-500">
+                                <span>1920×1080</span>
+                                <span>3.1 MB</span>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-1">2024-06-13</p>
+                        </div>
+                    </div>
+
+                    <div class="media-item bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-all cursor-pointer group">
+                        <div class="relative aspect-square">
+                            <img src="https://via.placeholder.com/300/27ae60" alt="Media" class="w-full h-full object-cover">
+                            <div class="media-overlay absolute inset-0 bg-black/50 opacity-0 transition-opacity flex items-center justify-center gap-2">
+                                <button class="p-2 bg-white rounded-lg hover:bg-gray-100 transition-colors">
+                                    <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                    </svg>
+                                </button>
+                                <button class="p-2 bg-white rounded-lg hover:bg-gray-100 transition-colors">
+                                    <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4-4m0 0l-4 4m4-4v12"/>
+                                    </svg>
+                                </button>
+                                <button class="p-2 bg-white rounded-lg hover:bg-gray-100 transition-colors">
+                                    <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                    </svg>
+                                </button>
+                            </div>
+                            <span class="absolute top-2 left-2 px-2 py-1 bg-green-500 text-white text-xs font-medium rounded">图片</span>
+                        </div>
+                        <div class="p-3">
+                            <p class="text-sm font-medium text-gray-900 truncate">产品详情页banner.png</p>
+                            <div class="flex items-center justify-between mt-2 text-xs text-gray-500">
+                                <span>1500×500</span>
+                                <span>980 KB</span>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-1">2024-06-12</p>
+                        </div>
+                    </div>
+
+                    <div class="media-item bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-all cursor-pointer group">
+                        <div class="relative aspect-square bg-gray-900">
+                            <img src="https://via.placeholder.com/300/2980b9" alt="Video" class="w-full h-full object-cover">
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <div class="w-16 h-16 bg-white/90 rounded-full flex items-center justify-center">
+                                    <svg class="w-8 h-8 text-red-500 ml-1" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M8 5v14l11-7z"/>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="media-overlay absolute inset-0 bg-black/50 opacity-0 transition-opacity flex items-center justify-center gap-2">
+                                <button class="p-2 bg-white rounded-lg hover:bg-gray-100 transition-colors">
+                                    <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                </button>
+                                <button class="p-2 bg-white rounded-lg hover:bg-gray-100 transition-colors">
+                                    <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4-4m0 0l-4 4m4-4v12"/>
+                                    </svg>
+                                </button>
+                                <button class="p-2 bg-white rounded-lg hover:bg-gray-100 transition-colors">
+                                    <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                    </svg>
+                                </button>
+                            </div>
+                            <span class="absolute top-2 left-2 px-2 py-1 bg-purple-500 text-white text-xs font-medium rounded">视频</span>
+                            <span class="absolute bottom-2 right-2 px-2 py-1 bg-black/70 text-white text-xs font-medium rounded">00:45</span>
+                        </div>
+                        <div class="p-3">
+                            <p class="text-sm font-medium text-gray-900 truncate">品牌故事宣传片.mp4</p>
+                            <div class="flex items-center justify-between mt-2 text-xs text-gray-500">
+                                <span>1920×1080</span>
+                                <span>35.8 MB</span>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-1">2024-06-11</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pagination -->
+                <div class="flex items-center justify-between bg-white rounded-lg border border-gray-200 px-6 py-4">
+                    <div class="text-sm text-gray-600">
+                        显示 <span class="font-medium text-gray-900">1-10</span> 条，共 <span class="font-medium text-gray-900">2,456</span> 条
+                    </div>
+                    <div class="flex gap-2">
+                        <button class="px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                            上一页
+                        </button>
+                        <button class="px-3 py-2 bg-gradient-to-r from-red-500 to-orange-500 text-white rounded-lg text-sm">
+                            1
+                        </button>
+                        <button class="px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 hover:bg-gray-50">
+                            2
+                        </button>
+                        <button class="px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 hover:bg-gray-50">
+                            3
+                        </button>
+                        <button class="px-3 py-2 text-gray-500 text-sm">...</button>
+                        <button class="px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 hover:bg-gray-50">
+                            246
+                        </button>
+                        <button class="px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 hover:bg-gray-50">
+                            下一页
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Tips -->
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <div class="flex items-start gap-3">
+                        <svg class="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                        </svg>
+                        <div>
+                            <h4 class="text-sm font-semibold text-blue-900 mb-1">💡 素材管理建议</h4>
+                            <ul class="text-sm text-blue-800 space-y-1">
+                                <li>• 图片建议使用 JPG 或 PNG 格式，尺寸建议 1080×1080 或 1920×1080</li>
+                                <li>• 视频建议使用 MP4 格式，分辨率建议 1080P，时长控制在 15-60 秒</li>
+                                <li>• 单个文件大小不超过 100MB，总存储空间 50GB</li>
+                                <li>• 素材可直接用于创意制作，建议定期清理不再使用的素材</li>
+                                <li>• 支持批量上传和管理，可按日期、类型、大小排序</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+              </div>
+    </div>
+  </main>
+  </div>
+    </div>
+
+    <script>
+        // Batch selection functionality
+        const selectAllCheckbox = document.getElementById('selectAll');
+        const mediaCheckboxes = document.querySelectorAll('.media-checkbox');
+        const batchActionsBar = document.getElementById('batchActionsBar');
+        const selectedCountSpan = document.getElementById('selectedCount');
+
+        // Select all toggle
+        selectAllCheckbox.addEventListener('change', function() {
+            mediaCheckboxes.forEach(checkbox => {
+                checkbox.checked = this.checked;
+            });
+            updateBatchActions();
+        });
+
+        // Individual checkbox change
+        mediaCheckboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', updateBatchActions);
+        });
+
+        function updateBatchActions() {
+            const checkedCount = document.querySelectorAll('.media-checkbox:checked').length;
+            selectedCountSpan.textContent = checkedCount;
+            
+            if (checkedCount > 0) {
+                batchActionsBar.classList.remove('hidden');
+            } else {
+                batchActionsBar.classList.add('hidden');
+            }
+
+            // Update select all checkbox state
+            selectAllCheckbox.checked = checkedCount === mediaCheckboxes.length;
+        }
+    </script>
+  <script src="nav-component.js"></script>
+</body>
+</html>

@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>人群分组管理 - 千川直播带货平台</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="design-system.css">
+</head>
+<body class="bg-gray-50">
+    <header class="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-gray-200">
+        <div class="px-6 py-4">
+            <div class="flex items-center justify-between">
+                <h1 class="text-2xl font-bold bg-gradient-to-r from-red-500 to-orange-500 bg-clip-text text-transparent">
+                    人群分组管理
+                </h1>
+                <button onclick="createGroup()" class="btn-primary">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                    </svg>
+                    创建分组
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="flex">
+        <aside class="w-64 bg-white border-r border-gray-200 h-screen sticky top-16 overflow-y-auto">
+            <nav id="main-nav"></nav>
+        </aside>
+
+        <main class="flex-1 p-8">
+            <div class="grid grid-cols-4 gap-6 mb-6">
+                <div class="bg-white rounded-xl p-6 border border-gray-200">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="text-sm text-gray-500">总分组数</span>
+                        <svg class="w-5 h-5 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"/>
+                        </svg>
+                    </div>
+                    <div class="text-2xl font-bold text-gray-900">15</div>
+                </div>
+
+                <div class="bg-white rounded-xl p-6 border border-gray-200">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="text-sm text-gray-500">总人群包</span>
+                        <svg class="w-5 h-5 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"/>
+                        </svg>
+                    </div>
+                    <div class="text-2xl font-bold text-gray-900">128</div>
+                </div>
+
+                <div class="bg-white rounded-xl p-6 border border-gray-200">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="text-sm text-gray-500">活跃分组</span>
+                        <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                        </svg>
+                    </div>
+                    <div class="text-2xl font-bold text-gray-900">12</div>
+                </div>
+
+                <div class="bg-white rounded-xl p-6 border border-gray-200">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="text-sm text-gray-500">未分组人群</span>
+                        <svg class="w-5 h-5 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                        </svg>
+                    </div>
+                    <div class="text-2xl font-bold text-gray-900">24</div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl border border-gray-200">
+                <div class="p-6 border-b border-gray-200">
+                    <div class="flex items-center justify-between">
+                        <h2 class="text-lg font-semibold text-gray-900">分组列表</h2>
+                        <div class="flex gap-3">
+                            <input type="text" placeholder="搜索分组..." class="px-4 py-2 border border-gray-300 rounded-lg text-sm w-64">
+                            <select class="px-4 py-2 border border-gray-300 rounded-lg text-sm">
+                                <option>全部分组</option>
+                                <option>活跃分组</option>
+                                <option>未使用</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="divide-y divide-gray-200">
+                    <div class="p-6 hover:bg-gray-50 transition">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 bg-gradient-to-br from-blue-400 to-cyan-500 rounded-lg flex items-center justify-center">
+                                    <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h3 class="font-semibold text-gray-900 mb-1">高价值客户</h3>
+                                    <div class="text-sm text-gray-500">创建于 2025-01-05 | 最后更新: 2天前</div>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <button class="text-blue-600 hover:text-blue-700 text-sm">编辑</button>
+                                <button class="text-red-600 hover:text-red-700 text-sm">删除</button>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-5 gap-4 mb-4">
+                            <div>
+                                <div class="text-xs text-gray-500 mb-1">包含人群包</div>
+                                <div class="font-semibold text-gray-900">12个</div>
+                            </div>
+                            <div>
+                                <div class="text-xs text-gray-500 mb-1">总人数</div>
+                                <div class="font-semibold text-gray-900">85.6万</div>
+                            </div>
+                            <div>
+                                <div class="text-xs text-gray-500 mb-1">使用计划</div>
+                                <div class="font-semibold text-green-600">8个</div>
+                            </div>
+                            <div>
+                                <div class="text-xs text-gray-500 mb-1">转化率</div>
+                                <div class="font-semibold text-orange-600">12.5%</div>
+                            </div>
+                            <div>
+                                <div class="text-xs text-gray-500 mb-1">状态</div>
+                                <span class="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full">活跃</span>
+                            </div>
+                        </div>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="px-3 py-1 bg-blue-50 text-blue-700 text-xs rounded-full">复购客户</span>
+                            <span class="px-3 py-1 bg-purple-50 text-purple-700 text-xs rounded-full">高客单价</span>
+                            <span class="px-3 py-1 bg-green-50 text-green-700 text-xs rounded-full">活跃用户</span>
+                        </div>
+                    </div>
+
+                    <div class="p-6 hover:bg-gray-50 transition">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 bg-gradient-to-br from-purple-400 to-pink-500 rounded-lg flex items-center justify-center">
+                                    <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h3 class="font-semibold text-gray-900 mb-1">美妆爱好者</h3>
+                                    <div class="text-sm text-gray-500">创建于 2025-01-03 | 最后更新: 5天前</div>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <button class="text-blue-600 hover:text-blue-700 text-sm">编辑</button>
+                                <button class="text-red-600 hover:text-red-700 text-sm">删除</button>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-5 gap-4 mb-4">
+                            <div>
+                                <div class="text-xs text-gray-500 mb-1">包含人群包</div>
+                                <div class="font-semibold text-gray-900">8个</div>
+                            </div>
+                            <div>
+                                <div class="text-xs text-gray-500 mb-1">总人数</div>
+                                <div class="font-semibold text-gray-900">62.3万</div>
+                            </div>
+                            <div>
+                                <div class="text-xs text-gray-500 mb-1">使用计划</div>
+                                <div class="font-semibold text-green-600">5个</div>
+                            </div>
+                            <div>
+                                <div class="text-xs text-gray-500 mb-1">转化率</div>
+                                <div class="font-semibold text-orange-600">9.8%</div>
+                            </div>
+                            <div>
+                                <div class="text-xs text-gray-500 mb-1">状态</div>
+                                <span class="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full">活跃</span>
+                            </div>
+                        </div>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="px-3 py-1 bg-pink-50 text-pink-700 text-xs rounded-full">美妆护肤</span>
+                            <span class="px-3 py-1 bg-purple-50 text-purple-700 text-xs rounded-full">18-35岁</span>
+                            <span class="px-3 py-1 bg-orange-50 text-orange-700 text-xs rounded-full">一二线城市</span>
+                        </div>
+                    </div>
+
+                    <div class="p-6 hover:bg-gray-50 transition">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 bg-gradient-to-br from-orange-400 to-red-500 rounded-lg flex items-center justify-center">
+                                    <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h3 class="font-semibold text-gray-900 mb-1">潜在客户</h3>
+                                    <div class="text-sm text-gray-500">创建于 2024-12-28 | 最后更新: 10天前</div>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <button class="text-blue-600 hover:text-blue-700 text-sm">编辑</button>
+                                <button class="text-red-600 hover:text-red-700 text-sm">删除</button>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-5 gap-4 mb-4">
+                            <div>
+                                <div class="text-xs text-gray-500 mb-1">包含人群包</div>
+                                <div class="font-semibold text-gray-900">5个</div>
+                            </div>
+                            <div>
+                                <div class="text-xs text-gray-500 mb-1">总人数</div>
+                                <div class="font-semibold text-gray-900">38.9万</div>
+                            </div>
+                            <div>
+                                <div class="text-xs text-gray-500 mb-1">使用计划</div>
+                                <div class="font-semibold text-gray-600">0个</div>
+                            </div>
+                            <div>
+                                <div class="text-xs text-gray-500 mb-1">转化率</div>
+                                <div class="font-semibold text-gray-600">-</div>
+                            </div>
+                            <div>
+                                <div class="text-xs text-gray-500 mb-1">状态</div>
+                                <span class="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-full">未使用</span>
+                            </div>
+                        </div>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="px-3 py-1 bg-yellow-50 text-yellow-700 text-xs rounded-full">新客户</span>
+                            <span class="px-3 py-1 bg-blue-50 text-blue-700 text-xs rounded-full">浏览未购买</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="nav-component.js"></script>
+    <script>
+        function createGroup() {
+            alert('打开创建分组对话框');
+        }
+    </script>
+</body>
+</html>

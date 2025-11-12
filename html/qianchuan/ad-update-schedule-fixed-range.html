@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>固定时段投放 - 千川直播带货平台</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="design-system.css">
+</head>
+<body class="bg-gray-50">
+    <header class="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-gray-200">
+        <div class="px-6 py-4">
+            <h1 class="text-2xl font-bold bg-gradient-to-r from-red-500 to-orange-500 bg-clip-text text-transparent">
+                固定时段投放设置
+            </h1>
+        </div>
+    </header>
+
+    <div class="flex">
+        <aside class="w-64 bg-white border-r border-gray-200 h-screen sticky top-16 overflow-y-auto">
+            <nav id="main-nav"></nav>
+        </aside>
+
+        <main class="flex-1 p-8 max-w-4xl">
+            <div class="bg-white rounded-xl border border-gray-200 p-6 mb-6">
+                <h2 class="text-lg font-semibold text-gray-900 mb-4">批量选择推广计划</h2>
+                <div class="space-y-2">
+                    <label class="flex items-center gap-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
+                        <input type="checkbox" class="rounded" value="1790123456789">
+                        <div class="flex-1">
+                            <div class="font-medium text-gray-900">美妆新品推广-01</div>
+                            <div class="text-xs text-gray-500">ID: 1790123456789 | 状态: 投放中</div>
+                        </div>
+                    </label>
+                    <label class="flex items-center gap-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
+                        <input type="checkbox" class="rounded" value="1790123456790">
+                        <div class="flex-1">
+                            <div class="font-medium text-gray-900">数码产品直播推广</div>
+                            <div class="text-xs text-gray-500">ID: 1790123456790 | 状态: 投放中</div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl border border-gray-200 p-6 mb-6">
+                <h2 class="text-lg font-semibold text-gray-900 mb-4">时段设置方式</h2>
+                <div class="grid grid-cols-2 gap-4">
+                    <label class="relative p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-orange-400 transition">
+                        <input type="radio" name="rangeType" value="simple" checked class="absolute top-4 right-4">
+                        <div class="font-medium text-gray-900 mb-2">简单时段</div>
+                        <div class="text-sm text-gray-500">设置单个连续时间段</div>
+                    </label>
+                    <label class="relative p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-orange-400 transition">
+                        <input type="radio" name="rangeType" value="multiple" class="absolute top-4 right-4">
+                        <div class="font-medium text-gray-900 mb-2">多时段</div>
+                        <div class="text-sm text-gray-500">设置多个不连续时间段</div>
+                    </label>
+                </div>
+            </div>
+
+            <div id="simpleRange" class="bg-white rounded-xl border border-gray-200 p-6 mb-6">
+                <h2 class="text-lg font-semibold text-gray-900 mb-4">设置投放时段</h2>
+                
+                <div class="grid grid-cols-2 gap-6 mb-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">开始时间</label>
+                        <input type="time" id="startTime" value="09:00" 
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">结束时间</label>
+                        <input type="time" id="endTime" value="22:00" 
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500">
+                    </div>
+                </div>
+
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <div class="flex items-start gap-3">
+                        <svg class="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                        </svg>
+                        <div class="text-sm text-blue-700">
+                            当前时段: <span class="font-semibold" id="rangePreview">09:00 - 22:00 (持续13小时)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="multipleRange" class="hidden bg-white rounded-xl border border-gray-200 p-6 mb-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-lg font-semibold text-gray-900">设置多个时段</h2>
+                    <button onclick="addTimeRange()" class="btn-secondary text-sm">
+                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                        </svg>
+                        添加时段
+                    </button>
+                </div>
+
+                <div id="rangeList" class="space-y-3">
+                    <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                        <input type="time" value="09:00" class="px-3 py-1 border border-gray-300 rounded text-sm">
+                        <span class="text-gray-500">至</span>
+                        <input type="time" value="12:00" class="px-3 py-1 border border-gray-300 rounded text-sm">
+                        <button onclick="removeRange(this)" class="ml-auto text-red-600 hover:text-red-700">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                        <input type="time" value="18:00" class="px-3 py-1 border border-gray-300 rounded text-sm">
+                        <span class="text-gray-500">至</span>
+                        <input type="time" value="22:00" class="px-3 py-1 border border-gray-300 rounded text-sm">
+                        <button onclick="removeRange(this)" class="ml-auto text-red-600 hover:text-red-700">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 预设模板 -->
+            <div class="bg-white rounded-xl border border-gray-200 p-6 mb-6">
+                <h2 class="text-lg font-semibold text-gray-900 mb-4">快捷时段模板</h2>
+                <div class="grid grid-cols-3 gap-3">
+                    <button onclick="applyPreset('morning')" class="p-3 border border-gray-200 rounded-lg hover:border-orange-400 hover:bg-orange-50 transition text-left">
+                        <div class="font-medium text-gray-900 text-sm">早高峰</div>
+                        <div class="text-xs text-gray-500 mt-1">06:00 - 09:00</div>
+                    </button>
+                    <button onclick="applyPreset('noon')" class="p-3 border border-gray-200 rounded-lg hover:border-orange-400 hover:bg-orange-50 transition text-left">
+                        <div class="font-medium text-gray-900 text-sm">午休时段</div>
+                        <div class="text-xs text-gray-500 mt-1">12:00 - 14:00</div>
+                    </button>
+                    <button onclick="applyPreset('evening')" class="p-3 border border-gray-200 rounded-lg hover:border-orange-400 hover:bg-orange-50 transition text-left">
+                        <div class="font-medium text-gray-900 text-sm">晚间黄金</div>
+                        <div class="text-xs text-gray-500 mt-1">18:00 - 23:00</div>
+                    </button>
+                    <button onclick="applyPreset('worktime')" class="p-3 border border-gray-200 rounded-lg hover:border-orange-400 hover:bg-orange-50 transition text-left">
+                        <div class="font-medium text-gray-900 text-sm">工作时间</div>
+                        <div class="text-xs text-gray-500 mt-1">09:00 - 18:00</div>
+                    </button>
+                    <button onclick="applyPreset('allday')" class="p-3 border border-gray-200 rounded-lg hover:border-orange-400 hover:bg-orange-50 transition text-left">
+                        <div class="font-medium text-gray-900 text-sm">全天</div>
+                        <div class="text-xs text-gray-500 mt-1">00:00 - 23:59</div>
+                    </button>
+                    <button onclick="applyPreset('night')" class="p-3 border border-gray-200 rounded-lg hover:border-orange-400 hover:bg-orange-50 transition text-left">
+                        <div class="font-medium text-gray-900 text-sm">深夜时段</div>
+                        <div class="text-xs text-gray-500 mt-1">23:00 - 02:00</div>
+                    </button>
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-3">
+                <button onclick="history.back()" class="btn-secondary">取消</button>
+                <button onclick="submitFixedRange()" class="btn-primary">应用时段设置</button>
+            </div>
+        </main>
+    </div>
+
+    <script src="nav-component.js"></script>
+    <script>
+        const presets = {
+            morning: ['06:00', '09:00'],
+            noon: ['12:00', '14:00'],
+            evening: ['18:00', '23:00'],
+            worktime: ['09:00', '18:00'],
+            allday: ['00:00', '23:59'],
+            night: ['23:00', '02:00']
+        };
+
+        // 切换时段类型
+        document.querySelectorAll('input[name="rangeType"]').forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                if (e.target.value === 'simple') {
+                    document.getElementById('simpleRange').classList.remove('hidden');
+                    document.getElementById('multipleRange').classList.add('hidden');
+                } else {
+                    document.getElementById('simpleRange').classList.add('hidden');
+                    document.getElementById('multipleRange').classList.remove('hidden');
+                }
+            });
+        });
+
+        // 更新时段预览
+        function updatePreview() {
+            const start = document.getElementById('startTime').value;
+            const end = document.getElementById('endTime').value;
+            const startHour = parseInt(start.split(':')[0]);
+            const endHour = parseInt(end.split(':')[0]);
+            const duration = endHour > startHour ? endHour - startHour : 24 - startHour + endHour;
+            document.getElementById('rangePreview').textContent = `${start} - ${end} (持续${duration}小时)`;
+        }
+
+        document.getElementById('startTime').addEventListener('change', updatePreview);
+        document.getElementById('endTime').addEventListener('change', updatePreview);
+
+        function applyPreset(preset) {
+            const [start, end] = presets[preset];
+            document.getElementById('startTime').value = start;
+            document.getElementById('endTime').value = end;
+            updatePreview();
+        }
+
+        function addTimeRange() {
+            const list = document.getElementById('rangeList');
+            const div = document.createElement('div');
+            div.className = 'flex items-center gap-3 p-3 bg-gray-50 rounded-lg';
+            div.innerHTML = `
+                <input type="time" value="09:00" class="px-3 py-1 border border-gray-300 rounded text-sm">
+                <span class="text-gray-500">至</span>
+                <input type="time" value="12:00" class="px-3 py-1 border border-gray-300 rounded text-sm">
+                <button onclick="removeRange(this)" class="ml-auto text-red-600 hover:text-red-700">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                    </svg>
+                </button>
+            `;
+            list.appendChild(div);
+        }
+
+        function removeRange(btn) {
+            btn.closest('.flex').remove();
+        }
+
+        function submitFixedRange() {
+            const selected = Array.from(document.querySelectorAll('input[type="checkbox"]:checked')).map(cb => cb.value);
+            if (selected.length === 0) {
+                alert('请至少选择一个推广计划');
+                return;
+            }
+
+            const rangeType = document.querySelector('input[name="rangeType"]:checked').value;
+            let ranges = [];
+
+            if (rangeType === 'simple') {
+                const start = document.getElementById('startTime').value;
+                const end = document.getElementById('endTime').value;
+                ranges = [[start, end]];
+            } else {
+                const rangeElements = document.querySelectorAll('#rangeList > div');
+                rangeElements.forEach(el => {
+                    const inputs = el.querySelectorAll('input[type="time"]');
+                    ranges.push([inputs[0].value, inputs[1].value]);
+                });
+            }
+
+            console.log('更新计划:', selected, '时段:', ranges);
+            alert(`成功为 ${selected.length} 个计划更新固定时段`);
+        }
+    </script>
+</body>
+</html>
