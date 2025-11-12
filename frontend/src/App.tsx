@@ -64,10 +64,7 @@ const LoadingScreen = () => <Loading fullScreen text="加载中..." size="lg" />
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated } = useAuthStore()
   
-  // 开发模式：允许通过 URL 参数 ?preview=true 跳过登录
-  const isDevelopmentPreview = import.meta.env.DEV && new URLSearchParams(window.location.search).get('preview') === 'true'
-  
-  if (!isAuthenticated && !isDevelopmentPreview) {
+  if (!isAuthenticated) {
     return <Navigate to="/login" replace />
   }
   
