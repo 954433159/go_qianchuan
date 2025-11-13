@@ -9,6 +9,7 @@ import {
 } from '../api/uniPromotion'
 import { useAuthStore } from '../store/authStore'
 import { useEffect } from 'react'
+import { toast } from '../components/ui/Toast'
 
 /**
  * 全域推广创建页面
@@ -50,8 +51,12 @@ export default function UniPromotionCreate() {
       if (list.length > 0 && list[0]?.is_authorized) {
         setFormData((prev) => ({ ...prev, aweme_id: list[0]?.aweme_id ?? '' }))
       }
-    } catch (error) {
-      console.error('获取抖音号列表失败:', error)
+    } catch (err: unknown) {
+      const errorMsg = err && typeof err === 'object' && 'message' in err
+        ? String((err as any).message)
+        : '获取抖音号列表失败'
+      toast.warning(errorMsg)
+      console.error('获取抖音号列表失败:', err)
     }
   }
 
@@ -59,17 +64,22 @@ export default function UniPromotionCreate() {
     e.preventDefault()
     
     if (!user?.advertiserId) {
-      alert('请先登录')
+      toast.error('请先登录')
       return
     }
 
     if (!formData.ad_name.trim()) {
-      alert('请输入推广计划名称')
+      toast.error('请输入推广计划名称')
       return
     }
 
     if (formData.marketing_scene.length === 0) {
-      alert('请至少选择一个营销场景')
+      toast.error('请至少选择一个营销场景')
+      return
+    }
+
+    if (formData.budget < 300) {
+      toast.error('预算金额不能少于300元')
       return
     }
 
@@ -84,11 +94,14 @@ export default function UniPromotionCreate() {
       }
 
       const result = await createUniPromotion(params)
-      alert('创建成功！')
+      toast.success('创建成功！')
       navigate(`/uni-promotions/${result.ad_id}`)
-    } catch (error: any) {
-      console.error('创建失败:', error)
-      alert(`创建失败: ${error.response?.data?.message || error.message || '未知错误'}`)
+    } catch (err: unknown) {
+      const errorMsg = err && typeof err === 'object' && 'response' in err
+        ? (err as any).response?.data?.message || (err as any).message
+        : '创建失败'
+      toast.error(errorMsg || '创建失败，请稍后重试')
+      console.error('创建失败:', err)
     } finally {
       setSubmitting(false)
     }

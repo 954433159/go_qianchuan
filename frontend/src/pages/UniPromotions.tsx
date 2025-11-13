@@ -8,6 +8,7 @@ import {
   type GetUniPromotionListParams,
 } from '../api/uniPromotion'
 import { useAuthStore } from '../store/authStore'
+import { toast } from '../components/ui/Toast'
 
 /**
  * 全域推广列表页面
@@ -29,12 +30,14 @@ export default function UniPromotions() {
     status: '',
     marketing_goal: '',
   })
+  const [error, setError] = useState<string | null>(null)
 
   // 加载列表
   const fetchPromotions = async () => {
     if (!user?.advertiserId) return
     
     setLoading(true)
+    setError(null)
     try {
       const params: GetUniPromotionListParams = {
         advertiser_id: user.advertiserId || 0,
@@ -56,8 +59,27 @@ export default function UniPromotions() {
       const data = await getUniPromotionList(params)
       setPromotions(data.list || [])
       setTotal(data.total || 0)
-    } catch (error) {
-      console.error('获取全域推广列表失败:', error)
+      setError(null)
+    } catch (err: unknown) {
+      const errorMsg = err && typeof err === 'object' && 'message' in err
+        ? String(err.message)
+        : '获取全域推广列表失败'
+      
+      // Handle 501 Not Implemented gracefully
+      if (err && typeof err === 'object' && 'response' in err) {
+        const response = (err as { response?: { status?: number } }).response
+        if (response?.status === 501) {
+          setError('全域推广功能暂未完全开放，部分接口正在对接中')
+          toast.warning('全域推广功能开发中，请稍后再试')
+        } else {
+          setError(errorMsg)
+          toast.error(errorMsg)
+        }
+      } else {
+        setError(errorMsg)
+        toast.error(errorMsg)
+      }
+      console.error('获取全域推广列表失败:', err)
     } finally {
       setLoading(false)
     }
@@ -80,9 +102,15 @@ export default function UniPromotions() {
         ad_ids: adIds,
         opt_status: optStatus,
       })
+      const actionText = optStatus === 'ENABLE' ? '启用' : optStatus === 'DISABLE' ? '暂停' : '删除'
+      toast.success(`${actionText}成功`)
       fetchPromotions()
-    } catch (error) {
-      console.error('更新状态失败:', error)
+    } catch (err: unknown) {
+      const errorMsg = err && typeof err === 'object' && 'message' in err
+        ? String(err.message)
+        : '更新状态失败'
+      toast.error(errorMsg)
+      console.error('更新状态失败:', err)
     }
   }
 
@@ -113,39 +141,23 @@ export default function UniPromotions() {
     return goalMap[goal] || goal
   }
 
+  // 应用搜索过滤
+  const filteredPromotions = promotions.filter(promo => {
+    if (filters.keyword) {
+      const keyword = filters.keyword.toLowerCase()
+      return promo.ad_name.toLowerCase().includes(keyword) ||
+        promo.ad_id.toString().includes(keyword)
+    }
+    return true
+  })
+
+  // 处理搜索提交
+  const handleSearch = () => {
+    fetchPromotions()
+  }
+
   return (
     <div className="p-6">
-      {/* Feature Under Development Banner */}
-      <div className="mb-6 bg-gradient-to-r from-amber-50 to-orange-50 border-l-4 border-amber-500 p-4 rounded-lg shadow-sm">
-        <div className="flex items-start gap-3">
-          <div className="flex-shrink-0 mt-0.5">
-            <svg className="h-5 w-5 text-amber-600" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-            </svg>
-          </div>
-          <div className="flex-1">
-            <h3 className="text-sm font-semibold text-amber-900">🚧 功能开发中</h3>
-            <p className="mt-1 text-sm text-amber-800">
-              全域推广功能正在对接SDK中，暂时不可用。如需多场景投放，请使用「广告计划」和「随心推」功能。
-            </p>
-            <div className="mt-2 flex gap-3">
-              <button
-                onClick={() => navigate('/ads')}
-                className="text-xs font-medium text-amber-900 hover:text-amber-700 underline"
-              >
-                前往广告计划 →
-              </button>
-              <button
-                onClick={() => navigate('/aweme-orders')}
-                className="text-xs font-medium text-amber-900 hover:text-amber-700 underline"
-              >
-                前往随心推 →
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
       {/* Header */}
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-900">全域推广</h1>
@@ -162,18 +174,30 @@ export default function UniPromotions() {
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
             <input
               type="text"
-              placeholder="搜索推广计划名称..."
+              placeholder="搜索推广计划名称或ID..."
               className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               value={filters.keyword}
               onChange={(e) => setFilters({ ...filters, keyword: e.target.value })}
+              onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
             />
           </div>
+
+          {/* Search Button */}
+          <button
+            onClick={handleSearch}
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
+          >
+            <Search className="w-4 h-4" />
+            搜索
+          </button>
 
           {/* Status Filter */}
           <select
             className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
             value={filters.status}
-            onChange={(e) => setFilters({ ...filters, status: e.target.value })}
+            onChange={(e) => {
+              setFilters({ ...filters, status: e.target.value })
+            }}
           >
             <option value="">全部状态</option>
             <option value="ACTIVE">投放中</option>
@@ -184,7 +208,9 @@ export default function UniPromotions() {
           <select
             className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
             value={filters.marketing_goal}
-            onChange={(e) => setFilters({ ...filters, marketing_goal: e.target.value })}
+            onChange={(e) => {
+              setFilters({ ...filters, marketing_goal: e.target.value })
+            }}
           >
             <option value="">全部目标</option>
             <option value="LIVE">直播推广</option>
@@ -211,13 +237,34 @@ export default function UniPromotions() {
         </div>
       </div>
 
+      {/* Error State */}
+      {error && (
+        <div className="mb-6 bg-red-50 border-l-4 border-red-500 p-4 rounded-lg">
+          <div className="flex items-start gap-3">
+            <div className="flex-shrink-0 mt-0.5">
+              <svg className="h-5 w-5 text-red-600" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+              </svg>
+            </div>
+            <div className="flex-1">
+              <h3 className="text-sm font-semibold text-red-900">加载失败</h3>
+              <p className="mt-1 text-sm text-red-800">{error}</p>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Table */}
       <div className="bg-white rounded-lg shadow overflow-hidden">
         {loading ? (
           <div className="p-8 text-center text-gray-500">加载中...</div>
-        ) : promotions.length === 0 ? (
+        ) : error ? (
           <div className="p-8 text-center text-gray-500">
-            暂无推广计划，点击"新建推广"开始投放
+            加载失败，请刷新重试
+          </div>
+        ) : filteredPromotions.length === 0 ? (
+          <div className="p-8 text-center text-gray-500">
+            {filters.keyword ? '没有找到匹配的推广计划' : '暂无推广计划，点击"新建推广"开始投放'}
           </div>
         ) : (
           <table className="min-w-full divide-y divide-gray-200">
@@ -244,7 +291,7 @@ export default function UniPromotions() {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {promotions.map((promotion) => (
+              {filteredPromotions.map((promotion) => (
                 <tr key={promotion.ad_id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm font-medium text-gray-900">

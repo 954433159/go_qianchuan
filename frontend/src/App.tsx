@@ -69,6 +69,23 @@ const AdUpdateRegion = lazy(() => import('./pages/ad/AdUpdateRegion'))
 const AdUpdateRoi = lazy(() => import('./pages/ad/AdUpdateRoi'))
 const PromotionCostGuarantee = lazy(() => import('./pages/ad/PromotionCostGuarantee'))
 
+// 报表页面
+const ReportCampaign = lazy(() => import('./pages/report/ReportCampaign'))
+const ReportAd = lazy(() => import('./pages/report/ReportAd'))
+const ReportCreative = lazy(() => import('./pages/report/ReportCreative'))
+const ReportMaterial = lazy(() => import('./pages/report/ReportMaterial'))
+const ReportAdvertiser = lazy(() => import('./pages/report/ReportAdvertiser'))
+const ReportSearchWord = lazy(() => import('./pages/report/ReportSearchWord'))
+const ReportVideoUserLose = lazy(() => import('./pages/report/ReportVideoUserLose'))
+
+// 定向工具页面
+const IndustryList = lazy(() => import('./pages/targeting/IndustryList'))
+const InterestActionList = lazy(() => import('./pages/targeting/InterestActionList'))
+const AwemeCategoryList = lazy(() => import('./pages/targeting/AwemeCategoryList'))
+const AudienceFileUploadLarge = lazy(() => import('./pages/targeting/AudienceFileUploadLarge'))
+const AuthorSimilarSearch = lazy(() => import('./pages/targeting/AuthorSimilarSearch'))
+const BrandList = lazy(() => import('./pages/targeting/BrandList'))
+
 // 财务管理页面
 const FinanceWallet = lazy(() => import('./pages/FinanceWallet'))
 const FinanceBalance = lazy(() => import('./pages/FinanceBalance'))
@@ -199,7 +216,20 @@ function App() {
           <Route path="/audiences" element={<ProtectedRoute><Audiences /></ProtectedRoute>} />
           <Route path="/keywords" element={<ProtectedRoute><Keywords /></ProtectedRoute>} />
           <Route path="/reports" element={<ProtectedRoute><Reports /></ProtectedRoute>} />
+          <Route path="/reports/campaign" element={<ProtectedRoute><ReportCampaign /></ProtectedRoute>} />
+          <Route path="/reports/ad" element={<ProtectedRoute><ReportAd /></ProtectedRoute>} />
+          <Route path="/reports/creative" element={<ProtectedRoute><ReportCreative /></ProtectedRoute>} />
+          <Route path="/reports/material" element={<ProtectedRoute><ReportMaterial /></ProtectedRoute>} />
+          <Route path="/reports/advertiser" element={<ProtectedRoute><ReportAdvertiser /></ProtectedRoute>} />
+          <Route path="/reports/search-word" element={<ProtectedRoute><ReportSearchWord /></ProtectedRoute>} />
+          <Route path="/reports/video-user-lose" element={<ProtectedRoute><ReportVideoUserLose /></ProtectedRoute>} />
           <Route path="/tools/targeting" element={<ProtectedRoute><ToolsTargeting /></ProtectedRoute>} />
+          <Route path="/targeting/industry" element={<ProtectedRoute><IndustryList /></ProtectedRoute>} />
+          <Route path="/targeting/interest-action" element={<ProtectedRoute><InterestActionList /></ProtectedRoute>} />
+          <Route path="/targeting/aweme-category" element={<ProtectedRoute><AwemeCategoryList /></ProtectedRoute>} />
+          <Route path="/targeting/audience-upload" element={<ProtectedRoute><AudienceFileUploadLarge /></ProtectedRoute>} />
+          <Route path="/targeting/author-search" element={<ProtectedRoute><AuthorSimilarSearch /></ProtectedRoute>} />
+          <Route path="/targeting/brand" element={<ProtectedRoute><BrandList /></ProtectedRoute>} />
           
           {/* 账户管理相关路由 */}
           <Route path="/account-center" element={<ProtectedRoute><AccountCenter /></ProtectedRoute>} />

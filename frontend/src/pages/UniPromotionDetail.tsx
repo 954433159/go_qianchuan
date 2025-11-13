@@ -1,12 +1,15 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft, Edit2, Play, Pause, Trash2 } from 'lucide-react'
+import { ArrowLeft, Edit2, Play, Pause, Trash2, Image as ImageIcon } from 'lucide-react'
 import {
   getUniPromotionDetail,
   updateUniPromotionStatus,
+  getUniPromotionMaterial,
   type UniPromotionAd,
+  type UniPromotionMaterial,
 } from '../api/uniPromotion'
 import { useAuthStore } from '../store/authStore'
+import { toast } from '../components/ui/Toast'
 
 /**
  * 全域推广详情页面
@@ -18,10 +21,13 @@ export default function UniPromotionDetail() {
   
   const [promotion, setPromotion] = useState<UniPromotionAd | null>(null)
   const [loading, setLoading] = useState(true)
+  const [materials, setMaterials] = useState<UniPromotionMaterial[]>([])
+  const [materialsLoading, setMaterialsLoading] = useState(false)
 
   useEffect(() => {
     if (id && user?.advertiserId) {
       fetchDetail()
+      fetchMaterials()
     }
   }, [id, user])
 
@@ -32,15 +38,43 @@ export default function UniPromotionDetail() {
     try {
       const data = await getUniPromotionDetail(user.advertiserId || 0, parseInt(id))
       setPromotion(data)
-    } catch (error) {
-      console.error('获取详情失败:', error)
+    } catch (err: unknown) {
+      const errorMsg = err && typeof err === 'object' && 'message' in err
+        ? String((err as any).message)
+        : '获取详情失败'
+      toast.error(errorMsg)
+      console.error('获取详情失败:', err)
     } finally {
       setLoading(false)
     }
   }
 
+  const fetchMaterials = async () => {
+    if (!id || !user?.advertiserId) return
+    
+    setMaterialsLoading(true)
+    try {
+      const data = await getUniPromotionMaterial({
+        advertiser_id: user.advertiserId || 0,
+        ad_id: parseInt(id),
+      })
+      setMaterials(data)
+    } catch (err: unknown) {
+      // Silently fail - materials are optional
+      console.warn('获取素材失败:', err)
+    } finally {
+      setMaterialsLoading(false)
+    }
+  }
+
   const handleStatusUpdate = async (status: 'ENABLE' | 'DISABLE' | 'DELETE') => {
     if (!promotion || !user?.advertiserId) return
+    
+    const actionText = status === 'ENABLE' ? '启用' : status === 'DISABLE' ? '暂停' : '删除'
+    
+    if (status === 'DELETE' && !confirm(`确定要删除推广计划"${promotion.ad_name}"吗？`)) {
+      return
+    }
     
     try {
       await updateUniPromotionStatus({
@@ -49,13 +83,19 @@ export default function UniPromotionDetail() {
         opt_status: status,
       })
       
+      toast.success(`${actionText}成功`)
+      
       if (status === 'DELETE') {
         navigate('/uni-promotions')
       } else {
         fetchDetail()
       }
-    } catch (error) {
-      console.error('更新状态失败:', error)
+    } catch (err: unknown) {
+      const errorMsg = err && typeof err === 'object' && 'message' in err
+        ? String((err as any).message)
+        : `${actionText}失败`
+      toast.error(errorMsg)
+      console.error('更新状态失败:', err)
     }
   }
 
@@ -241,7 +281,7 @@ export default function UniPromotionDetail() {
             </div>
           )}
 
-          {/* Delivery Settings */}
+          {/* Delivery Settings */
           {promotion.delivery_setting && (
             <div className="bg-white rounded-lg shadow p-6">
               <h2 className="text-lg font-semibold text-gray-900 mb-4">投放设置</h2>
@@ -252,6 +292,42 @@ export default function UniPromotionDetail() {
               </div>
             </div>
           )}
+
+          {/* Materials */}
+          <div className="bg-white rounded-lg shadow p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold text-gray-900">关联素材</h2>
+              <ImageIcon className="w-5 h-5 text-gray-400" />
+            </div>
+            {materialsLoading ? (
+              <div className="text-center py-8 text-gray-500">加载中...</div>
+            ) : materials.length === 0 ? (
+              <div className="text-center py-8 text-gray-500">暂无关联素材</div>
+            ) : (
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                {materials.map((material) => (
+                  <div key={material.material_id} className="border rounded-lg p-3">
+                    {material.material_type === 'IMAGE' ? (
+                      <img
+                        src={material.url}
+                        alt="素材"
+                        className="w-full h-32 object-cover rounded mb-2"
+                      />
+                    ) : (
+                      <video
+                        src={material.url}
+                        className="w-full h-32 object-cover rounded mb-2"
+                        controls
+                      />
+                    )}
+                    <p className="text-xs text-gray-500 truncate">
+                      {material.material_type === 'IMAGE' ? '图片' : '视频'} • {material.status}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Right Column - Quick Actions & Stats */}

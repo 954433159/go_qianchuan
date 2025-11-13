@@ -8,6 +8,7 @@ import {
   type UniPromotionAd,
 } from '../api/uniPromotion'
 import { useAuthStore } from '../store/authStore'
+import { toast } from '../components/ui/Toast'
 
 /**
  * 全域推广编辑页面
@@ -51,9 +52,12 @@ export default function UniPromotionEdit() {
         budget_mode: data.budget_mode,
         roi_goal: data.roi_goal,
       })
-    } catch (error) {
-      console.error('获取详情失败:', error)
-      alert('加载失败，请稍后重试')
+    } catch (err: unknown) {
+      const errorMsg = err && typeof err === 'object' && 'message' in err
+        ? String((err as any).message)
+        : '获取详情失败'
+      toast.error(errorMsg)
+      console.error('获取详情失败:', err)
     } finally {
       setLoading(false)
     }
@@ -63,12 +67,17 @@ export default function UniPromotionEdit() {
     e.preventDefault()
     
     if (!user?.advertiserId || !id) {
-      alert('参数错误')
+      toast.error('参数错误')
       return
     }
 
     if (!formData.ad_name?.trim()) {
-      alert('请输入推广计划名称')
+      toast.error('请输入推广计划名称')
+      return
+    }
+
+    if (formData.budget && formData.budget < 300) {
+      toast.error('预算金额不能少于300元')
       return
     }
 
@@ -90,16 +99,19 @@ export default function UniPromotionEdit() {
       if (formData.budget_mode && formData.budget_mode !== promotion?.budget_mode) {
         params.budget_mode = formData.budget_mode
       }
-      if (formData.roi_goal !== undefined) {
+      if (formData.roi_goal !== undefined && formData.roi_goal !== promotion?.roi_goal) {
         params.roi_goal = formData.roi_goal
       }
 
       await updateUniPromotion(params)
-      alert('保存成功！')
+      toast.success('保存成功！')
       navigate(`/uni-promotions/${id}`)
-    } catch (error: any) {
-      console.error('保存失败:', error)
-      alert(`保存失败: ${error.response?.data?.message || error.message || '未知错误'}`)
+    } catch (err: unknown) {
+      const errorMsg = err && typeof err === 'object' && 'response' in err
+        ? (err as any).response?.data?.message || (err as any).message
+        : '保存失败'
+      toast.error(errorMsg || '保存失败，请稍后重试')
+      console.error('保存失败:', err)
     } finally {
       setSubmitting(false)
     }

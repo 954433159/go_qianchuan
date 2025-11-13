@@ -141,9 +141,8 @@ export default function VirtualDataTable<T extends Record<string, unknown>>({
       searchedData.every((row) => selectedRows.has(getRowKey(row)))
   }, [searchedData, selectedRows, getRowKey])
 
-  // 是否使用虚拟滚动 (暂时禁用)
-  // TODO: Fix react-window v2 API compatibility
-  const useVirtualization = false // searchedData.length > threshold
+  // 是否使用虚拟滚动
+  const useVirtualization = searchedData.length > threshold
 
   // 虚拟滚动行渲染器
   const Row = useCallback(({ index, style }: { index: number; style: React.CSSProperties }) => {
@@ -196,12 +195,15 @@ export default function VirtualDataTable<T extends Record<string, unknown>>({
   }, [searchedData, selectedRows, getRowKey, selectable, columns, handleSelectRow])
 
   useEffect(() => {
-    // 数据变化时滚动到顶部
-    // TODO: Fix react-window v2 API compatibility
-    // if (listRef.current) {
-    //   listRef.current.scrollToRow({ index: 0, align: 'start' })
-    // }
-  }, [searchedData.length])
+    // 数据变化时滚动到顶部 (react-window v2)
+    if (listRef.current && useVirtualization) {
+      try {
+        listRef.current.scrollToItem(0, 'start')
+      } catch {
+        // Fallback for API incompatibility
+      }
+    }
+  }, [searchedData.length, useVirtualization])
 
   if (loading) {
     return (
@@ -282,8 +284,19 @@ export default function VirtualDataTable<T extends Record<string, unknown>>({
         {/* Body */}
         {searchedData.length === 0 ? (
           <EmptyState title={emptyText} />
+        ) : useVirtualization ? (
+          // 虚拟滚动模式 (react-window v2)
+          <List
+            ref={listRef}
+            height={virtualHeight}
+            itemCount={searchedData.length}
+            itemSize={rowHeight}
+            width="100%"
+          >
+            {Row as React.ComponentType<any>}
+          </List>
         ) : (
-          // 普通渲染模式 (虚拟滚动暂时禁用)
+          // 普通渲染模式
           <div>
             {searchedData.map((row, index) => {
               const key = getRowKey(row)
