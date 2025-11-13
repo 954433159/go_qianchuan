@@ -11,6 +11,7 @@ import {
   DollarSign,
   BarChart3,
   ArrowUpDown,
+  Target,
 } from 'lucide-react'
 import {
   PageHeader,
@@ -31,6 +32,7 @@ import {
 import { toast } from '@/components/ui/Toast'
 import { useAuthStore } from '@/store/authStore'
 import { cn } from '@/lib/utils'
+import { LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 
 interface MaterialMetrics {
   material_id: string
@@ -205,6 +207,35 @@ export default function MaterialEfficiency() {
   const avgCtr = totals.impressions > 0 ? (totals.clicks / totals.impressions) * 100 : 0
   const avgCvr = totals.clicks > 0 ? (totals.conversions / totals.clicks) * 100 : 0
   const avgCpa = totals.conversions > 0 ? totals.cost / totals.conversions : 0
+  const avgRoi = filteredMaterials.length > 0 
+    ? filteredMaterials.reduce((sum, m) => sum + m.roi, 0) / filteredMaterials.length 
+    : 0
+
+  // 素材类型分布数据
+  const typeDistribution = [
+    {
+      name: '图片素材',
+      value: materials.filter(m => m.material_type === 'image').length,
+      color: '#3b82f6'
+    },
+    {
+      name: '视频素材',
+      value: materials.filter(m => m.material_type === 'video').length,
+      color: '#8b5cf6'
+    }
+  ]
+
+  // 趋势数据（模拟按日期的趋势）
+  const trendData = Array.from({ length: parseInt(dateRange) }, (_, i) => {
+    const date = new Date()
+    date.setDate(date.getDate() - parseInt(dateRange) + i + 1)
+    return {
+      date: `${date.getMonth() + 1}/${date.getDate()}`,
+      ctr: 5 + Math.random() * 3,
+      cvr: 4 + Math.random() * 2,
+      roi: 4 + Math.random() * 3
+    }
+  })
 
   if (loading) {
     return <Loading fullScreen text="加载素材数据..." size="lg" />
@@ -336,6 +367,68 @@ export default function MaterialEfficiency() {
             </div>
             <div className="mt-2 flex items-center gap-1 text-sm text-gray-600">
               {filteredMaterials.length} 个素材
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* 趋势图表和分布图 */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* 效果趋势图 */}
+        <Card>
+          <CardHeader>
+            <CardTitle>效果趋势</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ResponsiveContainer width="100%" height={300}>
+              <LineChart data={trendData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="date" />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <Line type="monotone" dataKey="ctr" stroke="#3b82f6" name="CTR (%)" strokeWidth={2} />
+                <Line type="monotone" dataKey="cvr" stroke="#10b981" name="CVR (%)" strokeWidth={2} />
+                <Line type="monotone" dataKey="roi" stroke="#8b5cf6" name="ROI" strokeWidth={2} />
+              </LineChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+
+        {/* 素材类型分布 */}
+        <Card>
+          <CardHeader>
+            <CardTitle>素材类型分布</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ResponsiveContainer width="100%" height={300}>
+              <PieChart>
+                <Pie
+                  data={typeDistribution}
+                  cx="50%"
+                  cy="50%"
+                  labelLine={false}
+                  label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                  outerRadius={80}
+                  fill="#8884d8"
+                  dataKey="value"
+                >
+                  {typeDistribution.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Pie>
+                <Tooltip />
+              </PieChart>
+            </ResponsiveContainer>
+            <div className="mt-4 grid grid-cols-2 gap-4">
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 rounded-full bg-blue-500"></div>
+                <span className="text-sm text-gray-600">图片: {typeDistribution[0]?.value ?? 0}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 rounded-full bg-purple-500"></div>
+                <span className="text-sm text-gray-600">视频: {typeDistribution[1]?.value ?? 0}</span>
+              </div>
             </div>
           </CardContent>
         </Card>

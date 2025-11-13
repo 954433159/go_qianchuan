@@ -2,8 +2,10 @@ import { apiClient } from './client'
 
 export interface UploadImageParams {
   advertiser_id: number
-  file: File
-  upload_type: 'UPLOAD_TYPE_IMAGE' | 'UPLOAD_TYPE_AVATAR'
+  file?: File  // 本地文件上传
+  image_url?: string  // URL上传
+  upload_type: 'UPLOAD_BY_FILE' | 'UPLOAD_BY_URL'  // 与SDK一致
+  image_signature?: string  // 图片签名（可选）
 }
 
 export interface UploadVideoParams {
@@ -28,9 +30,23 @@ export const uploadImage = async (
   params: UploadImageParams
 ): Promise<FileInfo> => {
   const formData = new FormData()
-  formData.append('image_file', params.file)
+  
+  // 根据upload_type处理不同的上传方式
+  if (params.upload_type === 'UPLOAD_BY_FILE' && params.file) {
+    formData.append('image_file', params.file)
+  } else if (params.upload_type === 'UPLOAD_BY_URL' && params.image_url) {
+    formData.append('image_url', params.image_url)
+  } else {
+    throw new Error('Invalid upload parameters: file or image_url required based on upload_type')
+  }
+  
   formData.append('advertiser_id', params.advertiser_id.toString())
   formData.append('upload_type', params.upload_type)
+  
+  // 添加签名支持（可选）
+  if (params.image_signature) {
+    formData.append('image_signature', params.image_signature)
+  }
   
   const { data } = await apiClient.post('/qianchuan/file/image/upload', formData, {
     headers: {

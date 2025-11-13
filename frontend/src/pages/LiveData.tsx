@@ -28,7 +28,7 @@ export default function LiveData() {
     setLoading(true)
     try {
       // 获取今日直播数据
-      const stats = await getLiveStats(selectedAdvertiserId, selectedDate)
+      const stats = await getLiveStats(selectedAdvertiserId, selectedDate ?? '')
       setLiveStats(stats)
 
       // 获取直播间列表
@@ -37,11 +37,7 @@ export default function LiveData() {
       start.setDate(start.getDate() - 7)
       
       const rooms = await getLiveRooms({
-        advertiser_id: selectedAdvertiserId,
-        start_date: start.toISOString().split('T')[0],
-        end_date: end.toISOString().split('T')[0],
-        page: 1,
-        page_size: 10
+        count: 10
       })
       setLiveRooms(rooms.list)
     } catch (error) {
@@ -56,7 +52,7 @@ export default function LiveData() {
 
   const generateMockStats = (): LiveStats => ({
     advertiser_id: 1,
-    date: selectedDate,
+    date: selectedDate ?? '',
     gmv: 285600,
     watch_count: 152000,
     watch_ucnt: 45800,
@@ -78,8 +74,8 @@ export default function LiveData() {
       aweme_name: `@${['xiaomei', 'fangfang', 'chef', 'techguy', 'fitness'][i]}`,
       start_time: `2024-01-${20 - i} 19:00:00`,
       end_time: `2024-01-${20 - i} 22:00:00`,
-      status: i === 0 ? 'LIVE' : 'END',
-      gmv: 50000 + Math.random() * 100000,
+      status: (i === 0 ? 'LIVE' : 'END') as 'LIVE' | 'END',
+      gmv: Math.floor(50000 + Math.random() * 100000),
       watch_ucnt: Math.floor(8000 + Math.random() * 12000),
       order_count: Math.floor(300 + Math.random() * 500),
       online_user_count: i === 0 ? Math.floor(500 + Math.random() * 1000) : 0
@@ -317,22 +313,22 @@ export default function LiveData() {
                       <div>
                         <div className="text-xs text-gray-500">GMV</div>
                         <div className="text-base font-semibold text-orange-600">
-                          ¥{room.gmv.toLocaleString()}
+                          ¥{(room.gmv || 0).toLocaleString()}
                         </div>
                       </div>
                       <div>
                         <div className="text-xs text-gray-500">观看人数</div>
-                        <div className="text-base font-semibold">{room.watch_ucnt.toLocaleString()}</div>
+                        <div className="text-base font-semibold">{(room.watch_ucnt || 0).toLocaleString()}</div>
                       </div>
                       <div>
                         <div className="text-xs text-gray-500">订单数</div>
-                        <div className="text-base font-semibold text-green-600">{room.order_count}</div>
+                        <div className="text-base font-semibold text-green-600">{room.order_count || 0}</div>
                       </div>
                       {room.status === 'LIVE' && (
                         <div>
                           <div className="text-xs text-gray-500">当前在线</div>
                           <div className="text-base font-semibold text-red-600">
-                            {room.online_user_count}人
+                            {room.online_user_count || 0}人
                           </div>
                         </div>
                       )}

@@ -8,9 +8,11 @@ import { Plus, Target, LayoutGrid, List, TrendingUp, AlertTriangle, Lightbulb } 
 import { useAuthStore } from '@/store/authStore'
 import { usePromotionStore } from '@/store/promotionStore'
 import { useUIStore } from '@/store/uiStore'
+import { PAGINATION } from '@/constants/pagination'
 import CreateAdDialog from '@/components/ad/CreateAdDialog'
 import PromotionCard from '@/components/promotion/PromotionCard'
 import FilterBar, { FilterConfig } from '@/components/common/FilterBar'
+import { toast } from '@/components/ui/Toast'
 
 export default function Ads() {
   const { confirm, ConfirmDialog } = useConfirm()
@@ -33,15 +35,19 @@ export default function Ads() {
     batchDelete,
   } = usePromotionStore()
   
-  const selectedAdvertiserId = user?.advertiserId || 1
-  
   const fetchAds = async () => {
+    if (!user?.advertiserId) {
+      toast.error('未获取到广告主ID，请重新登录')
+      navigate('/login')
+      return
+    }
+    
     setLocalLoading(true)
     try {
       const data = await getAdList({
-        advertiser_id: selectedAdvertiserId,
-        page: 1,
-        page_size: 100
+        advertiser_id: user.advertiserId,
+        page: PAGINATION.DEFAULT_PAGE,
+        page_size: PAGINATION.MAX_PAGE_SIZE
       })
       // 转换为 Store 需要的格式
       const formattedPromotions = (data.list || []).map((ad: Ad) => ({
@@ -49,7 +55,7 @@ export default function Ads() {
         campaign_id: String(ad.campaign_id || ''),
         name: ad.name,
         status: ad.status === 'ENABLE' ? 'ACTIVE' : 'PAUSED',
-        learning_status: ['LEARNING', 'LEARNED', 'FAILED', 'NONE'][Math.floor(Math.random() * 4)],
+        learning_status: (['LEARNING', 'LEARNED', 'FAILED', 'NONE'][Math.floor(Math.random() * 4)] ?? 'NONE') as string,
         budget_mode: 'BUDGET_MODE_DAY',
         budget: ad.budget || 0,
         bid: Math.random() * 10 + 5,
@@ -72,7 +78,7 @@ export default function Ads() {
       }))
       setPromotions(formattedPromotions)
     } catch (error) {
-      console.error('Failed to fetch ads:', error)
+      toast.error('加载推广计划失败，请稍后重试')
     } finally {
       setLocalLoading(false)
     }
@@ -81,7 +87,7 @@ export default function Ads() {
   useEffect(() => {
     fetchAds()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedAdvertiserId])
+  }, [user?.advertiserId])
   
   const filteredPromotions = getFilteredPromotions()
   const learningPromotions = getLearningPromotions()
@@ -300,14 +306,14 @@ export default function Ads() {
       )}
       
       {/* 推广计划列表 */}
-      {filteredPromotions.length === 0 ? (
+      {!localLoading && filteredPromotions.length === 0 ? (
         <EmptyState
           icon={<Target className="h-16 w-16" />}
           title="暂无推广计划"
-          description="您还没有创建任何推广计划，点击下方按钮创建您的第一个计划。"
+          description="您还没有创建任何推广计划，点击右上角按钮创建您的第一个计划。"
           action={{
             label: '创建推广计划',
-            onClick: () => setDialogOpen(true)
+            onClick: () => navigate('/ads/new')
           }}
         />
       ) : (
@@ -329,7 +335,7 @@ export default function Ads() {
       <CreateAdDialog
         open={dialogOpen}
         onOpenChange={setDialogOpen}
-        advertiserId={selectedAdvertiserId}
+        advertiserId={user?.advertiserId || 0}
         onSuccess={fetchAds}
       />
     </div>

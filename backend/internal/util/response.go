@@ -1,1 +1,168 @@
-package util\n\nimport (\n\t\"net/http\"\n\n\t\"github.com/gin-gonic/gin\"\n)\n\n// Response codes\nconst (\n\tCodeSuccess = 0        // 成功\n\tCodeBadRequest = 400   // 请求参数错误\n\tCodeUnauthorized = 401 // 未认证\n\tCodeForbidden = 403    // 禁止访问\n\tCodeNotFound = 404     // 资源不存在\n\tCodeConflict = 409     // 冲突\n\tCodeServerError = 500  // 服务器错误\n)\n\n// ApiResponse 统一API响应格式\ntype ApiResponse struct {\n\tCode    int         `json:\"code\"`\n\tMessage string      `json:\"message\"`\n\tData    interface{} `json:\"data\"`\n}\n\n// PaginatedData 分页数据响应\ntype PaginatedData struct {\n\tList     interface{} `json:\"list\"`\n\tPage     int64       `json:\"page\"`\n\tPageSize int64       `json:\"page_size\"`\n\tTotal    int64       `json:\"total\"`\n}\n\n// Success 成功响应\nfunc Success(c *gin.Context, data interface{}, message string) {\n\tif message == \"\" {\n\t\tmessage = \"success\"\n\t}\n\tc.JSON(http.StatusOK, ApiResponse{\n\t\tCode:    CodeSuccess,\n\t\tMessage: message,\n\t\tData:    data,\n\t})\n}\n\n// SuccessList 成功响应 - 列表\nfunc SuccessList(c *gin.Context, list interface{}, page, pageSize, total int64) {\n\tc.JSON(http.StatusOK, ApiResponse{\n\t\tCode:    CodeSuccess,\n\t\tMessage: \"success\",\n\t\tData: PaginatedData{\n\t\t\tList:     list,\n\t\t\tPage:     page,\n\t\t\tPageSize: pageSize,\n\t\t\tTotal:    total,\n\t\t},\n\t})\n}\n\n// BadRequest 请求参数错误\nfunc BadRequest(c *gin.Context, message string) {\n\tc.JSON(http.StatusOK, ApiResponse{\n\t\tCode:    CodeBadRequest,\n\t\tMessage: message,\n\t})\n}\n\n// Unauthorized 未认证\nfunc Unauthorized(c *gin.Context, message string) {\n\tif message == \"\" {\n\t\tmessage = \"未登录或会话已过期\"\n\t}\n\tc.JSON(http.StatusUnauthorized, ApiResponse{\n\t\tCode:    CodeUnauthorized,\n\t\tMessage: message,\n\t})\n}\n\n// Forbidden 禁止访问\nfunc Forbidden(c *gin.Context, message string) {\n\tif message == \"\" {\n\t\tmessage = \"禁止访问\"\n\t}\n\tc.JSON(http.StatusForbidden, ApiResponse{\n\t\tCode:    CodeForbidden,\n\t\tMessage: message,\n\t})\n}\n\n// NotFound 资源不存在\nfunc NotFound(c *gin.Context, message string) {\n\tif message == \"\" {\n\t\tmessage = \"请求的资源不存在\"\n\t}\n\tc.JSON(http.StatusOK, ApiResponse{\n\t\tCode:    CodeNotFound,\n\t\tMessage: message,\n\t})\n}\n\n// Conflict 冲突\nfunc Conflict(c *gin.Context, message string) {\n\tc.JSON(http.StatusOK, ApiResponse{\n\t\tCode:    CodeConflict,\n\t\tMessage: message,\n\t})\n}\n\n// ServerError 服务器错误\nfunc ServerError(c *gin.Context, err error, message string) {\n\tif message == \"\" {\n\t\tmessage = \"服务器处理错误\"\n\t}\n\tif err != nil {\n\t\tmessage = message + \": \" + err.Error()\n\t}\n\tc.JSON(http.StatusInternalServerError, ApiResponse{\n\t\tCode:    CodeServerError,\n\t\tMessage: message,\n\t})\n}\n\n// Error 通用错误响应\nfunc Error(c *gin.Context, code int, message string) {\n\thttpCode := http.StatusOK\n\tswitch code {\n\tcase CodeUnauthorized:\n\t\thttpCode = http.StatusUnauthorized\n\tcase CodeForbidden:\n\t\thttpCode = http.StatusForbidden\n\tcase CodeServerError:\n\t\thttpCode = http.StatusInternalServerError\n\t}\n\n\tc.JSON(httpCode, ApiResponse{\n\t\tCode:    code,\n\t\tMessage: message,\n\t})\n}\n"}
+package util
+
+import (
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+)
+
+// Response codes
+const (
+	CodeSuccess            = 0   // 成功
+	CodeBadRequest         = 400 // 请求参数错误
+	CodeUnauthorized       = 401 // 未认证
+	CodeForbidden          = 403 // 禁止访问
+	CodeNotFound           = 404 // 资源不存在
+	CodeConflict           = 409 // 冲突
+	CodeServerError        = 500 // 服务器错误
+	CodeNotImplemented     = 501 // 功能未实现
+	CodeServiceUnavailable = 503 // 服务不可用
+)
+
+// ApiResponse 统一API响应格式
+type ApiResponse struct {
+	Code    int         `json:"code"`
+	Message string      `json:"message"`
+	Data    interface{} `json:"data,omitempty"`
+	Hint    string      `json:"hint,omitempty"` // 提示信息，用于501等状态
+}
+
+// PaginatedData 分页数据响应
+type PaginatedData struct {
+	List     interface{} `json:"list"`
+	Page     int64       `json:"page"`
+	PageSize int64       `json:"page_size"`
+	Total    int64       `json:"total"`
+}
+
+// Success 成功响应
+func Success(c *gin.Context, data interface{}) {
+	c.JSON(http.StatusOK, ApiResponse{
+		Code:    CodeSuccess,
+		Message: "success",
+		Data:    data,
+	})
+}
+
+// SuccessWithMessage 成功响应（自定义消息）
+func SuccessWithMessage(c *gin.Context, data interface{}, message string) {
+	c.JSON(http.StatusOK, ApiResponse{
+		Code:    CodeSuccess,
+		Message: message,
+		Data:    data,
+	})
+}
+
+// SuccessList 成功响应 - 列表
+func SuccessList(c *gin.Context, list interface{}, page, pageSize, total int64) {
+	c.JSON(http.StatusOK, ApiResponse{
+		Code:    CodeSuccess,
+		Message: "success",
+		Data: PaginatedData{
+			List:     list,
+			Page:     page,
+			PageSize: pageSize,
+			Total:    total,
+		},
+	})
+}
+
+// BadRequest 请求参数错误
+func BadRequest(c *gin.Context, message string) {
+	if message == "" {
+		message = "请求参数错误"
+	}
+	c.JSON(http.StatusBadRequest, ApiResponse{
+		Code:    CodeBadRequest,
+		Message: message,
+	})
+}
+
+// Unauthorized 未认证
+func Unauthorized(c *gin.Context, message string) {
+	if message == "" {
+		message = "未登录或会话已过期"
+	}
+	c.JSON(http.StatusUnauthorized, ApiResponse{
+		Code:    CodeUnauthorized,
+		Message: message,
+	})
+}
+
+// Forbidden 禁止访问
+func Forbidden(c *gin.Context, message string) {
+	if message == "" {
+		message = "禁止访问"
+	}
+	c.JSON(http.StatusForbidden, ApiResponse{
+		Code:    CodeForbidden,
+		Message: message,
+	})
+}
+
+// NotFound 资源不存在
+func NotFound(c *gin.Context, message string) {
+	if message == "" {
+		message = "请求的资源不存在"
+	}
+	c.JSON(http.StatusNotFound, ApiResponse{
+		Code:    CodeNotFound,
+		Message: message,
+	})
+}
+
+// Conflict 冲突
+func Conflict(c *gin.Context, message string) {
+	if message == "" {
+		message = "资源冲突"
+	}
+	c.JSON(http.StatusConflict, ApiResponse{
+		Code:    CodeConflict,
+		Message: message,
+	})
+}
+
+// ServerError 服务器错误
+func ServerError(c *gin.Context, message string) {
+	if message == "" {
+		message = "服务器处理错误"
+	}
+	c.JSON(http.StatusInternalServerError, ApiResponse{
+		Code:    CodeServerError,
+		Message: message,
+	})
+}
+
+// NotImplemented 功能未实现
+func NotImplemented(c *gin.Context, message, hint string) {
+	if message == "" {
+		message = "功能暂未实现"
+	}
+	c.JSON(http.StatusNotImplemented, ApiResponse{
+		Code:    CodeNotImplemented,
+		Message: message,
+		Hint:    hint,
+	})
+}
+
+// ServiceUnavailable 服务不可用
+func ServiceUnavailable(c *gin.Context, message string) {
+	if message == "" {
+		message = "服务暂时不可用"
+	}
+	c.JSON(http.StatusServiceUnavailable, ApiResponse{
+		Code:    CodeServiceUnavailable,
+		Message: message,
+	})
+}
+
+// ErrorResponse 自定义错误响应（用于SDK返回的非0错误码）
+func ErrorResponse(c *gin.Context, code int, message string) {
+	if message == "" {
+		message = "操作失败"
+	}
+	c.JSON(http.StatusOK, ApiResponse{
+		Code:    code,
+		Message: message,
+	})
+}

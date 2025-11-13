@@ -1,5 +1,39 @@
 import { apiClient } from './client'
 
+/**
+ * 报表数据字段映射适配器
+ * SDK返回字段名与前端期望不一致，需要做映射
+ * SDK: stat_cost, show_cnt, click_cnt, convert_cnt, cpm_platform, convert_cost, convert_rate
+ * 前端: cost, show, click, convert, cpm, convert_cost, convert_rate
+ */
+function mapReportData(sdkData: any[]): ReportData[] {
+  if (!Array.isArray(sdkData)) return []
+  
+  return sdkData.map(item => ({
+    // 基础字段
+    date: item.date || item.stat_datetime || '',
+    advertiser_id: item.advertiser_id,
+    ad_id: item.ad_id,
+    creative_id: item.creative_id,
+    
+    // 核心指标 - 字段映射
+    cost: item.stat_cost || 0,  // SDK: stat_cost (元)
+    show: item.show_cnt || 0,   // SDK: show_cnt
+    click: item.click_cnt || 0, // SDK: click_cnt
+    convert: item.convert_cnt || 0, // SDK: convert_cnt
+    
+    // 计算指标 - SDK已计算好
+    ctr: item.ctr || 0,
+    cpc: item.cpc || (item.stat_cost && item.click_cnt ? item.stat_cost / item.click_cnt : 0),
+    cpm: item.cpm_platform || (item.stat_cost && item.show_cnt ? (item.stat_cost / item.show_cnt) * 1000 : 0),
+    convert_cost: item.convert_cost || (item.stat_cost && item.convert_cnt ? item.stat_cost / item.convert_cnt : 0),
+    convert_rate: item.convert_rate || (item.convert_cnt && item.click_cnt ? item.convert_cnt / item.click_cnt : 0),
+    
+    // 保留原始数据供需要者使用
+    ...item
+  }))
+}
+
 export interface ReportParams {
   advertiser_id: number
   start_date: string
@@ -28,23 +62,37 @@ export const getCampaignReport = async (
   params: ReportParams
 ): Promise<ReportData[]> => {
   const { data } = await apiClient.post('/qianchuan/report/campaign/get', params)
-  return data?.list || []
+  return mapReportData(data?.list || [])
 }
 
 export const getAdReport = async (
   params: ReportParams
 ): Promise<ReportData[]> => {
   const { data } = await apiClient.post('/qianchuan/report/ad/get', params)
-  return data?.list || []
+  return mapReportData(data?.list || [])
 }
 
 export const getCreativeReport = async (
   params: ReportParams
 ): Promise<ReportData[]> => {
   const { data } = await apiClient.post('/qianchuan/report/creative/get', params)
-  return data?.list || []
+  return mapReportData(data?.list || [])
 }
 
+// ====================自定义报表 ====================
+
+// 获取自定义报表配置
+export interface CustomReportConfig {
+  dimensions: { key: string; label: string }[]
+  metrics: { key: string; label: string }[]
+}
+
+export const getCustomReportConfig = async (): Promise<CustomReportConfig> => {
+  const { data } = await apiClient.get('/qianchuan/report/custom/config')
+  return data
+}
+
+// 获取自定义报表数据
 export const getCustomReport = async (
   params: ReportParams & {
     dimensions: string[]
@@ -59,7 +107,7 @@ export const getMaterialReport = async (
   params: ReportParams
 ): Promise<ReportData[]> => {
   const { data } = await apiClient.post('/qianchuan/report/material/get', params)
-  return data?.list || []
+  return mapReportData(data?.list || [])
 }
 
 // ==================== 搜索词报表 ====================
@@ -105,31 +153,32 @@ export const getLiveStats = async (
 }
 
 // 直播间列表
+// 注意：SDK返回的字段名与前端期望的字段名不一致，需要在后端进行转换
 export interface LiveRoom {
-  room_id: string
+  room_id: string | number // SDK返回int64
   room_title: string
-  anchor_name: string
-  aweme_name: string
+  anchor_name?: string // 前端定义，但SDK不返回
+  aweme_name: string // SDK中aweme_name
+  aweme_id?: string // SDK中aweme_id
   start_time: string
   end_time?: string
-  status: 'LIVE' | 'END' | 'PAUSE'
-  gmv: number
-  watch_ucnt: number
-  order_count: number
-  online_user_count: number
+  status: 'LIVING' | 'FINISHED' | 'LIVE' | 'END' | 'PAUSE' // SDK: LIVING/FINISHED, 前端使用: LIVE/END/PAUSE
+  room_status?: string // SDK字段
+  live_duration?: number // SDK返回的直播时长
+  gmv?: number // 前端定义，但SDK在room list中不返回
+  watch_ucnt?: number // 前端定义，但SDK在room list中不返回
+  order_count?: number // 前端定义，但SDK在room list中不返回
+  online_user_count?: number // 前端定义，但SDK在room list中不返回
 }
 
 export interface GetLiveRoomsParams {
-  advertiser_id: number
-  start_date: string
-  end_date: string
-  page?: number
-  page_size?: number
+  cursor?: number
+  count?: number
 }
 
 export const getLiveRooms = async (
-  params: GetLiveRoomsParams
-): Promise<{ list: LiveRoom[]; total: number }> => {
+  params?: GetLiveRoomsParams
+): Promise<{ list: LiveRoom[]; page_info: { has_more: boolean; cursor: number } }> => {
   const { data } = await apiClient.get('/qianchuan/live/room/get', { params })
   return data
 }
@@ -224,9 +273,9 @@ export interface AdvertiserReportData extends ReportData {
 
 export const getAdvertiserReport = async (
   params: ReportParams
-): Promise<AdvertiserReportData[]> => {
+): Promise<ReportData[]> => {
   const { data } = await apiClient.post('/qianchuan/report/advertiser/get', params)
-  return data?.list || []
+  return mapReportData(data?.list || [])
 }
 
 // ==================== 视频互动流失报表 ====================

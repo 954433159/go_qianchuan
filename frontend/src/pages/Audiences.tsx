@@ -12,6 +12,8 @@ import { useAuthStore } from '@/store/authStore'
 import { getAudienceList, deleteAudience, Audience } from '@/api/tools'
 import { formatDate } from '@/utils/format'
 import { showSuccess, showError } from '@/hooks'
+import { withLoading } from '@/store/loadingStore'
+import { toast } from '@/components/ui/Toast'
 
 export default function Audiences() {
   const { confirm, ConfirmDialog } = useConfirm()
@@ -31,15 +33,18 @@ export default function Audiences() {
 
     setLoading(true)
     try {
-      const { list, total: totalCount } = await getAudienceList({
-        advertiser_id: user.advertiserId,
-        page,
-        page_size: pageSize,
-      })
+      const { list, total: totalCount } = await withLoading(
+        () => getAudienceList({
+          advertiser_id: user.advertiserId!,
+          page,
+          page_size: pageSize,
+        }),
+        '加载人群包列表...'
+      )
       setAudiences(list)
       setTotal(totalCount)
     } catch (error) {
-      showError('加载人群包列表失败')
+      toast.error('加载人群包列表失败')
     } finally {
       setLoading(false)
     }
@@ -59,11 +64,14 @@ export default function Audiences() {
     if (!confirmed) return
 
     try {
-      await deleteAudience(user.advertiserId, [audienceId])
-      showSuccess('删除成功')
+      await withLoading(
+        () => deleteAudience(user.advertiserId!, [audienceId]),
+        '删除中...'
+      )
+      toast.success('删除成功')
       fetchAudiences()
     } catch (error) {
-      showError('删除失败')
+      toast.error('删除失败，请稍后重试')
     }
   }
 

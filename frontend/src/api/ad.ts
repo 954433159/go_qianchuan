@@ -104,7 +104,7 @@ export interface UpdateAdBidParams {
 export const updateAdBid = async (
   params: UpdateAdBidParams
 ): Promise<{ ad_ids: number[] }> => {
-  const { data } = await apiClient.post('/qianchuan/ad/update/bid', params)
+  const { data } = await apiClient.post('/qianchuan/ad/bid/update', params)
   return data
 }
 
@@ -119,7 +119,7 @@ export interface UpdateAdBudgetParams {
 export const updateAdBudget = async (
   params: UpdateAdBudgetParams
 ): Promise<{ ad_ids: number[] }> => {
-  const { data } = await apiClient.post('/qianchuan/ad/update/budget', params)
+  const { data } = await apiClient.post('/qianchuan/ad/budget/update', params)
   return data
 }
 
@@ -148,7 +148,7 @@ export interface UpdateAdScheduleDateParams {
 export const updateAdScheduleDate = async (
   params: UpdateAdScheduleDateParams
 ): Promise<{ ad_id: number }> => {
-  const { data } = await apiClient.post('/qianchuan/ad/update/schedule-date', params)
+  const { data } = await apiClient.post('/qianchuan/ad/schedule/date/update', params)
   return data
 }
 
@@ -162,7 +162,7 @@ export interface UpdateAdScheduleTimeParams {
 export const updateAdScheduleTime = async (
   params: UpdateAdScheduleTimeParams
 ): Promise<{ ad_id: number }> => {
-  const { data } = await apiClient.post('/qianchuan/ad/update/schedule-time', params)
+  const { data } = await apiClient.post('/qianchuan/ad/schedule/time/update', params)
   return data
 }
 
@@ -176,7 +176,7 @@ export interface UpdateAdScheduleFixedRangeParams {
 export const updateAdScheduleFixedRange = async (
   params: UpdateAdScheduleFixedRangeParams
 ): Promise<{ ad_id: number }> => {
-  const { data } = await apiClient.post('/qianchuan/ad/update/schedule-fixed-range', params)
+  const { data } = await apiClient.post('/qianchuan/ad/schedule/fixed-range/update', params)
   return data
 }
 
@@ -191,7 +191,7 @@ export interface UpdateAdRegionParams {
 export const updateAdRegion = async (
   params: UpdateAdRegionParams
 ): Promise<{ ad_id: number }> => {
-  const { data } = await apiClient.post('/qianchuan/ad/update/region', params)
+  const { data } = await apiClient.post('/qianchuan/ad/region/update', params)
   return data
 }
 

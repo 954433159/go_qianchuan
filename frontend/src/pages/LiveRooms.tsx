@@ -2,8 +2,9 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import PageHeader from '../components/ui/PageHeader'
 import Loading from '../components/ui/Loading'
-import { LiveRoom } from '../api/report'
+import { LiveRoom, getLiveRooms } from '../api/report'
 import { useToast } from '../hooks/useToast'
+import { useAuthStore } from '../store/authStore'
 import {
   Users,
   TrendingUp,
@@ -44,10 +45,10 @@ const generateMockLiveRooms = (): LiveRoom[] => {
     
     rooms.push({
       room_id: `room_${1000 + i}`,
-      room_title: roomNames[i],
+      room_title: roomNames[i] ?? '直播间',
       anchor_name: `主播${String.fromCharCode(65 + i)}`,
       aweme_name: `抖音号${i + 1}`,
-      status,
+      status: status ?? 'END',
       start_time: new Date(Date.now() - Math.random() * 3600000 * (isLive ? 2 : 24)).toISOString(),
       end_time: status === 'END' ? new Date(Date.now() - Math.random() * 3600000).toISOString() : undefined,
       watch_ucnt: Math.floor(Math.random() * 50000) + 1000,
@@ -58,14 +59,15 @@ const generateMockLiveRooms = (): LiveRoom[] => {
   }
 
   return rooms.sort((a, b) => {
-    const statusOrder = { LIVE: 0, PAUSE: 1, END: 2 }
-    return statusOrder[a.status] - statusOrder[b.status]
+    const statusOrder: Record<string, number> = { LIVE: 0, LIVING: 0, PAUSE: 1, END: 2, FINISHED: 2 }
+    return (statusOrder[a.status] || 99) - (statusOrder[b.status] || 99)
   })
 }
 
 export default function LiveRooms() {
   const navigate = useNavigate()
   const { error: showError } = useToast()
+  const { user } = useAuthStore()
   const [loading, setLoading] = useState(false)
   const [rooms, setRooms] = useState<LiveRoom[]>([])
   const [filteredRooms, setFilteredRooms] = useState<LiveRoom[]>([])
@@ -83,19 +85,24 @@ export default function LiveRooms() {
   }, [rooms, searchQuery, statusFilter, sortBy, sortOrder])
 
   const fetchLiveRooms = async () => {
+    if (!user?.advertiserId) {
+      showError('未获取到广告主ID，请重新登录')
+      return
+    }
+
     setLoading(true)
     try {
-      // 使用模拟数据
-      await new Promise(resolve => setTimeout(resolve, 800))
-      const mockData = generateMockLiveRooms()
-      setRooms(mockData)
-      
-      // 真实API调用（注释掉）
-      // const data = await getLiveRooms({ advertiserId: 'xxx', dateRange: [startDate, endDate] })
-      // setRooms(data)
+      // SDK直播间API返回今日直播间列表，不需要日期参数
+      const { list } = await getLiveRooms({
+        count: 100
+      })
+      setRooms(list)
     } catch (error) {
       showError('获取直播间列表失败')
       console.error('Failed to fetch live rooms:', error)
+      // 降级使用模拟数据
+      const mockData = generateMockLiveRooms()
+      setRooms(mockData)
     } finally {
       setLoading(false)
     }
@@ -115,8 +122,8 @@ export default function LiveRooms() {
       filtered = filtered.filter(
         room =>
           room.room_title.toLowerCase().includes(query) ||
-          room.anchor_name.toLowerCase().includes(query) ||
-          room.room_id.toLowerCase().includes(query)
+          (room.anchor_name || '').toLowerCase().includes(query) ||
+          String(room.room_id).toLowerCase().includes(query)
       )
     }
 
@@ -126,20 +133,20 @@ export default function LiveRooms() {
 
       switch (sortBy) {
         case 'watch_ucnt':
-          aValue = a.watch_ucnt
-          bValue = b.watch_ucnt
+          aValue = a.watch_ucnt || 0
+          bValue = b.watch_ucnt || 0
           break
         case 'gmv':
-          aValue = a.gmv
-          bValue = b.gmv
+          aValue = a.gmv || 0
+          bValue = b.gmv || 0
           break
         case 'order_count':
-          aValue = a.order_count
-          bValue = b.order_count
+          aValue = a.order_count || 0
+          bValue = b.order_count || 0
           break
         default:
-          aValue = a.watch_ucnt
-          bValue = b.watch_ucnt
+          aValue = a.watch_ucnt || 0
+          bValue = b.watch_ucnt || 0
       }
 
       return sortOrder === 'desc' ? bValue - aValue : aValue - bValue
@@ -148,11 +155,12 @@ export default function LiveRooms() {
     setFilteredRooms(filtered)
   }
 
-  const handleRoomClick = (roomId: string) => {
+  const handleRoomClick = (roomId: string | number) => {
     navigate(`/live-rooms/${roomId}`)
   }
 
-  const formatNumber = (num: number): string => {
+  const formatNumber = (num: number | undefined): string => {
+    if (!num) return '0'
     if (num >= 10000) {
       return (num / 10000).toFixed(1) + '万'
     }
@@ -160,27 +168,24 @@ export default function LiveRooms() {
   }
 
 
-  const getStatusColor = (status: 'LIVE' | 'END' | 'PAUSE') => {
-    switch (status) {
-      case 'LIVE':
-        return 'text-green-600 bg-green-50 border-green-200'
-      case 'PAUSE':
-        return 'text-blue-600 bg-blue-50 border-blue-200'
-      case 'END':
-        return 'text-gray-600 bg-gray-50 border-gray-200'
-      default:
-        return 'text-gray-600 bg-gray-50 border-gray-200'
+  const getStatusColor = (status: string) => {
+    // SDK返回LIVE/END, Mock返回LIVE/END/PAUSE
+    if (status === 'LIVE' || status === 'LIVING') {
+      return 'text-green-600 bg-green-50 border-green-200'
+    } else if (status === 'PAUSE') {
+      return 'text-blue-600 bg-blue-50 border-blue-200'
+    } else {
+      return 'text-gray-600 bg-gray-50 border-gray-200'
     }
   }
 
-  const getStatusLabel = (status: 'LIVE' | 'END' | 'PAUSE') => {
-    switch (status) {
-      case 'LIVE':
-        return '直播中'
-      case 'PAUSE':
-        return '预告中'
-      case 'END':
-        return '已结束'
+  const getStatusLabel = (status: string) => {
+    if (status === 'LIVE' || status === 'LIVING') {
+      return '直播中'
+    } else if (status === 'PAUSE') {
+      return '预告中'
+    } else {
+      return '已结束'
     }
   }
 
@@ -191,9 +196,9 @@ export default function LiveRooms() {
   // 统计数据
   const stats = {
     total: rooms.length,
-    live: rooms.filter(r => r.status === 'LIVE').length,
-    totalGMV: rooms.reduce((sum, r) => sum + r.gmv, 0),
-    totalWatchCount: rooms.reduce((sum, r) => sum + r.watch_ucnt, 0)
+    live: rooms.filter(r => r.status === 'LIVE' || r.status === 'LIVING').length,
+    totalGMV: rooms.reduce((sum, r) => sum + (r.gmv || 0), 0),
+    totalWatchCount: rooms.reduce((sum, r) => sum + (r.watch_ucnt || 0), 0)
   }
 
   return (

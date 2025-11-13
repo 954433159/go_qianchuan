@@ -1,7 +1,7 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
-import { Suspense, lazy } from 'react'
+import { Suspense, lazy, useEffect, useState } from 'react'
 import Layout from './components/layout/Layout'
-import ToastContainer from './components/ui/Toast'
+import ToastContainer, { toast } from './components/ui/Toast'
 import ErrorBoundary from './components/ErrorBoundary'
 import Loading from './components/ui/Loading'
 import { useAuthStore } from './store/authStore'
@@ -30,6 +30,10 @@ const CreativeUpload = lazy(() => import('./pages/CreativeUpload'))
 const LearningStatusList = lazy(() => import('./pages/LearningStatusList'))
 const LowQualityAdList = lazy(() => import('./pages/LowQualityAdList'))
 const AdSuggestTools = lazy(() => import('./pages/AdSuggestTools'))
+const PromotionBatchUpdateBudget = lazy(() => import('./pages/promotion/PromotionBatchUpdateBudget'))
+const PromotionBatchUpdateBid = lazy(() => import('./pages/promotion/PromotionBatchUpdateBid'))
+const PromotionBatchUpdateRoi = lazy(() => import('./pages/promotion/PromotionBatchUpdateRoi'))
+const CampaignBatchOperations = lazy(() => import('./pages/campaign/CampaignBatchOperations'))
 const AccountBudget = lazy(() => import('./pages/AccountBudget'))
 const AwemeAuthList = lazy(() => import('./pages/AwemeAuthList'))
 const AwemeAuthAdd = lazy(() => import('./pages/AwemeAuthAdd'))
@@ -47,6 +51,15 @@ const LiveRooms = lazy(() => import('./pages/LiveRooms'))
 const LiveRoomDetail = lazy(() => import('./pages/LiveRoomDetail'))
 const ProductAnalyse = lazy(() => import('./pages/ProductAnalyse'))
 const ProductCompareStats = lazy(() => import('./pages/ProductCompareStats'))
+const UniPromotions = lazy(() => import('./pages/UniPromotions'))
+const UniPromotionCreate = lazy(() => import('./pages/UniPromotionCreate'))
+const UniPromotionEdit = lazy(() => import('./pages/UniPromotionEdit'))
+const UniPromotionDetail = lazy(() => import('./pages/UniPromotionDetail'))
+const AwemeOrders = lazy(() => import('./pages/AwemeOrders'))
+const AwemeOrderCreate = lazy(() => import('./pages/AwemeOrderCreate'))
+const AwemeOrderDetail = lazy(() => import('./pages/AwemeOrderDetail'))
+const AwemeOrderEffect = lazy(() => import('./pages/AwemeOrderEffect'))
+const AwemeTools = lazy(() => import('./pages/AwemeTools'))
 
 // 财务管理页面
 const FinanceWallet = lazy(() => import('./pages/FinanceWallet'))
@@ -73,6 +86,56 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
 function App() {
   const { isLoading, loadingText } = useLoadingStore()
+  const { isAuthenticated, fetchUser } = useAuthStore()
+  const [authCheckDone, setAuthCheckDone] = useState(false)
+  
+  // 冷启动鉴权检查：刷新页面时尝试恢复登录状态
+  useEffect(() => {
+    const checkAuth = async () => {
+      // 如果已经认证，直接跳过
+      if (isAuthenticated) {
+        setAuthCheckDone(true)
+        return
+      }
+      
+      // 尝试拉取用户信息（如果 Cookie 中有有效 Session）
+      try {
+        await fetchUser()
+      } catch (error) {
+        // 静默失败，用户将被重定向到登录页
+        console.log('Cold start auth check failed:', error)
+      } finally {
+        setAuthCheckDone(true)
+      }
+    }
+    
+    checkAuth()
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+  
+  // 全局toast事件监听器（用于Axios 501等全局错误）
+  useEffect(() => {
+    function handleGlobalToast(e: Event) {
+      const detail = (e as CustomEvent).detail as { 
+        type: 'success' | 'error' | 'warning' | 'info'
+        message: string 
+      }
+      const toastFn = {
+        success: toast.success,
+        error: toast.error,
+        warning: toast.warning,
+        info: toast.info
+      }[detail.type]
+      toastFn?.(detail.message)
+    }
+    
+    window.addEventListener('global-toast', handleGlobalToast as EventListener)
+    return () => window.removeEventListener('global-toast', handleGlobalToast as EventListener)
+  }, [])
+  
+  // 鉴权检查未完成时，显示 loading
+  if (!authCheckDone) {
+    return <Loading fullScreen text="加载中..." size="lg" />
+  }
   
   return (
     <ErrorBoundary>
@@ -91,10 +154,14 @@ function App() {
           <Route path="/advertisers/:id" element={<ProtectedRoute><AdvertiserDetail /></ProtectedRoute>} />
           <Route path="/campaigns" element={<ProtectedRoute><Campaigns /></ProtectedRoute>} />
           <Route path="/campaigns/new" element={<ProtectedRoute><CampaignCreate /></ProtectedRoute>} />
+          <Route path="/campaigns/batch" element={<ProtectedRoute><CampaignBatchOperations /></ProtectedRoute>} />
           <Route path="/campaigns/:id" element={<ProtectedRoute><CampaignDetail /></ProtectedRoute>} />
           <Route path="/campaigns/:id/edit" element={<ProtectedRoute><CampaignEdit /></ProtectedRoute>} />
           <Route path="/ads" element={<ProtectedRoute><Ads /></ProtectedRoute>} />
           <Route path="/ads/new" element={<ProtectedRoute><AdCreate /></ProtectedRoute>} />
+          <Route path="/ads/batch/budget" element={<ProtectedRoute><PromotionBatchUpdateBudget /></ProtectedRoute>} />
+          <Route path="/ads/batch/bid" element={<ProtectedRoute><PromotionBatchUpdateBid /></ProtectedRoute>} />
+          <Route path="/ads/batch/roi" element={<ProtectedRoute><PromotionBatchUpdateRoi /></ProtectedRoute>} />
           <Route path="/ads/:id" element={<ProtectedRoute><AdDetail /></ProtectedRoute>} />
           <Route path="/ads/:id/edit" element={<ProtectedRoute><AdEdit /></ProtectedRoute>} />
           <Route path="/ads/learning-status" element={<ProtectedRoute><LearningStatusList /></ProtectedRoute>} />
@@ -127,6 +194,19 @@ function App() {
           <Route path="/agents/:id" element={<ProtectedRoute><AgentDetail /></ProtectedRoute>} />
           <Route path="/operation-log" element={<ProtectedRoute><OperationLog /></ProtectedRoute>} />
           <Route path="/creatives/:id" element={<ProtectedRoute><CreativeDetail /></ProtectedRoute>} />
+
+          {/* 全域推广路由 */}
+          <Route path="/uni-promotions" element={<ProtectedRoute><UniPromotions /></ProtectedRoute>} />
+          <Route path="/uni-promotions/new" element={<ProtectedRoute><UniPromotionCreate /></ProtectedRoute>} />
+          <Route path="/uni-promotions/:id" element={<ProtectedRoute><UniPromotionDetail /></ProtectedRoute>} />
+          <Route path="/uni-promotions/:id/edit" element={<ProtectedRoute><UniPromotionEdit /></ProtectedRoute>} />
+          
+          {/* 随心推订单路由 */}
+          <Route path="/aweme-orders" element={<ProtectedRoute><AwemeOrders /></ProtectedRoute>} />
+          <Route path="/aweme-orders/new" element={<ProtectedRoute><AwemeOrderCreate /></ProtectedRoute>} />
+          <Route path="/aweme-orders/:id" element={<ProtectedRoute><AwemeOrderDetail /></ProtectedRoute>} />
+          <Route path="/aweme-orders/:id/effect" element={<ProtectedRoute><AwemeOrderEffect /></ProtectedRoute>} />
+          <Route path="/aweme/tools" element={<ProtectedRoute><AwemeTools /></ProtectedRoute>} />
 
           {/* 财务管理路由 */}
           <Route path="/finance/wallet" element={<ProtectedRoute><FinanceWallet /></ProtectedRoute>} />

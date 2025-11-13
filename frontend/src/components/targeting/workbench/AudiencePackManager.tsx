@@ -61,7 +61,7 @@ export default function AudiencePackManager() {
       name: newPackName,
       description: newPackDesc,
       audienceSize: Math.floor(Math.random() * 1000000),
-      createTime: new Date().toISOString().split('T')[0],
+      createTime: new Date().toISOString().split('T')[0] ?? '',
       tags: [],
     }
 
@@ -109,7 +109,7 @@ export default function AudiencePackManager() {
       ...pack,
       id: Date.now().toString(),
       name: `${pack.name} (副本)`,
-      createTime: new Date().toISOString().split('T')[0],
+      createTime: new Date().toISOString().split('T')[0] ?? '',
     }
     setPacks([duplicated, ...packs])
     success('人群包已复制')

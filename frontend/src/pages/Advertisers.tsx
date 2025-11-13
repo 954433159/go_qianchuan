@@ -1,15 +1,16 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { getAdvertiserList } from '@/api/advertiser'
+import { getAdvertiserList, updateAdvertiser } from '@/api/advertiser'
 import { Advertiser } from '@/api/types'
-import { Building2, DollarSign, CheckCircle, XCircle, Eye, Download, RefreshCw } from 'lucide-react'
+import { Building2, DollarSign, CheckCircle, XCircle, Eye, Download, RefreshCw, Power, Edit3, FileDown, Trash2 } from 'lucide-react'
 import { Card, CardContent, PageHeader, Loading, Button, DataTable, FilterPanel, Drawer } from '@/components/ui'
 import type { ColumnDef, FilterField } from '@/components/ui'
 import { useToast } from '@/hooks/useToast'
+import { BatchOperator, BatchAction } from '@/components/common/BatchOperator'
 
 export default function Advertisers() {
   const navigate = useNavigate()
-  const { success } = useToast()
+  const { success, error } = useToast()
   const [advertisers, setAdvertisers] = useState<Advertiser[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedAdvertisers, setSelectedAdvertisers] = useState<Advertiser[]>([])
@@ -96,8 +97,100 @@ export default function Advertisers() {
     if (selectedAdvertisers.length === 0) {
       return
     }
+    // 模拟导出CSV
+    const csv = [
+      ['广告主ID', '名称', '公司', '余额', '状态', '创建时间'],
+      ...selectedAdvertisers.map(a => [
+        a.id,
+        a.name,
+        a.company,
+        a.balance,
+        a.status === 'ENABLE' ? '启用' : '禁用',
+        a.create_time
+      ])
+    ].map(row => row.join(',')).join('\n')
+    
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `advertisers_${new Date().toISOString().split('T')[0]}.csv`
+    link.click()
+    URL.revokeObjectURL(url)
+    
     success(`已导出 ${selectedAdvertisers.length} 个广告主数据`)
   }
+
+  const handleBatchEnable = async (advertisers: Advertiser[]) => {
+    try {
+      await Promise.all(
+        advertisers.map(a => updateAdvertiser(a.id as unknown as number, { status: 'ENABLE' }))
+      )
+      success(`已启用 ${advertisers.length} 个广告主`)
+      fetchAdvertisers()
+    } catch (err) {
+      error('批量启用失败')
+    }
+  }
+
+  const handleBatchDisable = async (advertisers: Advertiser[]) => {
+    try {
+      await Promise.all(
+        advertisers.map(a => updateAdvertiser(a.id as unknown as number, { status: 'DISABLE' }))
+      )
+      success(`已禁用 ${advertisers.length} 个广告主`)
+      fetchAdvertisers()
+    } catch (err) {
+      error('批量禁用失败')
+    }
+  }
+
+  const handleBatchDelete = async (advertisers: Advertiser[]) => {
+    try {
+      // TODO: 调用批量删除 API
+      success(`已删除 ${advertisers.length} 个广告主`)
+      fetchAdvertisers()
+    } catch (err) {
+      error('批量删除失败')
+    }
+  }
+
+  const batchActions: BatchAction<Advertiser>[] = [
+    {
+      key: 'enable',
+      label: '批量启用',
+      icon: Power,
+      variant: 'default',
+      onClick: handleBatchEnable,
+      disabled: (items) => items.every(a => a.status === 'ENABLE'),
+    },
+    {
+      key: 'disable',
+      label: '批量禁用',
+      icon: XCircle,
+      variant: 'outline',
+      onClick: handleBatchDisable,
+      disabled: (items) => items.every(a => a.status === 'DISABLE'),
+    },
+    {
+      key: 'export',
+      label: '批量导出',
+      icon: FileDown,
+      variant: 'outline',
+      onClick: handleBatchExport,
+    },
+    {
+      key: 'delete',
+      label: '批量删除',
+      icon: Trash2,
+      variant: 'destructive',
+      onClick: handleBatchDelete,
+      confirm: {
+        title: '确认删除',
+        description: '删除后将无法恢复，请谨慎操作。',
+      },
+    },
+  ]
 
   const columns: ColumnDef<Advertiser>[] = [
     {
@@ -213,26 +306,18 @@ export default function Advertisers() {
       />
 
       {/* Batch Actions */}
-      {selectedAdvertisers.length > 0 && (
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-muted-foreground">
-                已选择 {selectedAdvertisers.length} 个广告主
-              </span>
-              <div className="flex gap-2">
-                <Button size="sm" variant="outline" onClick={handleBatchExport}>
-                  <Download className="h-4 w-4 mr-2" />
-                  批量导出
-                </Button>
-                <Button size="sm" variant="outline" onClick={() => setSelectedAdvertisers([])}>
-                  取消选择
-                </Button>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      )}
+      <Card>
+        <CardContent className="p-4">
+          <BatchOperator
+            items={advertisers}
+            selectedItems={selectedAdvertisers}
+            onSelectionChange={setSelectedAdvertisers}
+            actions={batchActions}
+            keyExtractor={(item) => item.id}
+            disabled={loading}
+          />
+        </CardContent>
+      </Card>
       
       {/* Table */}
       <Card>

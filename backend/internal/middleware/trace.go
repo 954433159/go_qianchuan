@@ -20,9 +20,9 @@ func Trace() gin.HandlerFunc {
 		start := time.Now()
 
 		// 记录请求开始
-		log.Printf("[%s] --> %s %s from %s", 
-			requestId, 
-			c.Request.Method, 
+		log.Printf("[%s] --> %s %s from %s",
+			requestId,
+			c.Request.Method,
 			c.Request.URL.Path,
 			c.ClientIP())
 
@@ -34,11 +34,11 @@ func Trace() gin.HandlerFunc {
 		status := c.Writer.Status()
 
 		// 记录请求结束
-		log.Printf("[%s] <-- %s %s - %d (%v)", 
-			requestId, 
-			c.Request.Method, 
-			c.Request.URL.Path, 
-			status, 
+		log.Printf("[%s] <-- %s %s - %d (%v)",
+			requestId,
+			c.Request.Method,
+			c.Request.URL.Path,
+			status,
 			duration)
 
 		// 慢查询告警 (超过1秒)

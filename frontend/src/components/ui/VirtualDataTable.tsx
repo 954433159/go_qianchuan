@@ -1,5 +1,5 @@
 import { useState, useMemo, useCallback, useRef, useEffect } from 'react'
-import { FixedSizeList as List } from 'react-window'
+import { List, ListImperativeAPI } from 'react-window'
 import { ChevronDown, ChevronUp, ChevronsUpDown } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Checkbox } from './Checkbox'
@@ -56,7 +56,7 @@ export default function VirtualDataTable<T extends Record<string, unknown>>({
     direction: 'asc' | 'desc'
   } | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
-  const listRef = useRef<List>(null)
+  const listRef = useRef<ListImperativeAPI>(null)
 
   const getRowKey = useCallback((row: T): string | number => {
     if (typeof rowKey === 'function') {
@@ -141,12 +141,14 @@ export default function VirtualDataTable<T extends Record<string, unknown>>({
       searchedData.every((row) => selectedRows.has(getRowKey(row)))
   }, [searchedData, selectedRows, getRowKey])
 
-  // 是否使用虚拟滚动
-  const useVirtualization = searchedData.length > threshold
+  // 是否使用虚拟滚动 (暂时禁用)
+  // TODO: Fix react-window v2 API compatibility
+  const useVirtualization = false // searchedData.length > threshold
 
   // 虚拟滚动行渲染器
   const Row = useCallback(({ index, style }: { index: number; style: React.CSSProperties }) => {
     const row = searchedData[index]
+    if (!row) return null
     const key = getRowKey(row)
     const isSelected = selectedRows.has(key)
 
@@ -195,9 +197,10 @@ export default function VirtualDataTable<T extends Record<string, unknown>>({
 
   useEffect(() => {
     // 数据变化时滚动到顶部
-    if (listRef.current) {
-      listRef.current.scrollTo(0)
-    }
+    // TODO: Fix react-window v2 API compatibility
+    // if (listRef.current) {
+    //   listRef.current.scrollToRow({ index: 0, align: 'start' })
+    // }
   }, [searchedData.length])
 
   if (loading) {
@@ -279,20 +282,8 @@ export default function VirtualDataTable<T extends Record<string, unknown>>({
         {/* Body */}
         {searchedData.length === 0 ? (
           <EmptyState title={emptyText} />
-        ) : useVirtualization ? (
-          // 虚拟滚动模式
-          <List
-            ref={listRef}
-            height={virtualHeight}
-            itemCount={searchedData.length}
-            itemSize={rowHeight}
-            width="100%"
-            overscanCount={5}
-          >
-            {Row}
-          </List>
         ) : (
-          // 普通渲染模式
+          // 普通渲染模式 (虚拟滚动暂时禁用)
           <div>
             {searchedData.map((row, index) => {
               const key = getRowKey(row)

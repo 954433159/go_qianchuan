@@ -65,7 +65,7 @@ export default function CreativeUploadDialog({
         const result = await uploadImage({
           advertiser_id: advertiserId,
           file: selectedFile,
-          upload_type: 'UPLOAD_TYPE_IMAGE',
+          upload_type: 'UPLOAD_BY_FILE',
         })
         materialId = result.id
       } else {

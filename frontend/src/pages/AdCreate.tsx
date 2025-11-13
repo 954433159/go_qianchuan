@@ -28,6 +28,7 @@ import { useAdMutations } from '@/hooks'
 import { toast } from '@/components/ui/Toast'
 import { useAuthStore } from '@/store/authStore'
 import { cn } from '@/lib/utils'
+import { formatTimeForSDK } from '@/utils/time-format'
 
 // 推广目标配置
 const PROMOTION_TYPES = [
@@ -65,6 +66,8 @@ const adFormSchema = z.object({
     .min(1, '请输入计划名称')
     .max(50, '计划名称不能超过50个字符'),
   schedule_type: z.enum(['SCHEDULE_FROM_NOW', 'SCHEDULE_START_END']),
+  start_time: z.string().optional(),
+  end_time: z.string().optional(),
 
   // 步骤2：推广对象（暂时简化）
   campaign_id: z.number().min(1, '请选择广告组'),
@@ -89,7 +92,19 @@ const adFormSchema = z.object({
   carriers: z.array(z.string()).optional(),
   // 人群包（可选）
   audience_id: z.number().optional(),
-})
+}).refine(
+  (data) => {
+    // 当 schedule_type 为 SCHEDULE_START_END 时，end_time 必填
+    if (data.schedule_type === 'SCHEDULE_START_END') {
+      return data.start_time && data.end_time
+    }
+    return true
+  },
+  {
+    message: '投放时间类型为「设置开始和结束时间」时，开始时间和结束时间为必填项',
+    path: ['end_time'],
+  }
+)
 
 type AdFormValues = z.infer<typeof adFormSchema>
 
@@ -116,6 +131,8 @@ export default function AdCreate() {
       budget: 300,
       budget_mode: 'BUDGET_MODE_DAY',
       schedule_type: 'SCHEDULE_FROM_NOW',
+      start_time: undefined,
+      end_time: undefined,
       gender: 'NONE',
       age_ranges: ['AGE_18_23', 'AGE_24_30'],
       creative_mode: 'CUSTOM',
@@ -178,16 +195,39 @@ export default function AdCreate() {
   const onSubmit = async (values: AdFormValues) => {
     setSubmitting(true)
     try {
+      // 准备时间参数，转换为SDK格式
+      let deliverySetting: {
+        budget: number
+        budget_mode: 'BUDGET_MODE_DAY' | 'BUDGET_MODE_TOTAL'
+        schedule_type: 'SCHEDULE_FROM_NOW' | 'SCHEDULE_START_END'
+        start_time: string
+        end_time?: string
+      }
+
+      if (values.schedule_type === 'SCHEDULE_START_END') {
+        // SCHEDULE_START_END 需要传 start_time 和 end_time，格式为 SDK 格式
+        deliverySetting = {
+          budget: values.budget * 100,
+          budget_mode: values.budget_mode,
+          schedule_type: values.schedule_type,
+          start_time: values.start_time ? formatTimeForSDK(values.start_time) : formatTimeForSDK(new Date()),
+          end_time: values.end_time ? formatTimeForSDK(values.end_time) : undefined,
+        }
+      } else {
+        // SCHEDULE_FROM_NOW 只需要 start_time
+        deliverySetting = {
+          budget: values.budget * 100,
+          budget_mode: values.budget_mode,
+          schedule_type: values.schedule_type,
+          start_time: formatTimeForSDK(new Date()),
+        }
+      }
+
       await create({
         advertiser_id: advertiserIdFromUrl,
         campaign_id: values.campaign_id,
         ad_name: values.ad_name,
-        delivery_setting: {
-          budget: values.budget * 100,
-          budget_mode: values.budget_mode,
-          start_time: new Date().toISOString(),
-          schedule_type: values.schedule_type,
-        },
+        delivery_setting: deliverySetting,
         audience: {
           gender: values.gender,
           age: values.age_ranges,
@@ -423,6 +463,56 @@ export default function AdCreate() {
                         )}
                       />
                     </div>
+
+                    {/* 时间范围设置（当 schedule_type 为 SCHEDULE_START_END 时显示） */}
+                    {form.watch('schedule_type') === 'SCHEDULE_START_END' && (
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6">
+                        <FormField
+                          control={form.control}
+                          name="start_time"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>
+                                开始时间 <span className="text-red-500">*</span>
+                              </FormLabel>
+                              <FormControl>
+                                <Input
+                                  type="datetime-local"
+                                  {...field}
+                                  value={field.value || ''}
+                                />
+                              </FormControl>
+                              <FormDescription>
+                                选择广告开始投放的时间
+                              </FormDescription>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name="end_time"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>
+                                结束时间 <span className="text-red-500">*</span>
+                              </FormLabel>
+                              <FormControl>
+                                <Input
+                                  type="datetime-local"
+                                  {...field}
+                                  value={field.value || ''}
+                                />
+                              </FormControl>
+                              <FormDescription>
+                                选择广告结束投放的时间
+                              </FormDescription>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                    )}
                   </div>
 
                   {/* 预算设置提醒 */}

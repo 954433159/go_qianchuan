@@ -113,6 +113,7 @@ export default function CampaignDetail() {
       'DELETE': { label: '已删除', className: 'bg-red-100 text-red-800 hover:bg-red-100', icon: XCircle },
     }
     const config = statusMap[status] || statusMap['DISABLE']
+    if (!config) return null
     const Icon = config.icon
     
     return (

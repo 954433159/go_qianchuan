@@ -50,8 +50,8 @@ export default function FinanceWallet() {
       
       const { list } = await getFinanceDetail({
         advertiser_id: currentAdvertiser.id,
-        start_time: startDate.toISOString().split('T')[0],
-        end_time: endDate.toISOString().split('T')[0],
+        start_time: startDate.toISOString().split('T')[0] ?? '',
+        end_time: endDate.toISOString().split('T')[0] ?? '',
         page: 1,
         page_size: 5
       })
@@ -78,8 +78,8 @@ export default function FinanceWallet() {
       // 使用交易记录构造趋势数据
       const { list } = await getFinanceDetail({
         advertiser_id: currentAdvertiser.id,
-        start_time: startDate.toISOString().split('T')[0],
-        end_time: endDate.toISOString().split('T')[0],
+        start_time: startDate.toISOString().split('T')[0] ?? '',
+        end_time: endDate.toISOString().split('T')[0] ?? '',
         page: 1,
         page_size: 30
       })

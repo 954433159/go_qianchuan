@@ -9,6 +9,7 @@ import { lazy } from 'react'
 const Login = lazy(() => import('../pages/Login'))
 const AuthCallback = lazy(() => import('../pages/AuthCallback'))
 const Dashboard = lazy(() => import('../pages/Dashboard'))
+const NotFound = lazy(() => import('../pages/NotFound'))
 
 // 投放中心
 const Advertisers = lazy(() => import('../pages/Advertisers'))
@@ -43,6 +44,19 @@ const TransferCommit = lazy(() => import('../pages/TransferCommit'))
 const RefundCreate = lazy(() => import('../pages/RefundCreate'))
 const RefundCommit = lazy(() => import('../pages/RefundCommit'))
 
+// 全域推广
+const UniPromotions = lazy(() => import('../pages/UniPromotions'))
+const UniPromotionDetail = lazy(() => import('../pages/UniPromotionDetail'))
+const UniPromotionCreate = lazy(() => import('../pages/UniPromotionCreate'))
+const UniPromotionEdit = lazy(() => import('../pages/UniPromotionEdit'))
+
+// 随心推
+const AwemeOrders = lazy(() => import('../pages/AwemeOrders'))
+const AwemeOrderDetail = lazy(() => import('../pages/AwemeOrderDetail'))
+const AwemeOrderCreate = lazy(() => import('../pages/AwemeOrderCreate'))
+const AwemeOrderEffect = lazy(() => import('../pages/AwemeOrderEffect'))
+const AwemeTools = lazy(() => import('../pages/AwemeTools'))
+
 // 路由项类型定义
 export interface RouteItem {
   path: string
@@ -55,6 +69,7 @@ export interface RouteItem {
 export const publicRoutes: RouteItem[] = [
   { path: '/login', component: Login },
   { path: '/auth/callback', component: AuthCallback },
+  { path: '*', component: NotFound }, // 404 page
 ]
 
 // 受保护路由 (需要登录)
@@ -100,6 +115,19 @@ export const protectedRoutes: RouteItem[] = [
   { path: '/finance/transfer/commit', component: TransferCommit, protected: true },
   { path: '/finance/refund/create', component: RefundCreate, protected: true },
   { path: '/finance/refund/commit', component: RefundCommit, protected: true },
+
+  // 全域推广
+  { path: '/uni-promotions', component: UniPromotions, protected: true },
+  { path: '/uni-promotions/new', component: UniPromotionCreate, protected: true },
+  { path: '/uni-promotions/:id', component: UniPromotionDetail, protected: true },
+  { path: '/uni-promotions/:id/edit', component: UniPromotionEdit, protected: true },
+
+  // 随心推
+  { path: '/aweme-orders', component: AwemeOrders, protected: true },
+  { path: '/aweme-orders/new', component: AwemeOrderCreate, protected: true },
+  { path: '/aweme-orders/:id', component: AwemeOrderDetail, protected: true },
+  { path: '/aweme-orders/:id/effect', component: AwemeOrderEffect, protected: true },
+  { path: '/aweme/tools', component: AwemeTools, protected: true },
 ]
 
 // 导航菜单配置
@@ -187,6 +215,21 @@ export const mainNavigation: MenuItem[] = [
       { id: 'finance-refund', label: '退款管理', path: '/finance/refund/create' },
     ],
   },
+  {
+    id: 'uni-promotion',
+    label: '全域推广',
+    icon: 'Globe',
+    path: '/uni-promotions',
+  },
+  {
+    id: 'aweme',
+    label: '随心推',
+    icon: 'Heart',
+    children: [
+      { id: 'aweme-orders', label: '订单管理', path: '/aweme-orders' },
+      { id: 'aweme-tools', label: '工具集', path: '/aweme/tools' },
+    ],
+  },
 ]
 
 /**
@@ -226,6 +269,11 @@ export function getBreadcrumbs(pathname: string): { label: string; path?: string
     'new': '新建',
     'edit': '编辑',
     'upload': '上传',
+    'uni-promotions': '全域推广',
+    'aweme-orders': '随心推',
+    'aweme': '随心推',
+    'orders': '订单管理',
+    'effect': '效果分析',
   }
   
   let currentPath = ''

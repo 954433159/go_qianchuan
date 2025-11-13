@@ -206,7 +206,7 @@ describe('Ad API', () => {
         params: { advertiser_id: 123456, ad_id: 1 },
       })
       expect(result).toHaveLength(1)
-      expect(result[0].reject_reason).toBe('Invalid content')
+      expect(result[0]?.reject_reason).toBe('Invalid content')
     })
 
     it('should get ad learning status', async () => {
@@ -224,8 +224,8 @@ describe('Ad API', () => {
       const result = await adApi.getAdLearningStatus(123456, [1, 2])
 
       expect(result).toHaveLength(2)
-      expect(result[0].learning_phase).toBe('LEARNING')
-      expect(result[1].learning_phase).toBe('LEARNED')
+      expect(result[0]?.learning_phase).toBe('LEARNING')
+      expect(result[1]?.learning_phase).toBe('LEARNED')
     })
 
     it('should get ad compensate status', async () => {
@@ -241,8 +241,8 @@ describe('Ad API', () => {
 
       const result = await adApi.getAdCompensateStatus(123456, [1])
 
-      expect(result[0].compensate_status).toBe('ENABLED')
-      expect(result[0].compensate_amount).toBe(100)
+      expect(result[0]?.compensate_status).toBe('ENABLED')
+      expect(result[0]?.compensate_amount).toBe(100)
     })
 
     it('should get low quality ads', async () => {

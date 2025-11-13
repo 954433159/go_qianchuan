@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { getCampaignList } from '@/api/campaign'
 import { Campaign } from '@/api/types'
 import { PageHeader, EmptyState, Loading } from '@/components/ui'
@@ -8,12 +8,15 @@ import { Plus, Megaphone, LayoutGrid, List } from 'lucide-react'
 import { useAuthStore } from '@/store/authStore'
 import { useCampaignStore } from '@/store/campaignStore'
 import { useUIStore } from '@/store/uiStore'
+import { PAGINATION } from '@/constants/pagination'
 import CreateCampaignDialog from '@/components/campaign/CreateCampaignDialog'
 import CampaignCard from '@/components/campaign/CampaignCard'
 import FilterBar, { FilterConfig } from '@/components/common/FilterBar'
+import { toast } from '@/components/ui/Toast'
 
 export default function Campaigns() {
   const { confirm, ConfirmDialog } = useConfirm()
+  const navigate = useNavigate()
   const [dialogOpen, setDialogOpen] = useState(false)
   const [localLoading, setLocalLoading] = useState(true)
   const { user } = useAuthStore()
@@ -31,15 +34,19 @@ export default function Campaigns() {
     batchDelete,
   } = useCampaignStore()
   
-  const selectedAdvertiserId = user?.advertiserId || 1
-  
   const fetchCampaigns = async () => {
+    if (!user?.advertiserId) {
+      toast.error('未获取到广告主ID，请重新登录')
+      navigate('/login')
+      return
+    }
+    
     setLocalLoading(true)
     try {
       const data = await getCampaignList({
-        advertiser_id: selectedAdvertiserId,
-        page: 1,
-        page_size: 100
+        advertiser_id: user.advertiserId,
+        page: PAGINATION.DEFAULT_PAGE,
+        page_size: PAGINATION.MAX_PAGE_SIZE
       })
       // 转换为 Store 需要的格式
       const formattedCampaigns = (data.list || []).map((c: Campaign) => ({
@@ -59,7 +66,7 @@ export default function Campaigns() {
       }))
       setCampaigns(formattedCampaigns)
     } catch (error) {
-      console.error('Failed to fetch campaigns:', error)
+      toast.error('加载广告组失败，请稍后重试')
     } finally {
       setLocalLoading(false)
     }
@@ -68,7 +75,7 @@ export default function Campaigns() {
   useEffect(() => {
     fetchCampaigns()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedAdvertiserId])
+  }, [user?.advertiserId])
   
   const filteredCampaigns = getFilteredCampaigns()
   
@@ -245,7 +252,7 @@ export default function Campaigns() {
       <CreateCampaignDialog
         open={dialogOpen}
         onOpenChange={setDialogOpen}
-        advertiserId={selectedAdvertiserId}
+        advertiserId={user?.advertiserId || 0}
         onSuccess={fetchCampaigns}
       />
     </div>

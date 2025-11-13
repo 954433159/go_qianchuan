@@ -121,7 +121,7 @@ export default function ImageLibrary({
       const result = await uploadImage({
         advertiser_id: advertiserId,
         file,
-        upload_type: 'UPLOAD_TYPE_IMAGE',
+        upload_type: 'UPLOAD_BY_FILE',
       })
 
       const newImage: ImageFile = {

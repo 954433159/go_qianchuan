@@ -1,100 +1,61 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { getAuthorizedAwemeList } from '@/api/advertiser'
-import { Users, CheckCircle, XCircle, Plus, RefreshCw } from 'lucide-react'
+import { Users, CheckCircle, XCircle, Plus, RefreshCw, AlertTriangle, Video } from 'lucide-react'
 import { Card, CardContent, PageHeader, Loading, Button, Badge } from '@/components/ui'
-import { useToast } from '@/hooks/useToast'
-
-interface AwemeAuth {
-  aweme_id: string
-  aweme_name: string
-  aweme_avatar: string
-  auth_status: 'AUTHORIZED' | 'UNAUTHORIZED' | 'EXPIRED'
-  auth_time?: string
-  expire_time?: string
-  followers_count?: number
-  shop_name?: string
-}
+import { useAwemeAuth } from '@/hooks/useAwemeAuth'
+import { useAuthStore } from '@/store/authStore'
 
 export default function AwemeAuthList() {
   const navigate = useNavigate()
-  const { success } = useToast()
-  const [loading, setLoading] = useState(true)
-  const [awemeList, setAwemeList] = useState<AwemeAuth[]>([])
+  const { user } = useAuthStore()
+  const advertiserId = user?.advertiserId
+
+  const {
+    authList,
+    loading,
+    refreshAuth,
+    getExpiringSoonCount,
+    getAuthorizedCount,
+  } = useAwemeAuth({ advertiserId, autoRefresh: false })
+
   const [filterStatus, setFilterStatus] = useState('all')
+  const [refreshing, setRefreshing] = useState(false)
 
-  useEffect(() => {
-    fetchAwemeList()
-  }, [])
-
-  const fetchAwemeList = async () => {
-    setLoading(true)
-    try {
-      // 模拟数据
-      const mockData: AwemeAuth[] = [
-        {
-          aweme_id: 'aweme_123',
-          aweme_name: '@xiaomei_beauty',
-          aweme_avatar: 'https://via.placeholder.com/48',
-          auth_status: 'AUTHORIZED',
-          auth_time: '2024-03-10 16:20:15',
-          expire_time: '2025-03-10',
-          followers_count: 125600,
-          shop_name: '美妆旗舰店'
-        },
-        {
-          aweme_id: 'aweme_456',
-          aweme_name: '@fashion_store',
-          aweme_avatar: 'https://via.placeholder.com/48',
-          auth_status: 'AUTHORIZED',
-          auth_time: '2024-02-15 10:30:00',
-          followers_count: 89300,
-          shop_name: '服饰专卖店'
-        },
-        {
-          aweme_id: 'aweme_789',
-          aweme_name: '@food_lover',
-          aweme_avatar: 'https://via.placeholder.com/48',
-          auth_status: 'EXPIRED',
-          auth_time: '2023-12-01 14:20:00',
-          expire_time: '2024-12-01',
-          followers_count: 56700
-        }
-      ]
-      setAwemeList(mockData)
-    } catch (error) {
-      console.error('Failed to fetch aweme list:', error)
-    } finally {
-      setLoading(false)
-    }
+  const handleRefresh = async () => {
+    setRefreshing(true)
+    await refreshAuth()
+    setRefreshing(false)
   }
 
-  const filteredList = awemeList.filter(item => {
+  const filteredList = authList.filter(item => {
     if (filterStatus === 'all') return true
-    return item.auth_status.toLowerCase() === filterStatus
+    if (filterStatus === 'authorized') return item.auth_status === 'AUTHORIZED'
+    if (filterStatus === 'unauthorized') return item.auth_status === 'UNAUTHORIZED'
+    if (filterStatus === 'expiring') return item.is_expiring_soon
+    return true
   })
 
   const stats = [
     {
-      title: '授权抖音号',
-      value: awemeList.filter(a => a.auth_status === 'AUTHORIZED').length,
-      icon: Users,
-      bgColor: 'bg-blue-50',
-      iconColor: 'text-blue-600'
+      title: '总授权数',
+      value: authList.length,
+      icon: Video,
+      bgColor: 'bg-blue-50 dark:bg-blue-950',
+      iconColor: 'text-blue-600 dark:text-blue-400'
     },
     {
-      title: '待授权',
-      value: awemeList.filter(a => a.auth_status === 'UNAUTHORIZED').length,
-      icon: XCircle,
-      bgColor: 'bg-orange-50',
-      iconColor: 'text-orange-600'
+      title: '已授权',
+      value: getAuthorizedCount(),
+      icon: CheckCircle,
+      bgColor: 'bg-green-50 dark:bg-green-950',
+      iconColor: 'text-green-600 dark:text-green-400'
     },
     {
-      title: '已过期',
-      value: awemeList.filter(a => a.auth_status === 'EXPIRED').length,
-      icon: XCircle,
-      bgColor: 'bg-red-50',
-      iconColor: 'text-red-600'
+      title: '即将过期',
+      value: getExpiringSoonCount(),
+      icon: AlertTriangle,
+      bgColor: 'bg-orange-50 dark:bg-orange-950',
+      iconColor: 'text-orange-600 dark:text-orange-400'
     }
   ]
 
@@ -118,8 +79,8 @@ export default function AwemeAuthList() {
               <Plus className="h-4 w-4 mr-2" />
               添加授权
             </Button>
-            <Button variant="outline" onClick={fetchAwemeList}>
-              <RefreshCw className="h-4 w-4 mr-2" />
+            <Button variant="outline" onClick={handleRefresh} disabled={refreshing}>
+              <RefreshCw className={`h-4 w-4 mr-2 ${refreshing ? 'animate-spin' : ''}`} />
               刷新
             </Button>
           </div>
@@ -156,8 +117,8 @@ export default function AwemeAuthList() {
             >
               <option value="all">全部状态</option>
               <option value="authorized">已授权</option>
-              <option value="expired">已过期</option>
-              <option value="unauthorized">待授权</option>
+              <option value="unauthorized">未授权</option>
+              <option value="expiring">即将过期</option>
             </select>
             <input
               type="text"
@@ -170,80 +131,60 @@ export default function AwemeAuthList() {
 
       {/* Aweme List */}
       <div className="space-y-4">
-        {filteredList.map((aweme) => (
-          <Card key={aweme.aweme_id} className="hover:shadow-lg transition-all">
-            <CardContent className="p-6">
-              <div className="flex items-start justify-between">
-                <div className="flex items-start gap-4 flex-1">
-                  <div className="flex-shrink-0">
-                    <div className="w-12 h-12 rounded-lg overflow-hidden">
-                      <img 
-                        src={aweme.aweme_avatar} 
-                        alt={aweme.aweme_name}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-2">
-                      <h3 className="text-lg font-semibold text-gray-900">{aweme.aweme_name}</h3>
-                      {aweme.auth_status === 'AUTHORIZED' && (
-                        <Badge className="bg-green-100 text-green-800">
-                          <CheckCircle className="w-3 h-3 mr-1" />
-                          已授权
-                        </Badge>
-                      )}
-                      {aweme.auth_status === 'EXPIRED' && (
-                        <Badge variant="secondary" className="bg-red-100 text-red-800">
-                          <XCircle className="w-3 h-3 mr-1" />
-                          已过期
-                        </Badge>
-                      )}
-                      <Badge variant="secondary" className="bg-red-100 text-red-700">
-                        抖音号
-                      </Badge>
-                    </div>
-                    <div className="space-y-1 text-sm text-gray-600 mb-4">
-                      <p>抖音号ID: {aweme.aweme_id}</p>
-                      {aweme.auth_time && <p>授权时间: {aweme.auth_time}</p>}
-                      {aweme.expire_time && <p>授权到期: {aweme.expire_time}</p>}
-                    </div>
-                    <div className="grid grid-cols-3 gap-4">
-                      <div>
-                        <div className="text-xs text-gray-500">粉丝数</div>
-                        <div className="text-base font-semibold text-gray-900">
-                          {aweme.followers_count ? 
-                            `${(aweme.followers_count / 1000).toFixed(1)}K` : 
-                            '-'}
-                        </div>
-                      </div>
-                      <div>
-                        <div className="text-xs text-gray-500">关联店铺</div>
-                        <div className="text-base font-semibold text-blue-600">
-                          {aweme.shop_name || '-'}
-                        </div>
-                      </div>
-                      <div>
-                        <div className="text-xs text-gray-500">素材授权</div>
-                        <div className="text-base font-semibold text-green-600">
-                          {aweme.auth_status === 'AUTHORIZED' ? '已授权' : '未授权'}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="ml-4 flex flex-col gap-2">
-                  <Button size="sm">查看详情</Button>
-                  {aweme.auth_status === 'AUTHORIZED' ? (
-                    <Button variant="outline" size="sm">解除授权</Button>
-                  ) : (
-                    <Button variant="outline" size="sm">重新授权</Button>
-                  )}
-                </div>
-              </div>
+        {filteredList.length === 0 ? (
+          <Card>
+            <CardContent className="p-12 text-center">
+              <p className="text-gray-500">暂无授权数据</p>
             </CardContent>
           </Card>
-        ))}
+        ) : (
+          filteredList.map((aweme) => (
+            <Card key={aweme.aweme_id} className="hover:shadow-lg transition-all">
+              <CardContent className="p-6">
+                <div className="flex items-start justify-between">
+                  <div className="flex items-start gap-4 flex-1">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-3 mb-2">
+                        <h3 className="text-lg font-semibold text-gray-900">{aweme.aweme_name || aweme.aweme_id}</h3>
+                        {aweme.auth_status === 'AUTHORIZED' && (
+                          <Badge className="bg-green-100 text-green-800">
+                            <CheckCircle className="w-3 h-3 mr-1" />
+                            已授权
+                          </Badge>
+                        )}
+                        {aweme.auth_status === 'UNAUTHORIZED' && (
+                          <Badge variant="secondary" className="bg-orange-100 text-orange-800">
+                            <XCircle className="w-3 h-3 mr-1" />
+                            未授权
+                          </Badge>
+                        )}
+                        {aweme.is_expiring_soon && (
+                          <Badge variant="warning" className="bg-yellow-100 text-yellow-800">
+                            <AlertTriangle className="w-3 h-3 mr-1" />
+                            即将过期
+                          </Badge>
+                        )}
+                      </div>
+                      <div className="space-y-1 text-sm text-gray-600 mb-4">
+                        <p>抖音号ID: {aweme.aweme_id}</p>
+                        <p>授权类型: {aweme.auth_type}</p>
+                        {aweme.auth_time && <p>授权时间: {aweme.auth_time}</p>}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="ml-4 flex flex-col gap-2">
+                    <Button size="sm" variant="outline">查看详情</Button>
+                    {aweme.auth_status === 'AUTHORIZED' ? (
+                      <Button variant="outline" size="sm">解除授权</Button>
+                    ) : (
+                      <Button variant="outline" size="sm">重新授权</Button>
+                    )}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))
+        )}
       </div>
     </div>
   )

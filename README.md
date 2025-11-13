@@ -137,34 +137,89 @@ docker-compose up -d
 
 ### API端点支持
 
-- ✅ OAuth授权流程
-- ✅ 广告主管理
-- 🚧 广告计划CRUD (占位实现)
-- 🚧 广告单元CRUD (占位实现)
-- 🚧 创意管理 (占位实现)
-- 🚧 数据报表 (占位实现)
-- 🚧 文件上传 (占位实现)
+#### 已对接SDK的接口 (18个) ✅
 
-**注**: 标记为🚧的功能已有API端点，但返回模拟数据，需要根据实际业务完善
+**财务管理** (7个)
+- ✅ 获取钱包信息
+- ✅ 获取账户余额
+- ✅ 获取财务流水
+- ✅ 创建转账交易号
+- ✅ 提交转账交易号
+- ✅ 创建退款交易号
+- ✅ 提交退款交易号
+
+**随心推管理** (9个)
+- ✅ 获取随心推订单列表
+- ✅ 获取随心推订单详情
+- ✅ 创建随心推订单
+- ✅ 终止随心推订单
+- ✅ 获取可投视频列表
+- ✅ 追加订单预算
+- ✅ 获取建议出价
+- ✅ 获取投放效果预估
+- ✅ 获取订单配额信息
+
+**授权查询** (2个)
+- ✅ 获取店铺关联的广告账户
+- ✅ 获取代理商关联的广告账户
+
+#### SDK未实现的接口 (21个) 🚧
+
+**全域推广模块** (12个) - SDK完全未实现
+**报表扩展模块** (5个) - SDK仅有基本报表
+**账户预算模块** (2个) - SDK未实现
+**抽音号授权模块** (2个) - SDK未实现
+
+**注**: 标记为🚧的功能返回501占位响应，等待SDK更新后才能对接
+
+> 📊 **SDK对接进度**: 18/39 (46%) | 详见 [SDK对接报告](./SDK_INTEGRATION_COMPLETE.md)
 
 ## 📊 项目进度
 
-### 完成度: 85%
+### 完成度: 72%
 
-- ✅ 前端应用: **95%**
+- ✅ 前端应用: **85%** (核心页面完成,部分功能待对接)
 - ✅ 后端服务器: **70%** (核心功能完成)
-- ✅ SDK封装: **100%**
-- ✅ 文档: **95%**
+  - ✅ OAuth授权: 100%
+  - ✅ 财务管理: 100% (7个SDK接口已对接)
+  - ✅ 随心推管理: 100% (9个SDK接口已对接)
+  - ✅ 授权查询: 100% (2个SDK接口已对接)
+  - ⏳ 广告管理: 50% (基础CRUD完成,27个端点返回501)
+  - ⏳ 全域推广: 0% (SDK未实现)
+  - ⏳ 报表扩展: 30% (基础报表完成,高级功能未实现)
+- ✅ SDK封装: **100%** (核心API已完成)
+- ✅ 文档: **90%**
 - ✅ 部署配置: **100%**
-- ⚠️ 测试覆盖: **30%** (仅SDK有测试)
+- ⚠️ 测试覆盖: **30%** (SDK ~95%, Backend ~30%, Frontend 0%)
 
 ### 待完善项
 
-1. 完整实现所有业务API Handler
-2. 添加前端单元测试和E2E测试
-3. 添加API请求/响应日志
-4. 实现文件上传功能
-5. 添加CI/CD流水线
+1. 等待qianchuanSDK更新支持剩余21个接口
+2. 实现CSRF Token验证（当前使用SameSite Cookie替代）
+3. 添加前端单元测试和E2E测试
+4. 为已对接的18个接口添加单元测试
+5. 实现文件上传功能（当前返回501占位）
+6. 添加CI/CD流水线
+
+### 已知限制
+
+**安全限制**:
+- 无CSRF Token实现（依赖SameSite=Lax/Strict保护）
+- 无数据库持久化（重启服务会清空Session）
+- 单租户设计（一个Session只能绑定一个广告主）
+
+**功能限制**:
+- 27个后端接口返回HTTP 501（SDK未实现或等待对接）
+  - 全域推广：12个接口完全未实现
+  - 广告区域/时段更新：4个接口需使用完整更新接口代替
+  - 创意独立创建/状态更新：2个接口未实现
+  - AI标题推荐：1个接口未实现
+  - 报表扩展模块：5个接口未实现
+  - 账户预算/授权列表：3个接口未实现
+- 部分前端页面使用Mock数据（文件上传、高级定向等）
+- 后端单元测试存在panic（SDK未Mock、Session中间件未注入）
+
+**构建状态**: ✅ Frontend (npm run build) | ✅ Backend (go build)
 
 ## 📚 文档
 
@@ -172,6 +227,8 @@ docker-compose up -d
 - **架构设计**: [docs/ARCHITECTURE_STATIC_SITE.md](./docs/ARCHITECTURE_STATIC_SITE.md)
 - **OAuth流程**: [docs/OAUTH_FLOW_AND_AUTH.md](./docs/OAUTH_FLOW_AND_AUTH.md)
 - **API契约**: [docs/API_CONTRACTS.md](./docs/API_CONTRACTS.md)
+- **SDK对接报告**: [SDK_INTEGRATION_COMPLETE.md](./SDK_INTEGRATION_COMPLETE.md) 🎉
+- **SDK对接详情**: [SDK_INTEGRATION_REPORT.md](./SDK_INTEGRATION_REPORT.md)
 - **深度分析**: [深度分析报告](./docs/PROJECT_DEEP_ANALYSIS_COMPREHENSIVE.md)
 - **SDK文档**: [qianchuanSDK/README.md](./qianchuanSDK/README.md)
 - **前端文档**: [前端优化总结](./docs/FRONTEND_OPTIMIZATION_SUMMARY.md)
@@ -211,12 +268,13 @@ cd backend && go build -o server ./cmd/server
 ## 🔐 安全特性
 
 - ✅ OAuth2.0标准授权流程
-- ✅ HttpOnly + Secure Cookie
-- ✅ CSRF保护
+- ✅ HttpOnly + Secure Cookie (可选AES-256-GCM加密)
+- ✅ SameSite Cookie保护
 - ✅ CORS跨域配置
 - ✅ Session过期检测
 - ✅ 前端零秘钥设计
-- ✅ 安全响应头
+- ✅ 生产环境强制SECRET检查
+- ⚠️ CSRF Token：暂未实现（使用SameSite=Lax替代）
 
 ## 📈 性能优化
 

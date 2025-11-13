@@ -15,6 +15,8 @@ import { Button, PageHeader, Card, CardHeader, CardTitle, CardContent, Loading, 
 import type { ColumnDef } from '@/components/ui'
 import { Plus, Search, AlertCircle, CheckCircle, Package, Ban, Sparkles, Save, X } from 'lucide-react'
 import { useToast } from '@/hooks/useToast'
+import { withLoading } from '@/store/loadingStore'
+import { toast } from '@/components/ui/Toast'
 
 type TabValue = 'packages' | 'negative' | 'recommend'
 
@@ -72,8 +74,7 @@ export default function Keywords() {
         setRecommendations(data || [])
       }
     } catch (err) {
-      console.error('Failed to fetch keywords:', err)
-      error('加载数据失败')
+      toast.error('加载数据失败，请稍后重试')
     } finally {
       setLoading(false)
     }
@@ -138,23 +139,24 @@ export default function Keywords() {
       setPackageDialogOpen(false)
       fetchData()
     } catch (err) {
-      console.error('Failed to save package:', err)
-      error('保存失败')
+      toast.error('保存失败，请稍后重试')
     }
   }
 
   const handleUpdateNegativeKeywords = async () => {
     try {
       const keywords = negativeInputValue.split('\n').filter(k => k.trim())
-      await updateNegativeKeywords({
-        advertiser_id: selectedAdvertiserId,
-        negative_keywords: keywords
-      })
+      await withLoading(
+        () => updateNegativeKeywords({
+          advertiser_id: selectedAdvertiserId,
+          negative_keywords: keywords
+        }),
+        '更新否定词...'
+      )
       success('否定词更新成功')
       fetchData()
     } catch (err) {
-      console.error('Failed to update negative keywords:', err)
-      error('更新失败')
+      toast.error('更新失败，请稍后重试')
     }
   }
 
@@ -162,15 +164,17 @@ export default function Keywords() {
     if (!recommendQuery.trim()) return
     setLoading(true)
     try {
-      const data = await getKeywordRecommendations({
-        advertiser_id: selectedAdvertiserId,
-        query: recommendQuery,
-        limit: 50
-      })
+      const data = await withLoading(
+        () => getKeywordRecommendations({
+          advertiser_id: selectedAdvertiserId,
+          query: recommendQuery,
+          limit: 50
+        }),
+        '搜索推荐词...'
+      )
       setRecommendations(data || [])
     } catch (err) {
-      console.error('Failed to search recommendations:', err)
-      error('搜索失败')
+      toast.error('搜索失败，请稍后重试')
     } finally {
       setLoading(false)
     }

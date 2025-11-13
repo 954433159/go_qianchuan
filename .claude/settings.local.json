@@ -1,17 +1,15 @@
 {
   "permissions": {
     "allow": [
-      "Bash(cat:*)",
-      "Bash(go:*)",
-      "Bash(go mod:*)",
-      "Bash(done)",
-      "Bash(npm run test:*)",
-      "Bash(docker:*)",
-      "Bash(npm run build)",
+      "Bash(tree:*)",
+      "Bash(find:*)",
       "Bash(curl:*)",
-      "Bash(lsof:*)",
-      "Bash(echo:*)",
-      "Bash(/Users/wushaobing911/Desktop/douyin/检查总结.txt)"
+      "Bash(xargs:*)",
+      "Bash(npm install:*)",
+      "Bash(npx -y filesystem-mcp-server --help)",
+      "Bash(npm search:*)",
+      "Bash(npx -y @modelcontextprotocol/server-filesystem:*)",
+      "Bash(npx -y playwright-mcp:*)"
     ],
     "deny": [],
     "ask": []

@@ -97,8 +97,8 @@ describe('Finance API', () => {
       })
 
       expect(result.list).toHaveLength(2)
-      expect(result.list[0].trade_type).toBe('RECHARGE')
-      expect(result.list[1].trade_type).toBe('CONSUME')
+      expect(result.list[0]?.trade_type).toBe('RECHARGE')
+      expect(result.list[1]?.trade_type).toBe('CONSUME')
     })
   })
 

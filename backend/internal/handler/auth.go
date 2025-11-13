@@ -213,10 +213,21 @@ func (h *AuthHandler) RefreshSession(c *gin.Context) {
 	}, userSession.AdvertiserID)
 
 	sess.Set("user", newSession)
-	sess.Save()
+	if err := sess.Save(); err != nil {
+		log.Printf("Save session failed: %v", err)
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"code":    500,
+			"message": "保存会话失败",
+		})
+		return
+	}
 
 	c.JSON(http.StatusOK, gin.H{
 		"code":    0,
 		"message": "刷新成功",
+		"data": gin.H{
+			"access_token": newSession.AccessToken,
+			"expires_at":   newSession.ExpiresAt,
+		},
 	})
 }

@@ -7,6 +7,8 @@ import type { ColumnDef, FilterField } from '@/components/ui'
 import { Plus, Image as ImageIcon, Video, Eye, Download, Trash2, Play, Pause } from 'lucide-react'
 import CreativeUploadDialog from '@/components/creative/CreativeUploadDialog'
 import { useToast } from '@/hooks/useToast'
+import { toast } from '@/components/ui/Toast'
+import { PAGINATION } from '@/constants/pagination'
 
 export default function Creatives() {
   const { success } = useToast()
@@ -25,12 +27,12 @@ export default function Creatives() {
     try {
       const data = await getCreativeList({
         advertiser_id: selectedAdvertiserId,
-        page: 1,
-        page_size: 20
+        page: PAGINATION.DEFAULT_PAGE,
+        page_size: PAGINATION.DEFAULT_PAGE_SIZE
       })
       setCreatives(data.list || [])
     } catch (error) {
-      console.error('Failed to fetch creatives:', error)
+      toast.error('加载创意列表失败，请稍后重试')
     } finally {
       setLoading(false)
     }
@@ -92,8 +94,14 @@ export default function Creatives() {
       success(`已删除 ${selectedCreatives.length} 个创意`)
       setCreatives(creatives.filter(c => !selectedCreatives.find(sc => sc.id === c.id)))
       setSelectedCreatives([])
-    } catch (error) {
-      console.error('Failed to delete creatives:', error)
+    } catch (error: unknown) {
+      const err = error as { response?: { status: number; data?: { hint?: string; message?: string } } }
+      if (err.response?.status === 501) {
+        const hint = err.response.data?.hint
+        toast.warning(`功能暂未实现${hint ? `（${hint}）` : ''}`)
+      } else {
+        toast.error('删除创意失败，请稍后重试')
+      }
     }
   }
 
@@ -108,8 +116,14 @@ export default function Creatives() {
       success(`已启用 ${selectedCreatives.length} 个创意`)
       fetchCreatives()
       setSelectedCreatives([])
-    } catch (error) {
-      console.error('Failed to enable creatives:', error)
+    } catch (error: unknown) {
+      const err = error as { response?: { status: number; data?: { hint?: string; message?: string } } }
+      if (err.response?.status === 501) {
+        const hint = err.response.data?.hint
+        toast.warning(`功能暂未实现${hint ? `（${hint}）` : ''}`)
+      } else {
+        toast.error('启用创意失败，请稍后重试')
+      }
     }
   }
 
@@ -124,8 +138,14 @@ export default function Creatives() {
       success(`已暂停 ${selectedCreatives.length} 个创意`)
       fetchCreatives()
       setSelectedCreatives([])
-    } catch (error) {
-      console.error('Failed to disable creatives:', error)
+    } catch (error: unknown) {
+      const err = error as { response?: { status: number; data?: { hint?: string; message?: string } } }
+      if (err.response?.status === 501) {
+        const hint = err.response.data?.hint
+        toast.warning(`功能暂未实现${hint ? `（${hint}）` : ''}`)
+      } else {
+        toast.error('暂停创意失败，请稍后重试')
+      }
     }
   }
   
@@ -187,9 +207,10 @@ export default function Creatives() {
           REJECTED: { label: '已拒绝', variant: 'destructive' }
         }
         const status = statusMap[value as string] || statusMap.PENDING
+        if (!status) return null
         return (
-          <Badge variant={status.variant} className={status.className}>
-            {status.label}
+          <Badge variant={status?.variant} className={status?.className}>
+            {status?.label}
           </Badge>
         )
       }

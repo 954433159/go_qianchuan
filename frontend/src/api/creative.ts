@@ -75,6 +75,6 @@ export interface UpdateCreativeStatusParams {
 export const updateCreativeStatus = async (
   params: UpdateCreativeStatusParams
 ): Promise<{ creative_ids: number[] }> => {
-  const { data } = await apiClient.post('/qianchuan/creative/update-status', params)
+  const { data } = await apiClient.post('/qianchuan/creative/status/update', params)
   return data
 }

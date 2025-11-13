@@ -91,7 +91,7 @@
 
 ```bash
 # 克隆项目
-cd /Users/wushaobing911/Desktop/douyin/html
+cd /Users/wushaobing911/Desktop/douyin/frontend
 
 # 安装依赖
 npm install

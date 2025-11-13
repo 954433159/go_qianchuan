@@ -159,14 +159,16 @@ export default function LiveRoomDetail() {
     }
   }
 
-  const formatNumber = (num: number): string => {
+  const formatNumber = (num: number | undefined): string => {
+    if (!num) return '0'
     if (num >= 10000) {
       return (num / 10000).toFixed(1) + '万'
     }
     return num.toLocaleString()
   }
 
-  const formatDuration = (seconds: number): string => {
+  const formatDuration = (seconds: number | undefined): string => {
+    if (!seconds) return '0分钟'
     const hours = Math.floor(seconds / 3600)
     const minutes = Math.floor((seconds % 3600) / 60)
     if (hours > 0) {
@@ -206,7 +208,7 @@ export default function LiveRoomDetail() {
         title={`${roomDetail.room_title} - ${roomDetail.anchor_name}`}
         description={`房间ID：${roomDetail.room_id} | ${new Date(roomDetail.start_time).toLocaleString()} - ${
           roomDetail.end_time ? new Date(roomDetail.end_time).toLocaleString() : '进行中'
-        } | 时长：${formatDuration(roomDetail.room_duration)}`}
+        } | 时长：${formatDuration(roomDetail.room_duration || 0)}`}
         actions={
           <button
             onClick={() => navigate('/live-rooms')}

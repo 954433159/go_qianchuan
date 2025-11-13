@@ -98,7 +98,7 @@ describe('Activity API', () => {
         params: { page: 1, page_size: 10, type: 'campaign_status' },
       })
       expect(result.list).toHaveLength(1)
-      expect(result.list[0].type).toBe('campaign_status')
+      expect(result.list[0]?.type).toBe('campaign_status')
     })
 
     it('fetches activity list without parameters', async () => {
@@ -188,7 +188,7 @@ describe('Activity API', () => {
         vi.mocked(apiClient.get).mockResolvedValueOnce(mockResponse)
 
         const result = await getActivityList()
-        expect(result.list[0].status).toBe(status)
+        expect(result.list[0]?.status).toBe(status)
       }
     })
 
@@ -218,7 +218,7 @@ describe('Activity API', () => {
         vi.mocked(apiClient.get).mockResolvedValueOnce(mockResponse)
 
         const result = await getActivityList()
-        expect(result.list[0].resource_type).toBe(resourceType)
+        expect(result.list[0]?.resource_type).toBe(resourceType)
       }
     })
   })

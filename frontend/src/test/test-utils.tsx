@@ -1,5 +1,7 @@
 import { ReactElement } from 'react'
 import { render, RenderOptions } from '@testing-library/react'
+import { screen } from '@testing-library/dom'
+import { fireEvent, waitFor as waitForRTL } from '@testing-library/react'
 import { BrowserRouter } from 'react-router-dom'
 
 // Custom render function with providers
@@ -17,7 +19,7 @@ function customRender(
 // Re-export everything from React Testing Library
 // eslint-disable-next-line react-refresh/only-export-components
 export * from '@testing-library/react'
-export { customRender as render }
+export { customRender as render, screen, fireEvent, waitForRTL as waitFor }
 
 // Helper to create mock API response
 export function createMockApiResponse<T>(data: T, code = 0, message = 'success') {
@@ -28,7 +30,7 @@ export function createMockApiResponse<T>(data: T, code = 0, message = 'success')
   }
 }
 
-// Helper to wait for async operations
-export function waitFor(ms: number) {
+// Helper to wait for async operations (renamed to avoid conflict)
+export function delay(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms))
 }

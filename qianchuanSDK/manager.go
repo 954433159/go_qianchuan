@@ -23,7 +23,8 @@ func NewCredentials(appId int64, appSecret string) *auth.Credentials {
 // NewManager 创建新的Manager
 func NewManager(credentials *auth.Credentials, tr http.RoundTripper) *Manager {
 	client := client.DefaultClient
-	client.Transport = newTransport(credentials, nil)
+	// 使用传入的 transport 参数，支持自定义限流、追踪等
+	client.Transport = newTransport(credentials, tr)
 	return &Manager{
 		client:      &client,
 		Credentials: credentials,

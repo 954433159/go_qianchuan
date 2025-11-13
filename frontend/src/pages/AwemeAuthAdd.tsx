@@ -1,36 +1,36 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { addAwemeAuth } from '@/api/advertiser'
 import { ArrowLeft, Plus } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle, PageHeader, Button } from '@/components/ui'
-import { useToast } from '@/hooks/useToast'
+import { useAwemeAuth } from '@/hooks/useAwemeAuth'
+import { useAuthStore } from '@/store/authStore'
 
 export default function AwemeAuthAdd() {
   const navigate = useNavigate()
-  const { success, error: showError } = useToast()
+  const { user } = useAuthStore()
+  const advertiserId = user?.advertiserId
+
+  const { addAuth } = useAwemeAuth({ advertiserId })
+
   const [formData, setFormData] = useState({
     aweme_id: '',
-    auth_type: 'VIDEO' as 'VIDEO' | 'PRODUCT' | 'LIVE',
-    advertiser_id: ''
+    auth_type: 'VIDEO' as 'VIDEO' | 'PRODUCT' | 'LIVE'
   })
   const [loading, setLoading] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setLoading(true)
     
-    try {
-      await addAwemeAuth({
-        advertiser_id: Number(formData.advertiser_id),
-        aweme_id: formData.aweme_id,
-        auth_type: formData.auth_type
-      })
-      success('抖音号授权添加成功')
+    if (!advertiserId) {
+      return
+    }
+
+    setLoading(true)
+    const success = await addAuth(formData.aweme_id, formData.auth_type)
+    setLoading(false)
+    
+    if (success) {
       navigate('/aweme-auth')
-    } catch (err) {
-      showError('授权添加失败')
-    } finally {
-      setLoading(false)
     }
   }
 
@@ -60,16 +60,18 @@ export default function AwemeAuthAdd() {
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                广告主ID *
+                广告主ID
               </label>
               <input
                 type="number"
-                required
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary"
-                value={formData.advertiser_id}
-                onChange={(e) => setFormData({ ...formData, advertiser_id: e.target.value })}
-                placeholder="请输入广告主ID"
+                disabled
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-600"
+                value={advertiserId || ''}
+                placeholder="当前登录广告主"
               />
+              <p className="mt-1 text-sm text-gray-500">
+                自动使用当前登录的广告主账户
+              </p>
             </div>
 
             <div>

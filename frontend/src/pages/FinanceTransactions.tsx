@@ -54,8 +54,8 @@ export default function FinanceTransactions() {
     try {
       const params: GetFinanceDetailParams = {
         advertiser_id: currentAdvertiser.id,
-        start_time: filters.startDate,
-        end_time: filters.endDate,
+        start_time: filters.startDate ?? '',
+        end_time: filters.endDate ?? '',
         page: currentPage,
         page_size: pageSize
       }
@@ -81,7 +81,46 @@ export default function FinanceTransactions() {
   }
 
   const handleExport = () => {
-    toast.info('导出功能开发中')
+    if (!transactions.length) {
+      toast.info('暂无可导出的数据')
+      return
+    }
+    
+    try {
+      // CSV 表头
+      const headers = ['交易号', '交易时间', '交易类型', '交易金额', '交易后余额', '备注']
+      
+      // 数据行
+      const rows = transactions.map(t => [
+        t.trade_no || '',
+        t.trade_time || '',
+        getTransactionTypeInfo(t.trade_type).label,
+        t.amount?.toString() || '0',
+        t.balance_after?.toString() || '0',
+        t.remark || ''
+      ])
+      
+      // 生成 CSV 内容
+      const csvContent = [
+        headers,
+        ...rows
+      ].map(cols => 
+        cols.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')
+      ).join('\n')
+      
+      // 创建下载
+      const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' }) // BOM for Excel UTF-8
+      const url = URL.createObjectURL(blob)
+      const link = document.createElement('a')
+      link.href = url
+      link.download = `finance_transactions_${new Date().getTime()}.csv`
+      link.click()
+      URL.revokeObjectURL(url)
+      
+      toast.success('导出成功')
+    } catch (error) {
+      toast.error('导出失败，请稍后重试')
+    }
   }
 
   const formatAmount = (amount: number) => {

@@ -12,6 +12,8 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   Target: Icons.Target,
   Wallet: Icons.Wallet,
   Users: Icons.Users,
+  Globe: Icons.Globe,
+  Heart: Icons.Heart,
 }
 
 // 递归渲染菜单项组件

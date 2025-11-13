@@ -1,1 +1,133 @@
-package handler\n\nimport (\n\t\"encoding/json\"\n\t\"io\"\n\t\"net/http\"\n\t\"net/http/httptest\"\n\t\"strings\"\n\t\"testing\"\n\n\t\"github.com/CriarBrand/qianchuan-backend/internal/middleware\"\n\t\"github.com/CriarBrand/qianchuan-backend/internal/service\"\n\t\"github.com/CriarBrand/qianchuan-backend/internal/util\"\n\t\"github.com/CriarBrand/qianchuan-backend/pkg/session\"\n\t\"github.com/gin-contrib/sessions\"\n\t\"github.com/gin-contrib/sessions/cookie\"\n\t\"github.com/gin-gonic/gin\"\n)\n\n// TestResponse 解析响应\ntype TestResponse struct {\n\tCode    int         `json:\"code\"`\n\tMessage string      `json:\"message\"`\n\tData    interface{} `json:\"data\"`\n}\n\n// SetupTestRouter 创建测试路由\nfunc SetupTestRouter() *gin.Engine {\n\tgin.SetMode(gin.TestMode)\n\trouter := gin.New()\n\n\t// 添加必要的中间件\n\trouter.Use(gin.Recovery())\n\n\t// Session配置\n\tstore := cookie.NewStore([]byte(\"test-secret-key-32-chars-minimum\"))\n\tstore.Options(sessions.Options{\n\t\tPath:     \"/\",\n\t\tDomain:   \"localhost\",\n\t\tMaxAge:   86400,\n\t\tSecure:   false,\n\t\tHttpOnly: true,\n\t\tSameSite: http.SameSiteLaxMode,\n\t})\n\trouter.Use(sessions.Sessions(\"test_session\", store))\n\n\treturn router\n}\n\n// SetupTestSession 在context中设置测试会话\nfunc SetupTestSession(c *gin.Context, userSession *session.UserSession) {\n\tsess := sessions.Default(c)\n\tsess.Set(\"user\", userSession)\n\tsess.Save()\n}\n\n// CreateTestUserSession 创建测试用户会话\nfunc CreateTestUserSession(advertiserId int64) *session.UserSession {\n\treturn &session.UserSession{\n\t\tAccessToken:           \"test-access-token-\" + string(rune(advertiserId)),\n\t\tRefreshToken:          \"test-refresh-token-\" + string(rune(advertiserId)),\n\t\tAccessTokenExpiresAt:  9999999999, // 远未来\n\t\tRefreshTokenExpiresAt: 9999999999,\n\t\tAdvertiserID:          advertiserId,\n\t}\n}\n\n// ParseResponse 解析响应体\nfunc ParseResponse(resp *httptest.ResponseRecorder, t *testing.T) TestResponse {\n\tvar response TestResponse\n\tbody, _ := io.ReadAll(resp.Body)\n\n\tif err := json.Unmarshal(body, &response); err != nil {\n\t\tt.Fatalf(\"Failed to parse response: %v\", err)\n\t}\n\n\treturn response\n}\n\n// DoRequest 执行HTTP请求\nfunc DoRequest(router *gin.Engine, method, path string, body io.Reader) *httptest.ResponseRecorder {\n\treq, _ := http.NewRequest(method, path, body)\n\treq.Header.Set(\"Content-Type\", \"application/json\")\n\tresp := httptest.NewRecorder()\n\trouter.ServeHTTP(resp, req)\n\treturn resp\n}\n\n// DoAuthenticatedRequest 执行需要认证的HTTP请求\nfunc DoAuthenticatedRequest(router *gin.Engine, method, path string, body io.Reader, userSession *session.UserSession, t *testing.T) *httptest.ResponseRecorder {\n\t// 首先获取一个有效的request来创建会话\n\treq, _ := http.NewRequest(\"GET\", \"/health\", nil)\n\tresp := httptest.NewRecorder()\n\tc, _ := gin.CreateTestContext(resp)\n\tc.Request = req\n\n\t// 设置会话\n\tstore := cookie.NewStore([]byte(\"test-secret-key-32-chars-minimum\"))\n\tc.Request.AddCookie(&http.Cookie{\n\t\tName:  \"test_session\",\n\t\tValue: \"test\",\n\t})\n\n\t// 执行实际请求\n\treqBody := body\n\tif body == nil {\n\t\treqBody = strings.NewReader(\"{}\")\n\t}\n\n\tactualReq, _ := http.NewRequest(method, path, reqBody)\n\tactualReq.Header.Set(\"Content-Type\", \"application/json\")\n\tactualResp := httptest.NewRecorder()\n\n\trouter.ServeHTTP(actualResp, actualReq)\n\treturn actualResp\n}\n\n// AssertResponseCode 断言响应码\nfunc AssertResponseCode(t *testing.T, response TestResponse, expectedCode int, message string) {\n\tif response.Code != expectedCode {\n\t\tt.Errorf(\"%s: Expected code %d, got %d. Message: %s\", message, expectedCode, response.Code, response.Message)\n\t}\n}\n\n// AssertStatusCode 断言HTTP状态码\nfunc AssertStatusCode(t *testing.T, resp *httptest.ResponseRecorder, expectedStatus int, message string) {\n\tif resp.Code != expectedStatus {\n\t\tt.Errorf(\"%s: Expected status %d, got %d\", message, expectedStatus, resp.Code)\n\t}\n}\n"}
+package handler
+
+import (
+	"encoding/json"
+	"io"
+	"net/http"
+	"net/http/httptest"
+	"strings"
+	"testing"
+
+	"github.com/CriarBrand/qianchuan-backend/pkg/session"
+	"github.com/gin-contrib/sessions"
+	"github.com/gin-contrib/sessions/cookie"
+	"github.com/gin-gonic/gin"
+)
+
+// TestResponse 解析响应
+type TestResponse struct {
+	Code    int         `json:"code"`
+	Message string      `json:"message"`
+	Data    interface{} `json:"data"`
+}
+
+// SetupTestRouter 创建测试路由
+func SetupTestRouter() *gin.Engine {
+	gin.SetMode(gin.TestMode)
+	router := gin.New()
+
+	// 添加必要的中间件
+	router.Use(gin.Recovery())
+
+	// Session配置
+	store := cookie.NewStore([]byte("test-secret-key-32-chars-minimum"))
+	store.Options(sessions.Options{
+		Path:     "/",
+		Domain:   "localhost",
+		MaxAge:   86400,
+		Secure:   false,
+		HttpOnly: true,
+		SameSite: http.SameSiteLaxMode,
+	})
+	router.Use(sessions.Sessions("test_session", store))
+
+	return router
+}
+
+// SetupTestSession 在context中设置测试会话
+func SetupTestSession(c *gin.Context, userSession *session.UserSession) {
+	// 设置到gin context中（middleware.GetUserSession从这里读取）
+	c.Set("userSession", userSession)
+	c.Set("accessToken", userSession.AccessToken)
+	c.Set("advertiserId", userSession.AdvertiserID)
+
+	// 同时设置到session中（为了完整性）
+	sess := sessions.Default(c)
+	sess.Set("user", userSession)
+	sess.Save()
+}
+
+// CreateTestUserSession 创建测试用户会话
+func CreateTestUserSession(advertiserId int64) *session.UserSession {
+	return &session.UserSession{
+		AccessToken:    "test-access-token-" + string(rune(advertiserId)),
+		RefreshToken:   "test-refresh-token-" + string(rune(advertiserId)),
+		ExpiresAt:      9999999999, // 远未来
+		RefreshExpires: 9999999999,
+		AdvertiserID:   advertiserId,
+		CreatedAt:      1700000000, // 固定创建时间
+	}
+}
+
+// ParseResponse 解析响应体
+func ParseResponse(resp *httptest.ResponseRecorder, t *testing.T) TestResponse {
+	var response TestResponse
+	body, _ := io.ReadAll(resp.Body)
+
+	if err := json.Unmarshal(body, &response); err != nil {
+		t.Fatalf("Failed to parse response: %v", err)
+	}
+
+	return response
+}
+
+// DoRequest 执行HTTP请求
+func DoRequest(router *gin.Engine, method, path string, body io.Reader) *httptest.ResponseRecorder {
+	req, _ := http.NewRequest(method, path, body)
+	req.Header.Set("Content-Type", "application/json")
+	resp := httptest.NewRecorder()
+	router.ServeHTTP(resp, req)
+	return resp
+}
+
+// DoAuthenticatedRequest 执行需要认证的HTTP请求
+func DoAuthenticatedRequest(router *gin.Engine, method, path string, body io.Reader, userSession *session.UserSession, t *testing.T) *httptest.ResponseRecorder {
+	// 首先获取一个有效的request来创建会话
+	req, _ := http.NewRequest("GET", "/health", nil)
+	resp := httptest.NewRecorder()
+	c, _ := gin.CreateTestContext(resp)
+	c.Request = req
+
+	// 设置会话
+	c.Request.AddCookie(&http.Cookie{
+		Name:  "test_session",
+		Value: "test",
+	})
+
+	// 执行实际请求
+	reqBody := body
+	if body == nil {
+		reqBody = strings.NewReader("{}")
+	}
+
+	actualReq, _ := http.NewRequest(method, path, reqBody)
+	actualReq.Header.Set("Content-Type", "application/json")
+	actualResp := httptest.NewRecorder()
+
+	router.ServeHTTP(actualResp, actualReq)
+	return actualResp
+}
+
+// AssertResponseCode 断言响应码
+func AssertResponseCode(t *testing.T, response TestResponse, expectedCode int, message string) {
+	if response.Code != expectedCode {
+		t.Errorf("%s: Expected code %d, got %d. Message: %s", message, expectedCode, response.Code, response.Message)
+	}
+}
+
+// AssertStatusCode 断言HTTP状态码
+func AssertStatusCode(t *testing.T, resp *httptest.ResponseRecorder, expectedStatus int, message string) {
+	if resp.Code != expectedStatus {
+		t.Errorf("%s: Expected status %d, got %d", message, expectedStatus, resp.Code)
+	}
+}

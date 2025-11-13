@@ -65,9 +65,11 @@ export default function PromotionCard({
           <span className={statusConfig.className}>
             {statusConfig.text}
           </span>
-          <span className={learningConfig.className}>
-            {learningConfig.text}
-          </span>
+          {learningConfig && (
+            <span className={learningConfig.className}>
+              {learningConfig.text}
+            </span>
+          )}
           <span className="text-xs text-gray-500">
             ID: {promotion.id}
           </span>

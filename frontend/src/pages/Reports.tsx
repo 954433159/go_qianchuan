@@ -1,6 +1,10 @@
 import { useEffect, useState } from 'react'
-import { getCampaignReport, getAdReport, getCreativeReport, ReportData } from '@/api/report'
 import { 
+  getAdvertiserReport, getAdReport, getCreativeReport, 
+  getCustomReport, getCustomReportConfig,
+  ReportData, CustomReportConfig
+} from '@/api/report'
+import {
   Card, CardContent, CardHeader, CardTitle, 
   PageHeader, Loading, Button, Badge,
   Tabs, TabsContent, TabsList, TabsTrigger,
@@ -9,44 +13,57 @@ import {
 import { Download, TrendingUp, TrendingDown, Eye, MousePointer, DollarSign, Target } from 'lucide-react'
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 import { useToast } from '@/hooks/useToast'
+import { useAuthStore } from '@/store/authStore'
 
 export default function ReportsEnhanced() {
-  const { success } = useToast()
+  const { success, error: showError } = useToast()
+  const { user } = useAuthStore()
   const [loading, setLoading] = useState(false)
-  const [activeTab, setActiveTab] = useState('campaign')
+  const [activeTab, setActiveTab] = useState('advertiser')
   const [startDate, setStartDate] = useState('')
   const [endDate, setEndDate] = useState('')
   const [reportData, setReportData] = useState<ReportData[]>([])
-  const [selectedAdvertiserId] = useState(1)
+  const [customConfig, setCustomConfig] = useState<CustomReportConfig | null>(null)
+  const [selectedDimensions, setSelectedDimensions] = useState<string[]>([])
+  const [customLoading, setCustomLoading] = useState(false)
+  const [showExtendedHint, setShowExtendedHint] = useState(true)
 
   useEffect(() => {
     // 设置默认日期（最近7天）
     const end = new Date()
     const start = new Date()
     start.setDate(start.getDate() - 7)
-    setStartDate(start.toISOString().split('T')[0])
-    setEndDate(end.toISOString().split('T')[0])
+    setStartDate(start.toISOString().split('T')[0] ?? '')
+    setEndDate(end.toISOString().split('T')[0] ?? '')
   }, [])
 
   useEffect(() => {
-    if (startDate && endDate) {
+    if (startDate && endDate && activeTab !== 'custom') {
       fetchReport()
+    }
+    if (activeTab === 'custom' && !customConfig) {
+      fetchCustomConfig()
     }
   }, [startDate, endDate, activeTab])
 
   const fetchReport = async () => {
+    if (!user?.advertiserId) {
+      showError('未获取到广告主ID，请重新登录')
+      return
+    }
+
     setLoading(true)
     try {
       const params = {
-        advertiser_id: selectedAdvertiserId,
+        advertiser_id: user.advertiserId,
         start_date: startDate,
         end_date: endDate,
         fields: ['cost', 'show', 'click', 'convert', 'ctr', 'cpc', 'cpm', 'convert_cost', 'convert_rate'],
       }
 
       let data: ReportData[]
-      if (activeTab === 'campaign') {
-        data = await getCampaignReport(params)
+      if (activeTab === 'advertiser') {
+        data = await getAdvertiserReport(params)
       } else if (activeTab === 'ad') {
         data = await getAdReport(params)
       } else {
@@ -56,7 +73,8 @@ export default function ReportsEnhanced() {
       setReportData(data)
     } catch (error) {
       console.error('Failed to fetch report:', error)
-      // Mock数据
+      showError('获取报表数据失败')
+      // Mock数据作为降级
       const mockData = generateMockData()
       setReportData(mockData)
     } finally {
@@ -75,7 +93,7 @@ export default function ReportsEnhanced() {
       const convert = Math.floor(click * (0.05 + Math.random() * 0.15))
       
       return {
-        date: date.toISOString().split('T')[0],
+        date: date.toISOString().split('T')[0] ?? '',
         cost,
         show,
         click,
@@ -87,6 +105,50 @@ export default function ReportsEnhanced() {
         convert_rate: convert / click
       }
     })
+  }
+
+  const fetchCustomConfig = async () => {
+    setCustomLoading(true)
+    try {
+      const config = await getCustomReportConfig()
+      setCustomConfig(config)
+    } catch (error: any) {
+      // 后端返回 501，显示提示
+      console.error('Failed to fetch custom config:', error)
+      if (error.response?.status === 501) {
+        const hint = error.hint || '请使用现有维度报表（广告主/广告/创意）'
+        showError(`自定义报表功能暂未实现。${hint}`)
+      }
+    } finally {
+      setCustomLoading(false)
+    }
+  }
+
+  const fetchCustomReport = async () => {
+    if (!user?.advertiserId || selectedDimensions.length === 0) {
+      showError('请选择至少一个维度')
+      return
+    }
+
+    setCustomLoading(true)
+    try {
+      const data = await getCustomReport({
+        advertiser_id: user.advertiserId,
+        start_date: startDate,
+        end_date: endDate,
+        fields: ['cost', 'show', 'click', 'convert'],
+        dimensions: selectedDimensions
+      })
+      setReportData(data)
+    } catch (error: any) {
+      console.error('Failed to fetch custom report:', error)
+      if (error.response?.status === 501) {
+        const hint = error.hint || '请使用现有维度报表'
+        showError(`自定义报表功能暂未实现。${hint}`)
+      }
+    } finally {
+      setCustomLoading(false)
+    }
   }
 
   const handleExport = () => {
@@ -108,7 +170,7 @@ export default function ReportsEnhanced() {
   // 统计卡片数据
   const stats = [
     {
-      title: '总消耗',
+      title: '总消耗 📊',
       value: `¥${summary.cost.toFixed(2)}`,
       change: '+12.5%',
       icon: DollarSign,
@@ -148,7 +210,7 @@ export default function ReportsEnhanced() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="📊 数据报表"
+        title="📊 数据报表 · 基础版"
         description="查看广告投放效果数据，支持多维度分析"
         breadcrumbs={[
           { label: '首页', href: '/dashboard' },
@@ -163,6 +225,42 @@ export default function ReportsEnhanced() {
           </div>
         }
       />
+
+      {/* Extended Features Hint */}
+      {showExtendedHint && (
+        <div className="bg-gradient-to-r from-purple-50 to-pink-50 border-l-4 border-purple-500 p-4 rounded-lg shadow-sm relative">
+          <button
+            onClick={() => setShowExtendedHint(false)}
+            className="absolute top-2 right-2 text-gray-400 hover:text-gray-600"
+          >
+            <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+            </svg>
+          </button>
+          <div className="flex items-start gap-3 pr-6">
+            <div className="flex-shrink-0 mt-0.5">
+              <svg className="h-5 w-5 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z" />
+              </svg>
+            </div>
+            <div className="flex-1">
+              <h3 className="text-sm font-semibold text-purple-900">🌟 当前为基础版报表</h3>
+              <p className="mt-1 text-sm text-purple-800">
+                支持<strong>账户、广告计划、创意</strong>三大维度报表。以下高级功能正在对接SDK：
+              </p>
+              <ul className="mt-2 text-xs text-purple-700 space-y-1 ml-4 list-disc">
+                <li>素材报表：查看图片/视频素材的效果表现</li>
+                <li>搜索词报表：分析用户搜索关键词效果</li>
+                <li>视频流失报表：了解视频各阶段用户流失</li>
+                <li>自定义报表：自由组合维度和指标</li>
+              </ul>
+              <p className="mt-2 text-xs text-purple-700">
+                当前请使用<strong>创意报表</strong>查看素材效果，使用<strong>关键词管理</strong>查看关键词表现。
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* 日期选择器 */}
       <Card>
@@ -238,14 +336,14 @@ export default function ReportsEnhanced() {
       {/* Tab切换报表 */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="campaign">广告组报表</TabsTrigger>
+          <TabsTrigger value="advertiser">账户报表</TabsTrigger>
           <TabsTrigger value="ad">广告计划报表</TabsTrigger>
           <TabsTrigger value="creative">创意报表</TabsTrigger>
           <TabsTrigger value="custom">自定义报表</TabsTrigger>
         </TabsList>
 
-        {/* 广告组报表 */}
-        <TabsContent value="campaign" className="space-y-6">
+        {/* 账户报表 */}
+        <TabsContent value="advertiser" className="space-y-6">
           <Card>
             <CardHeader>
               <CardTitle>趋势图 - 消耗与转化</CardTitle>
@@ -350,7 +448,81 @@ export default function ReportsEnhanced() {
               <CardTitle>自定义报表</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-muted-foreground">自定义维度和指标组合...</p>
+              {customLoading ? (
+                <div className="text-center py-8 text-gray-500">加载中...</div>
+              ) : (
+                <div className="space-y-6">
+                  <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                    <div className="flex items-start gap-2">
+                      <svg className="w-5 h-5 text-yellow-600 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                      </svg>
+                      <div>
+                        <p className="text-sm font-medium text-yellow-800">功能暂未实现</p>
+                        <p className="text-sm text-yellow-700 mt-1">
+                          SDK 正在对接千川自定义报表API，请稍后使用。建议使用现有维度报表（广告主/广告计划/创意）。
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <h3 className="text-sm font-medium text-gray-700 mb-3">选择维度</h3>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                      {['advertiser', 'campaign', 'ad', 'creative', 'date', 'region'].map((dim) => (
+                        <label key={dim} className="flex items-center gap-2 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={selectedDimensions.includes(dim)}
+                            onChange={(e) => {
+                              if (e.target.checked) {
+                                setSelectedDimensions([...selectedDimensions, dim])
+                              } else {
+                                setSelectedDimensions(selectedDimensions.filter(d => d !== dim))
+                              }
+                            }}
+                            className="rounded"
+                          />
+                          <span className="text-sm">
+                            {{
+                              advertiser: '广告主',
+                              campaign: '广告组',
+                              ad: '广告计划',
+                              creative: '创意',
+                              date: '日期',
+                              region: '地域'
+                            }[dim]}
+                          </span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="flex gap-3">
+                    <Button 
+                      onClick={fetchCustomReport}
+                      disabled={customLoading || selectedDimensions.length === 0}
+                    >
+                      查询报表
+                    </Button>
+                    <Button 
+                      variant="outline"
+                      onClick={() => setSelectedDimensions([])}
+                    >
+                      清空选择
+                    </Button>
+                  </div>
+
+                  {reportData.length > 0 && (
+                    <div className="mt-6">
+                      <p className="text-sm text-gray-500 mb-4">已选择维度: {selectedDimensions.join(', ')}</p>
+                      <div className="text-center text-gray-500 py-8">
+                        报表数据将在此处展示
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>

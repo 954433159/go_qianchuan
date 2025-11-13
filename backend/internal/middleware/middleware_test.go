@@ -4,6 +4,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/gin-contrib/sessions"
+	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
 )
 
@@ -55,6 +57,9 @@ func TestAuthRequired_NoSession(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 
 	r := gin.New()
+	// 必须先挂载 sessions 中间件，否则 AuthRequired 会 panic
+	store := cookie.NewStore([]byte("test-secret-key-for-middleware-test"))
+	r.Use(sessions.Sessions("test_session", store))
 	r.Use(AuthRequired())
 	r.GET("/test", func(c *gin.Context) {
 		c.JSON(200, gin.H{"message": "ok"})

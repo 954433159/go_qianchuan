@@ -2,6 +2,7 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import path from 'path'
 import { visualizer } from 'rollup-plugin-visualizer'
+import viteCompression from 'vite-plugin-compression'
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -12,6 +13,20 @@ export default defineConfig({
       open: false,
       gzipSize: true,
       brotliSize: true,
+    }),
+    // Gzip 压缩
+    viteCompression({
+      algorithm: 'gzip',
+      ext: '.gz',
+      threshold: 10240, // 大于 10KB 才压缩
+      deleteOriginFile: false,
+    }),
+    // Brotli 压缩 (更高压缩率)
+    viteCompression({
+      algorithm: 'brotliCompress',
+      ext: '.br',
+      threshold: 10240,
+      deleteOriginFile: false,
     }),
   ],
   resolve: {
@@ -29,10 +44,19 @@ export default defineConfig({
     },
   },
   build: {
+    target: 'es2020',
     outDir: 'dist',
     sourcemap: false,
     minify: 'terser',
     chunkSizeWarningLimit: 500,
+    cssCodeSplit: true, // CSS 代码分割
+    terserOptions: {
+      compress: {
+        drop_console: true, // 移除 console
+        drop_debugger: true, // 移除 debugger
+        pure_funcs: ['console.log'], // 移除特定函数
+      },
+    },
     rollupOptions: {
       output: {
         manualChunks: (id) => {
