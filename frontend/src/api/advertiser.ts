@@ -82,7 +82,7 @@ export const getShopAdvertiserList = async (
 }
 
 // 获取代理商账户关联的广告账户列表
-export interface AgentAdvertiser {
+export interface AgentAdvertiser extends Record<string, unknown> {
   advertiser_id: number
   advertiser_name: string
   company: string

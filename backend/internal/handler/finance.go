@@ -213,7 +213,7 @@ func (h *FinanceHandler) CreateTransferSeq(c *gin.Context) {
 	var req struct {
 		AgentId      int64   `json:"agent_id" binding:"required"`
 		AdvertiserId int64   `json:"advertiser_id" binding:"required"`
-		Amount       float64 `json:"amount" binding:"required"`
+		Amount       float64 `json:"amount"` // 允许为0，后续自定义校验
 		Remark       string  `json:"remark"`
 	}
 
@@ -320,7 +320,7 @@ func (h *FinanceHandler) CreateRefundSeq(c *gin.Context) {
 	var req struct {
 		AgentId      int64   `json:"agent_id" binding:"required"`
 		AdvertiserId int64   `json:"advertiser_id" binding:"required"`
-		Amount       float64 `json:"amount" binding:"required"`
+		Amount       float64 `json:"amount"` // 允许为0，后续自定义校验
 		Remark       string  `json:"remark"`
 	}
 

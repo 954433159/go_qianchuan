@@ -60,6 +60,10 @@ const AwemeOrderCreate = lazy(() => import('./pages/AwemeOrderCreate'))
 const AwemeOrderDetail = lazy(() => import('./pages/AwemeOrderDetail'))
 const AwemeOrderEffect = lazy(() => import('./pages/AwemeOrderEffect'))
 const AwemeTools = lazy(() => import('./pages/AwemeTools'))
+const BrandAuthorizedList = lazy(() => import('./pages/account/BrandAuthorizedList'))
+const AccountAdvertiserPublic = lazy(() => import('./pages/account/AccountAdvertiserPublic'))
+const AccountAgentAdvertisers = lazy(() => import('./pages/account/AccountAgentAdvertisers'))
+const AccountShopAuth = lazy(() => import('./pages/account/AccountShopAuth'))
 
 // 财务管理页面
 const FinanceWallet = lazy(() => import('./pages/FinanceWallet'))
@@ -188,6 +192,10 @@ function App() {
           {/* 账户管理相关路由 */}
           <Route path="/account-center" element={<ProtectedRoute><AccountCenter /></ProtectedRoute>} />
           <Route path="/account/budget" element={<ProtectedRoute><AccountBudget /></ProtectedRoute>} />
+          <Route path="/account/advertiser-public" element={<ProtectedRoute><AccountAdvertiserPublic /></ProtectedRoute>} />
+          <Route path="/account/brand-authorized" element={<ProtectedRoute><BrandAuthorizedList /></ProtectedRoute>} />
+          <Route path="/account/agent-advertisers" element={<ProtectedRoute><AccountAgentAdvertisers /></ProtectedRoute>} />
+          <Route path="/account/shop-auth" element={<ProtectedRoute><AccountShopAuth /></ProtectedRoute>} />
           <Route path="/aweme-auth" element={<ProtectedRoute><AwemeAuthList /></ProtectedRoute>} />
           <Route path="/aweme-auth/add" element={<ProtectedRoute><AwemeAuthAdd /></ProtectedRoute>} />
           <Route path="/shops/:id" element={<ProtectedRoute><ShopDetail /></ProtectedRoute>} />

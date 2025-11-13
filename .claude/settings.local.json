@@ -9,7 +9,9 @@
       "Bash(npx -y filesystem-mcp-server --help)",
       "Bash(npm search:*)",
       "Bash(npx -y @modelcontextprotocol/server-filesystem:*)",
-      "Bash(npx -y playwright-mcp:*)"
+      "Bash(npx -y playwright-mcp:*)",
+      "Bash(pkill:*)",
+      "Bash(cat:*)"
     ],
     "deny": [],
     "ask": []
