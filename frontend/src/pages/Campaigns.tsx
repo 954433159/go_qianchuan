@@ -49,21 +49,25 @@ export default function Campaigns() {
         page_size: PAGINATION.MAX_PAGE_SIZE
       })
       // 转换为 Store 需要的格式
-      const formattedCampaigns = (data.list || []).map((c: Campaign) => ({
-        id: String(c.id),
-        name: c.name,
-        status: c.status === 'ENABLE' ? 'ACTIVE' : 'PAUSED',
-        budget: c.budget || 0,
-        spend: Math.random() * c.budget * 0.8, // Mock data
-        impressions: Math.floor(Math.random() * 100000),
-        clicks: Math.floor(Math.random() * 10000),
-        conversions: Math.floor(Math.random() * 1000),
-        ctr: Math.random() * 0.1,
-        cpc: Math.random() * 5,
-        roi: Math.random() * 10,
-        created_at: c.create_time || new Date().toISOString(),
-        updated_at: c.modify_time || new Date().toISOString(),
-      }))
+      const formattedCampaigns = (data.list || []).map((c: Campaign) => {
+        // 使用API返回的真实数据，如果API没有返回则使用默认值
+        const stat = c.stat || {}
+        return {
+          id: String(c.id),
+          name: c.name,
+          status: c.status === 'ENABLE' ? 'ACTIVE' : 'PAUSED',
+          budget: c.budget || 0,
+          spend: stat.cost || 0,
+          impressions: stat.show_cnt || 0,
+          clicks: stat.click_cnt || 0,
+          conversions: stat.convert_cnt || 0,
+          ctr: stat.ctr || 0,
+          cpc: stat.avg_click_cost || 0,
+          roi: stat.roi || 0,
+          created_at: c.create_time || new Date().toISOString(),
+          updated_at: c.modify_time || new Date().toISOString(),
+        }
+      })
       setCampaigns(formattedCampaigns)
     } catch (error) {
       toast.error('加载广告组失败，请稍后重试')

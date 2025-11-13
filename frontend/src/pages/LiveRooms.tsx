@@ -16,53 +16,6 @@ import {
   Filter
 } from 'lucide-react'
 
-// 生成模拟数据
-const generateMockLiveRooms = (): LiveRoom[] => {
-  const rooms: LiveRoom[] = []
-  const roomNames = [
-    '潮流服饰专场',
-    '美妆护肤直播间',
-    '数码3C好物分享',
-    '零食小吃优选',
-    '家居生活馆',
-    '运动健身装备',
-    '母婴用品专场',
-    '珠宝首饰精选',
-    '图书文具店',
-    '宠物用品专区',
-    '汽车用品',
-    '户外装备',
-    '箱包皮具',
-    '茶叶特产',
-    '鲜花园艺'
-  ]
-
-  const statuses: ('LIVE' | 'END' | 'PAUSE')[] = ['LIVE', 'END', 'PAUSE']
-
-  for (let i = 0; i < 15; i++) {
-    const status = statuses[i % 3]
-    const isLive = status === 'LIVE'
-    
-    rooms.push({
-      room_id: `room_${1000 + i}`,
-      room_title: roomNames[i] ?? '直播间',
-      anchor_name: `主播${String.fromCharCode(65 + i)}`,
-      aweme_name: `抖音号${i + 1}`,
-      status: status ?? 'END',
-      start_time: new Date(Date.now() - Math.random() * 3600000 * (isLive ? 2 : 24)).toISOString(),
-      end_time: status === 'END' ? new Date(Date.now() - Math.random() * 3600000).toISOString() : undefined,
-      watch_ucnt: Math.floor(Math.random() * 50000) + 1000,
-      online_user_count: isLive ? Math.floor(Math.random() * 5000) + 100 : 0,
-      gmv: Math.floor(Math.random() * 1000000) + 10000,
-      order_count: Math.floor(Math.random() * 5000) + 50
-    })
-  }
-
-  return rooms.sort((a, b) => {
-    const statusOrder: Record<string, number> = { LIVE: 0, LIVING: 0, PAUSE: 1, END: 2, FINISHED: 2 }
-    return (statusOrder[a.status] || 99) - (statusOrder[b.status] || 99)
-  })
-}
 
 export default function LiveRooms() {
   const navigate = useNavigate()
@@ -100,9 +53,8 @@ export default function LiveRooms() {
     } catch (error) {
       showError('获取直播间列表失败')
       console.error('Failed to fetch live rooms:', error)
-      // 降级使用模拟数据
-      const mockData = generateMockLiveRooms()
-      setRooms(mockData)
+      // 设置空数据
+      setRooms([])
     } finally {
       setLoading(false)
     }

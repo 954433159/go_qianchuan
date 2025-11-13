@@ -28,6 +28,22 @@ export interface Campaign extends Record<string, unknown> {
   opt_status: string
   create_time: string
   modify_time: string
+  stat?: StatData
+}
+
+// 受众信息
+export interface AudienceData {
+  gender?: 'NONE' | 'MALE' | 'FEMALE'
+  age?: string[]
+  district?: string[]
+  region?: string[]
+  interest_tags?: string[]
+  action_tags?: string[]
+  device_brand_ids?: string[]
+  platform?: string[]
+  network?: string[]
+  carrier?: string[]
+  audience_package_ids?: number[]
 }
 
 // 广告计划信息
@@ -43,6 +59,8 @@ export interface Ad extends Record<string, unknown> {
   create_time: string
   modify_time?: string
   creative_material_mode?: 'CUSTOM' | 'PROGRAMMATIC'
+  learning_phase?: Record<string, unknown>
+  budget_mode?: Record<string, unknown>
   delivery_setting?: {
     budget: number
     budget_mode: 'BUDGET_MODE_DAY' | 'BUDGET_MODE_TOTAL'
@@ -50,18 +68,8 @@ export interface Ad extends Record<string, unknown> {
     end_time?: string
     schedule_type?: 'SCHEDULE_FROM_NOW' | 'SCHEDULE_START_END'
   }
-  audience?: {
-    gender: 'NONE' | 'MALE' | 'FEMALE'
-    age?: string[]
-    region?: string[]
-    interest_tags?: string[]
-    action_tags?: string[]
-    device_brand_ids?: string[]
-    platform?: string[]
-    network?: string[]
-    carrier?: string[]
-    audience_package_ids?: number[]
-  }
+  audience?: AudienceData
+  stat?: StatData
 }
 
 // 创意信息
@@ -126,6 +134,18 @@ export interface FileInfo {
   format?: string    // 文件格式
   poster_url?: string // 海报图URL
   create_time?: string
+}
+
+// 统计数据
+export interface StatData {
+  cost?: number
+  show_cnt?: number
+  click_cnt?: number
+  convert_cnt?: number
+  ctr?: number
+  avg_click_cost?: number
+  convert_rate?: number
+  roi?: number
 }
 
 // 报表数据

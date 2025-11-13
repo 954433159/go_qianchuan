@@ -78,6 +78,10 @@ const TransferCommit = lazy(() => import('./pages/TransferCommit'))
 const RefundCreate = lazy(() => import('./pages/RefundCreate'))
 const RefundCommit = lazy(() => import('./pages/RefundCommit'))
 
+// Error页面
+const NotFound = lazy(() => import('./pages/NotFound'))
+const Forbidden = lazy(() => import('./pages/Forbidden'))
+
 // Loading组件 - 使用统一的Loading组件
 const LoadingScreen = () => <Loading fullScreen text="加载中..." size="lg" />
 
@@ -236,8 +240,11 @@ function App() {
           {/* 默认路由 */}
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
           
-          {/* 404重定向 */}
-          <Route path="*" element={<Navigate to="/dashboard" replace />} />
+          {/* 403 无权限页面 */}
+          <Route path="/forbidden" element={<Forbidden />} />
+          
+          {/* 404 页面 - 必须放在最后 */}
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>
       <ToastContainer />

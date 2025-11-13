@@ -74,38 +74,13 @@ export default function ReportsEnhanced() {
     } catch (error) {
       console.error('Failed to fetch report:', error)
       showError('获取报表数据失败')
-      // Mock数据作为降级
-      const mockData = generateMockData()
-      setReportData(mockData)
+      // 设置空数据，不使用mock
+      setReportData([])
     } finally {
       setLoading(false)
     }
   }
 
-  const generateMockData = (): ReportData[] => {
-    const days = Math.ceil((new Date(endDate).getTime() - new Date(startDate).getTime()) / (1000 * 60 * 60 * 24))
-    return Array.from({ length: days }, (_, i) => {
-      const date = new Date(startDate)
-      date.setDate(date.getDate() + i)
-      const cost = 1000 + Math.random() * 2000
-      const show = Math.floor(10000 + Math.random() * 20000)
-      const click = Math.floor(show * (0.01 + Math.random() * 0.03))
-      const convert = Math.floor(click * (0.05 + Math.random() * 0.15))
-      
-      return {
-        date: date.toISOString().split('T')[0] ?? '',
-        cost,
-        show,
-        click,
-        convert,
-        ctr: click / show,
-        cpc: cost / click,
-        cpm: (cost / show) * 1000,
-        convert_cost: cost / convert,
-        convert_rate: convert / click
-      }
-    })
-  }
 
   const fetchCustomConfig = async () => {
     setCustomLoading(true)

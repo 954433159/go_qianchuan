@@ -74,74 +74,11 @@ export default function MaterialEfficiency() {
     setLoading(true)
     try {
       // TODO: 调用API获取素材效果数据
-      // const data = await materialApi.getEfficiency(advertiserId, { date_range: dateRange })
-
-      // 模拟数据
-      await new Promise((resolve) => setTimeout(resolve, 1000))
-      setMaterials([
-        {
-          material_id: '1',
-          material_name: '春季新品海报.jpg',
-          material_type: 'image',
-          material_url: 'https://via.placeholder.com/400x600',
-          impressions: 125000,
-          clicks: 8500,
-          ctr: 6.8,
-          conversions: 450,
-          cvr: 5.29,
-          cost: 12500,
-          cpa: 27.78,
-          roi: 5.2,
-          usage_count: 15,
-        },
-        {
-          material_id: '2',
-          material_name: '产品介绍视频.mp4',
-          material_type: 'video',
-          material_url: 'https://www.w3schools.com/html/mov_bbb.mp4',
-          cover_url: 'https://via.placeholder.com/800x400',
-          impressions: 98000,
-          clicks: 7200,
-          ctr: 7.35,
-          conversions: 380,
-          cvr: 5.28,
-          cost: 9800,
-          cpa: 25.79,
-          roi: 6.1,
-          usage_count: 12,
-        },
-        {
-          material_id: '3',
-          material_name: '夏季促销banner.png',
-          material_type: 'image',
-          material_url: 'https://via.placeholder.com/800x400',
-          impressions: 85000,
-          clicks: 4500,
-          ctr: 5.29,
-          conversions: 200,
-          cvr: 4.44,
-          cost: 8500,
-          cpa: 42.5,
-          roi: 3.8,
-          usage_count: 8,
-        },
-        {
-          material_id: '4',
-          material_name: '用户评价合集.mp4',
-          material_type: 'video',
-          material_url: 'https://www.w3schools.com/html/movie.mp4',
-          cover_url: 'https://via.placeholder.com/600x600',
-          impressions: 72000,
-          clicks: 5800,
-          ctr: 8.06,
-          conversions: 320,
-          cvr: 5.52,
-          cost: 7200,
-          cpa: 22.5,
-          roi: 7.5,
-          usage_count: 10,
-        },
-      ])
+      // const data = await getMaterialEfficiency(advertiserId, { date_range: dateRange })
+      // setMaterials(data)
+      
+      // 暂时设置空数据，等待API实现
+      setMaterials([])
     } catch (error) {
       console.error('Failed to load materials:', error)
       toast.error('加载素材数据失败')

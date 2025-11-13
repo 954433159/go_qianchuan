@@ -50,32 +50,40 @@ export default function Ads() {
         page_size: PAGINATION.MAX_PAGE_SIZE
       })
       // 转换为 Store 需要的格式
-      const formattedPromotions = (data.list || []).map((ad: Ad) => ({
-        id: String(ad.id),
-        campaign_id: String(ad.campaign_id || ''),
-        name: ad.name,
-        status: ad.status === 'ENABLE' ? 'ACTIVE' : 'PAUSED',
-        learning_status: (['LEARNING', 'LEARNED', 'FAILED', 'NONE'][Math.floor(Math.random() * 4)] ?? 'NONE') as string,
-        budget_mode: 'BUDGET_MODE_DAY',
-        budget: ad.budget || 0,
-        bid: Math.random() * 10 + 5,
-        spend: Math.random() * (ad.budget || 0) * 0.6,
-        impressions: Math.floor(Math.random() * 50000),
-        clicks: Math.floor(Math.random() * 5000),
-        conversions: Math.floor(Math.random() * 500),
-        ctr: Math.random() * 0.15,
-        cpc: Math.random() * 3,
-        cvr: Math.random() * 0.1,
-        roi: Math.random() * 8,
-        targeting_info: {
-          gender: ['MALE', 'FEMALE', undefined][Math.floor(Math.random() * 3)],
-          age_range: ['18-23', '24-30', '31-40'],
-          regions: ['北京', '上海', '广州'],
-        },
-        creative_ids: Array.from({ length: Math.floor(Math.random() * 5) + 1 }, (_, i) => `creative_${i}`),
-        created_at: ad.create_time || new Date().toISOString(),
-        updated_at: ad.modify_time || new Date().toISOString(),
-      }))
+      const formattedPromotions = (data.list || []).map((ad: Ad) => {
+        // 使用API返回的真实数据
+        const stat = ad.stat || {}
+        const audience = ad.audience || {}
+        
+        return {
+          id: String(ad.id),
+          campaign_id: String(ad.campaign_id || ''),
+          name: ad.name,
+          status: ad.status === 'ENABLE' ? 'ACTIVE' : 'PAUSED',
+          learning_status: typeof ad.learning_phase === 'string' ? ad.learning_phase : 'NONE',
+          budget_mode: typeof ad.budget_mode === 'string' ? ad.budget_mode : 'BUDGET_MODE_DAY',
+          budget: ad.budget || 0,
+          bid: ad.bid || 0,
+          spend: stat.cost || 0,
+          impressions: stat.show_cnt || 0,
+          clicks: stat.click_cnt || 0,
+          conversions: stat.convert_cnt || 0,
+          ctr: stat.ctr || 0,
+          cpc: stat.avg_click_cost || 0,
+          cvr: stat.convert_rate || 0,
+          roi: stat.roi || 0,
+          targeting_info: {
+            gender: audience.gender,
+            age_range: audience.age || [],
+            regions: audience.district || [],
+          },
+          creative_ids: Array.isArray((ad as Record<string, unknown>).creative_list) 
+            ? ((ad as Record<string, unknown>).creative_list as string[]) 
+            : [],
+          created_at: ad.create_time || new Date().toISOString(),
+          updated_at: ad.modify_time || new Date().toISOString(),
+        }
+      })
       setPromotions(formattedPromotions)
     } catch (error) {
       toast.error('加载推广计划失败，请稍后重试')
