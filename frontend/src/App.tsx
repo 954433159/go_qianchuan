@@ -64,6 +64,10 @@ const BrandAuthorizedList = lazy(() => import('./pages/account/BrandAuthorizedLi
 const AccountAdvertiserPublic = lazy(() => import('./pages/account/AccountAdvertiserPublic'))
 const AccountAgentAdvertisers = lazy(() => import('./pages/account/AccountAgentAdvertisers'))
 const AccountShopAuth = lazy(() => import('./pages/account/AccountShopAuth'))
+const AdUpdateSchedule = lazy(() => import('./pages/ad/AdUpdateSchedule'))
+const AdUpdateRegion = lazy(() => import('./pages/ad/AdUpdateRegion'))
+const AdUpdateRoi = lazy(() => import('./pages/ad/AdUpdateRoi'))
+const PromotionCostGuarantee = lazy(() => import('./pages/ad/PromotionCostGuarantee'))
 
 // 财务管理页面
 const FinanceWallet = lazy(() => import('./pages/FinanceWallet'))
@@ -168,6 +172,10 @@ function App() {
           <Route path="/ads/batch/roi" element={<ProtectedRoute><PromotionBatchUpdateRoi /></ProtectedRoute>} />
           <Route path="/ads/:id" element={<ProtectedRoute><AdDetail /></ProtectedRoute>} />
           <Route path="/ads/:id/edit" element={<ProtectedRoute><AdEdit /></ProtectedRoute>} />
+          <Route path="/ads/update-schedule" element={<ProtectedRoute><AdUpdateSchedule /></ProtectedRoute>} />
+          <Route path="/ads/update-region" element={<ProtectedRoute><AdUpdateRegion /></ProtectedRoute>} />
+          <Route path="/ads/update-roi" element={<ProtectedRoute><AdUpdateRoi /></ProtectedRoute>} />
+          <Route path="/ads/cost-guarantee" element={<ProtectedRoute><PromotionCostGuarantee /></ProtectedRoute>} />
           <Route path="/ads/learning-status" element={<ProtectedRoute><LearningStatusList /></ProtectedRoute>} />
           <Route path="/ads/low-quality" element={<ProtectedRoute><LowQualityAdList /></ProtectedRoute>} />
           <Route path="/ads/suggest-tools" element={<ProtectedRoute><AdSuggestTools /></ProtectedRoute>} />

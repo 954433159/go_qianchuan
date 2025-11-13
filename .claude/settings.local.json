@@ -11,7 +11,8 @@
       "Bash(npx -y @modelcontextprotocol/server-filesystem:*)",
       "Bash(npx -y playwright-mcp:*)",
       "Bash(pkill:*)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(npm run build)"
     ],
     "deny": [],
     "ask": []

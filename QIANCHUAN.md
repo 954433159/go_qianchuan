@@ -182,3 +182,19 @@
     - 删除人群 [ AudienceDelete(clt *core.SDKClient, accessToken string, req*dmp.AudienceDeleteRequest) (uint64, error) ]
     - 小文件直接上传 [ AudienceFileUpload(clt *core.SDKClient, accessToken string, req*dmp.AudienceFileUploadRequest) (*dmp.AudienceFileUploadResult, error) ]
     - 大文件分片上传 [ AudienceFilePartUpload(clt *core.SDKClient, accessToken string, req*dmp.AudienceFilePartUploadRequest) (string, error) ]
+
+---
+
+## 前端对齐与优化索引
+
+为便于基于“官方静态设计（html/）”推进前端对齐与优化，新增以下文档（位于 `docs/frontend/`）：
+
+- QIANCHUAN_FRONTEND_STATUS.md — 前端完成度与覆盖率盘点
+- QIANCHUAN_STATIC_COMPARISON.md — 静态页面 vs SPA 功能对照
+- QIANCHUAN_ROUTING_MAP.md — 路由与信息架构（基于 App.tsx）
+- QIANCHUAN_FRONTEND_ISSUES.md — 问题清单（功能/UX/性能/工程）
+- QIANCHUAN_API_CLIENT_REVIEW.md — API 客户端评审与改进建议
+- QIANCHUAN_FRONTEND_OPTIMIZATIONS.md — 分阶段优化方案（含验收标准）
+- QIANCHUAN_TESTING_PLAN.md — 测试现状与覆盖率提升方案
+
+入口索引: 参见仓库根目录 `QIANCHUAN.md` 本节与 `docs/frontend/` 目录。
