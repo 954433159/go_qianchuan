@@ -122,5 +122,11 @@ export type { FilterPanelProps, FilterField } from './FilterPanel'
 export { default as DataTable } from './DataTable'
 export type { DataTableProps, ColumnDef } from './DataTable'
 
+// Performance Optimized Components
+export { default as VirtualDataTable } from './VirtualDataTable'
+export type { VirtualDataTableProps } from './VirtualDataTable'
+
+export { default as LazyImage, LazyBackgroundImage } from './LazyImage'
+
 export { Skeleton, SkeletonText, SkeletonCard, SkeletonAvatar, SkeletonTable, SkeletonList } from './Skeleton'
 export type { SkeletonProps } from './Skeleton'
