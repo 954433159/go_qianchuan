@@ -160,7 +160,7 @@ export interface EstimateProfit {
 export const getEstimateProfit = async (
   params: EstimateProfitParams
 ): Promise<EstimateProfit> => {
-  const { data } = await apiClient.get('/qianchuan/aweme/estimate-profit', { params })
+  const { data } = await apiClient.post('/qianchuan/aweme/estimate', params)
   return data
 }
 
@@ -174,7 +174,7 @@ export interface SuggestAwemeBidParams {
 export const getSuggestAwemeBid = async (
   params: SuggestAwemeBidParams
 ): Promise<{ suggested_bid: number }> => {
-  const { data } = await apiClient.get('/qianchuan/aweme/suggest-bid', { params })
+  const { data } = await apiClient.post('/qianchuan/aweme/suggest/bid', params)
   return data
 }
 
@@ -186,10 +186,11 @@ export interface SuggestAwemeRoiGoalParams {
 }
 
 export const getSuggestAwemeRoiGoal = async (
-  params: SuggestAwemeRoiGoalParams
+  _params: SuggestAwemeRoiGoalParams
 ): Promise<{ suggested_roi_goal: number }> => {
-  const { data } = await apiClient.get('/qianchuan/aweme/suggest-roi-goal', { params })
-  return data
+  // TODO: Backend endpoint not implemented yet
+  // Should be: POST /qianchuan/aweme/suggest/roi-goal
+  throw new Error('ROI建议功能暂未实现，请联系管理员')
 }
 
 // 查询随心推使用中订单配额信息
@@ -202,7 +203,7 @@ export interface AwemeOrderQuota {
 export const getAwemeOrderQuota = async (
   advertiserId: number
 ): Promise<AwemeOrderQuota> => {
-  const { data } = await apiClient.get('/qianchuan/aweme/order/quota/get', {
+  const { data } = await apiClient.get('/qianchuan/aweme/quota', {
     params: { advertiser_id: advertiserId }
   })
   return data
@@ -215,10 +216,10 @@ export interface SuggestDeliveryTimeParams {
 }
 
 export const getSuggestDeliveryTime = async (
-  params: SuggestDeliveryTimeParams
+  _params: SuggestDeliveryTimeParams
 ): Promise<{ suggested_delivery_time: number }> => {
-  const { data } = await apiClient.get('/qianchuan/aweme/order/suggest-delivery-time', { params })
-  return data
+  // TODO: Backend endpoint not implemented yet
+  throw new Error('延长时长建议功能暂未实现，请联系管理员')
 }
 
 // 获取随心推兴趣标签
@@ -229,10 +230,10 @@ export interface InterestKeyword {
 }
 
 export const getAwemeInterestKeywords = async (
-  advertiserId: number
+  _advertiserId: number
 ): Promise<InterestKeyword[]> => {
-  const { data } = await apiClient.get('/qianchuan/aweme/interest-action/interest-keyword', {
-    params: { advertiser_id: advertiserId }
-  })
-  return data?.list || []
+  // TODO: Backend endpoint not implemented yet
+  // This should use the general interest keyword API from tools handler
+  // Fallback to tools API or return empty for now
+  throw new Error('随心推兴趣标签功能暂未实现，请使用定向工具中的兴趣关键词功能')
 }

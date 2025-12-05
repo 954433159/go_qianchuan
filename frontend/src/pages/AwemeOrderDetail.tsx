@@ -291,7 +291,7 @@ export default function AwemeOrderDetail() {
 
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
             <p className="text-sm text-blue-800">
-              <strong>提示：</strong>数据报表功能请前往"数据中心"查看详细投放效果
+              <strong>提示：</strong>数据报表功能请前往&quot;数据中心&quot;查看详细投放效果
             </p>
           </div>
         </div>

@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
-import { useParams, Link } from 'react-router-dom'
-import { getAgentInfo } from '@/api/advertiser'
+import { useParams, Link, useNavigate } from 'react-router-dom'
+// Note: getAgentInfo can be used when API is fully implemented
 import { Building2, Users, DollarSign, ArrowLeft, TrendingUp } from 'lucide-react'
+import { toast } from '@/components/ui/Toast'
 import { Card, CardContent, CardHeader, CardTitle, PageHeader, Loading, Button, Badge } from '@/components/ui'
 
 interface AgentDetail {
@@ -19,6 +20,7 @@ interface AgentDetail {
 
 export default function AgentDetail() {
   const { id } = useParams<{ id: string }>()
+  const navigate = useNavigate()
   const [loading, setLoading] = useState(true)
   const [agent, setAgent] = useState<AgentDetail | null>(null)
 
@@ -232,7 +234,7 @@ export default function AgentDetail() {
                   <Badge className={adv.status === 'ENABLE' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}>
                     {adv.status === 'ENABLE' ? '启用' : '禁用'}
                   </Badge>
-                  <Button size="sm" variant="outline">查看</Button>
+                  <Button size="sm" variant="outline" onClick={() => navigate(`/advertisers/${adv.id}`)}>查看</Button>
                 </div>
               </div>
             ))}
@@ -247,14 +249,14 @@ export default function AgentDetail() {
         </CardHeader>
         <CardContent>
           <div className="flex gap-4">
-            <Button disabled={!agent.fund_transfer_enabled}>
+            <Button disabled={!agent.fund_transfer_enabled} onClick={() => navigate('/finance/transfer')}>
               <DollarSign className="h-4 w-4 mr-2" />
               向广告主转账
             </Button>
-            <Button variant="outline" disabled={!agent.fund_transfer_enabled}>
+            <Button variant="outline" disabled={!agent.fund_transfer_enabled} onClick={() => navigate('/finance/refund')}>
               退款申请
             </Button>
-            <Button variant="outline">
+            <Button variant="outline" onClick={() => navigate('/finance/transactions')}>
               查看流水记录
             </Button>
           </div>
@@ -273,13 +275,13 @@ export default function AgentDetail() {
         </CardHeader>
         <CardContent>
           <div className="flex gap-4">
-            <Button variant="outline">
+            <Button variant="outline" onClick={() => toast.info('权限管理功能开发中')}>
               权限管理
             </Button>
-            <Button variant="outline">
+            <Button variant="outline" onClick={() => toast.info('修改联系方式功能开发中')}>
               修改联系方式
             </Button>
-            <Button variant="outline" className="text-red-600 border-red-600 hover:bg-red-50">
+            <Button variant="outline" className="text-red-600 border-red-600 hover:bg-red-50" onClick={() => toast.warning('解除代理商授权功能开发中')}>
               解除代理商授权
             </Button>
           </div>

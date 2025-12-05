@@ -64,9 +64,9 @@ export default function AwemeTools() {
     try {
       const data = await getAwemeInterestKeywords(user.advertiserId || 0)
       setInterestKeywords(data)
-    } catch (error) {
+    } catch (error: any) {
       console.error('获取兴趣标签失败:', error)
-      showError('获取兴趣标签失败')
+      showError(error?.message || '获取兴趣标签失败')
     } finally {
       setInterestLoading(false)
     }
@@ -106,9 +106,9 @@ export default function AwemeTools() {
       })
       setRoiGoal(data.suggested_roi_goal)
       success('已获取ROI建议')
-    } catch (error) {
+    } catch (error: any) {
       console.error('获取ROI建议失败:', error)
-      showError('获取ROI建议失败')
+      showError(error?.message || '获取ROI建议失败')
     }
   }
 
@@ -200,12 +200,12 @@ export default function AwemeTools() {
                 </button>
               </div>
               
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
                 <div className="flex items-start gap-2">
-                  <HelpCircle className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
-                  <div className="text-sm text-blue-800">
-                    <p className="font-medium mb-1">使用说明</p>
-                    <p>兴趣标签用于定向投放，选择合适的兴趣标签可以提升广告投放效果。点击标签可复制到剪贴板。</p>
+                  <AlertCircle className="w-5 h-5 text-yellow-600 mt-0.5 flex-shrink-0" />
+                  <div className="text-sm text-yellow-800">
+                    <p className="font-medium mb-1">功能提示</p>
+                    <p>随心推兴趣标签功能暂未实现，请使用「定向工具」中的兴趣关键词功能代替。</p>
                   </div>
                 </div>
               </div>
@@ -277,9 +277,11 @@ export default function AwemeTools() {
                   </button>
                   <button
                     onClick={handleGetRoiGoal}
-                    className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
+                    disabled
+                    className="px-6 py-2 bg-gray-400 text-white rounded-lg cursor-not-allowed"
+                    title="ROI建议功能暂未实现"
                   >
-                    获取ROI建议
+                    获取ROI建议（暂不可用）
                   </button>
                 </div>
 
@@ -471,19 +473,19 @@ export default function AwemeTools() {
             <div className="max-w-2xl">
               <h2 className="text-lg font-semibold text-gray-900 mb-4">建议延长时长</h2>
               
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
                 <div className="flex items-start gap-2">
-                  <HelpCircle className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
-                  <div className="text-sm text-blue-800">
-                    <p className="font-medium mb-1">功能说明</p>
-                    <p>系统会根据订单的投放情况，给出建议的延长时长，帮助您优化投放效果。</p>
+                  <AlertCircle className="w-5 h-5 text-yellow-600 mt-0.5 flex-shrink-0" />
+                  <div className="text-sm text-yellow-800">
+                    <p className="font-medium mb-1">功能提示</p>
+                    <p>建议延长时长功能暂未实现，后续版本将提供此功能。</p>
                   </div>
                 </div>
               </div>
 
               <div className="text-center py-12 text-gray-500">
                 <Clock className="w-12 h-12 mx-auto mb-3 text-gray-400" />
-                <p>请在订单详情页查看延长时长建议</p>
+                <p>此功能尚在开发中</p>
               </div>
             </div>
           )}

@@ -2,8 +2,6 @@ package session
 
 import (
 	"time"
-
-	"github.com/CriarBrand/qianchuanSDK"
 )
 
 // UserSession 用户会话信息
@@ -32,15 +30,36 @@ func (s *UserSession) IsRefreshExpired() bool {
 	return time.Now().Unix() > s.RefreshExpires
 }
 
-// NewSessionFromTokenResponse 从Token响应创建Session
-func NewSessionFromTokenResponse(resp *qianchuanSDK.OauthAccessTokenRes, advertiserId int64) *UserSession {
+// NewSessionFromRefreshResponse 从刷新Token响应创建Session
+func NewSessionFromRefreshResponse(accessToken, refreshToken string, expiresIn, refreshTokenExpiresIn int64, advertiserId int64) *UserSession {
 	now := time.Now()
 	return &UserSession{
 		AdvertiserID:   advertiserId,
-		AccessToken:    resp.Data.AccessToken,
-		RefreshToken:   resp.Data.RefreshToken,
-		ExpiresAt:      now.Add(time.Duration(resp.Data.ExpiresIn) * time.Second).Unix(),
-		RefreshExpires: now.Add(time.Duration(resp.Data.RefreshTokenExpiresIn) * time.Second).Unix(),
+		AccessToken:    accessToken,
+		RefreshToken:   refreshToken,
+		ExpiresAt:      now.Add(time.Duration(expiresIn) * time.Second).Unix(),
+		RefreshExpires: now.Add(time.Duration(refreshTokenExpiresIn) * time.Second).Unix(),
+		CreatedAt:      now.Unix(),
+	}
+}
+
+// TokenResponse 简化的Token响应结构体
+type TokenResponse struct {
+	AccessToken           string
+	RefreshToken          string
+	ExpiresIn             int64
+	RefreshTokenExpiresIn int64
+}
+
+// NewSessionFromTokenResponse 从Token响应创建Session
+func NewSessionFromTokenResponse(tokenData *TokenResponse, advertiserId int64) *UserSession {
+	now := time.Now()
+	return &UserSession{
+		AdvertiserID:   advertiserId,
+		AccessToken:    tokenData.AccessToken,
+		RefreshToken:   tokenData.RefreshToken,
+		ExpiresAt:      now.Add(time.Duration(tokenData.ExpiresIn) * time.Second).Unix(),
+		RefreshExpires: now.Add(time.Duration(tokenData.RefreshTokenExpiresIn) * time.Second).Unix(),
 		CreatedAt:      now.Unix(),
 	}
 }

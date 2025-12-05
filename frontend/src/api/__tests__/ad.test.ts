@@ -123,7 +123,7 @@ describe('Ad API', () => {
         bid: 5.5,
       })
 
-      expect(apiClient.post).toHaveBeenCalledWith('/qianchuan/ad/update/bid', {
+      expect(apiClient.post).toHaveBeenCalledWith('/qianchuan/ad/bid/update', {
         advertiser_id: 123456,
         ad_ids: [1, 2, 3],
         bid: 5.5,
@@ -145,7 +145,7 @@ describe('Ad API', () => {
         budget_mode: 'BUDGET_MODE_DAY',
       })
 
-      expect(apiClient.post).toHaveBeenCalledWith('/qianchuan/ad/update/budget', {
+      expect(apiClient.post).toHaveBeenCalledWith('/qianchuan/ad/budget/update', {
         advertiser_id: 123456,
         ad_ids: [1, 2],
         budget: 2000,

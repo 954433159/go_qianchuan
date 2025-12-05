@@ -1,13 +1,14 @@
 package handler
 
 import (
+	"fmt"
 	"log"
-	"net/http"
 	"strconv"
 
 	"github.com/CriarBrand/qianchuan-backend/internal/middleware"
+	"github.com/CriarBrand/qianchuan-backend/internal/sdk"
 	"github.com/CriarBrand/qianchuan-backend/internal/service"
-	"github.com/CriarBrand/qianchuanSDK"
+	"github.com/CriarBrand/qianchuan-backend/internal/util"
 	"github.com/gin-gonic/gin"
 )
 
@@ -24,87 +25,37 @@ func NewAdvertiserHandler(service *service.QianchuanService) *AdvertiserHandler 
 }
 
 // List 获取广告主列表
+// 使用 Service 层封装的业务方法
 func (h *AdvertiserHandler) List(c *gin.Context) {
 	userSession, _ := middleware.GetUserSession(c)
 
-	resp, err := h.service.Manager.AdvertiserList(qianchuanSDK.AdvertiserListReq{
-		AccessToken: userSession.AccessToken,
-		AppId:       h.service.Manager.Credentials.AppId,
-		Secret:      h.service.Manager.Credentials.AppSecret,
-	})
+	// 调用 Service 层方法，获取带详细信息的广告主列表
+	infoResp, err := h.service.GetAdvertiserListWithDetails(
+		userSession.AccessToken,
+		[]string{"id", "name", "company", "role", "status", "first_industry_name", "second_industry_name", "create_time"},
+	)
 
 	if err != nil {
 		log.Printf("Get advertiser list failed: %v", err)
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"code":    500,
-			"message": "获取广告主列表失败: " + err.Error(),
-		})
+		util.ServerError(c, "获取广告主列表失败: "+err.Error())
 		return
 	}
 
-	// 提取所有 advertiser_id
-	ids := make([]int64, 0, len(resp.Data.List))
-	for _, item := range resp.Data.List {
-		ids = append(ids, item.AdvertiserId)
-	}
-
-	// 批量获取详细信息
-	infoResp, err := h.service.Manager.AdvertiserInfo(qianchuanSDK.AdvertiserInfoReq{
-		AccessToken:   userSession.AccessToken,
-		AdvertiserIds: ids,
-		Fields:        []string{"id", "name", "company", "role", "status", "first_industry_name", "second_industry_name", "create_time"},
-	})
-
-	if err != nil {
-		log.Printf("Get advertiser info failed: %v", err)
-		// 如果获取详细信息失败，使用基本信息
-		list := make([]gin.H, 0, len(resp.Data.List))
-		for _, item := range resp.Data.List {
-			status := "DISABLE"
-			if item.IsValid {
-				status = "ENABLE"
-			}
-			list = append(list, gin.H{
-				"id":          item.AdvertiserId,
-				"name":        item.AdvertiserName,
-				"company":     "",
-				"role":        item.AccountRole,
-				"status":      status,
-				"balance":     0,
-				"create_time": "",
-			})
-		}
-		c.JSON(http.StatusOK, gin.H{
-			"code":    0,
-			"message": "success",
-			"data": gin.H{
-				"list": list,
-			},
-		})
-		return
-	}
-
-	// 使用详细信息
+	// 构造响应数据
 	list := make([]gin.H, 0, len(infoResp.Data))
 	for _, info := range infoResp.Data {
 		list = append(list, gin.H{
-			"id":          info.ID,
-			"name":        info.Name,
+			"id":          info.AdvertiserId,
+			"name":        info.AdvertiserName,
 			"company":     info.Company,
-			"role":        info.Role,
-			"status":      info.Status,
-			"balance":     0, // SDK 不提供余额字段
-			"create_time": info.CreateTime,
+			"role":        "", // SDK 不提供角色字段
+			"status":      "", // SDK 不提供状态字段
+			"balance":     0,  // SDK 不提供余额字段
+			"create_time": "", // SDK 不提供创建时间字段
 		})
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"code":    0,
-		"message": "success",
-		"data": gin.H{
-			"list": list,
-		},
-	})
+	util.Success(c, gin.H{"list": list})
 }
 
 // Info 获取广告主详情
@@ -116,7 +67,7 @@ func (h *AdvertiserHandler) Info(c *gin.Context) {
 		advertiserId = userSession.AdvertiserID
 	}
 
-	resp, err := h.service.Manager.AdvertiserInfo(qianchuanSDK.AdvertiserInfoReq{
+	resp, err := h.service.Client.AdvertiserInfo(c.Request.Context(), sdk.AdvertiserInfoReq{
 		AccessToken:   userSession.AccessToken,
 		AdvertiserIds: []int64{advertiserId},
 		Fields:        []string{"id", "name", "company", "first_industry_name", "second_industry_name"},
@@ -124,10 +75,7 @@ func (h *AdvertiserHandler) Info(c *gin.Context) {
 
 	if err != nil {
 		log.Printf("Get advertiser info failed: %v", err)
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"code":    500,
-			"message": "获取广告主详情失败: " + err.Error(),
-		})
+		util.ServerError(c, "获取广告主详情失败: "+err.Error())
 		return
 	}
 
@@ -138,11 +86,38 @@ func (h *AdvertiserHandler) Info(c *gin.Context) {
 		data = nil
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"code":    0,
-		"message": "success",
-		"data":    data,
-	})
+	util.Success(c, data)
+}
+
+// Update 更新广告主信息（当前为占位实现）
+//
+// 注意：
+// - 千川 OpenAPI 当前不提供直接更新广告主基础信息/状态的接口
+// - 为保持 API 契约一致性，本端点返回 501，并给出替代建议
+// - 前端应根据 501 和 hint 字段展示 "功能暂未实现" 提示
+func (h *AdvertiserHandler) Update(c *gin.Context) {
+	var req struct {
+		AdvertiserId int64   `json:"advertiser_id" binding:"required"`
+		Status       *string `json:"status"`        // 期望状态: ENABLE/DISABLE（目前仅用于语义提示）
+		Name         *string `json:"name"`          // 预留字段：广告主名称
+		Company      *string `json:"company"`       // 预留字段：公司名称
+	}
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		util.BadRequest(c, "参数错误: "+err.Error())
+		return
+	}
+
+	log.Printf("Update advertiser placeholder: advertiser_id=%d, status=%v, name=%v, company=%v",
+		req.AdvertiserId, req.Status, req.Name, req.Company)
+
+	// 目前千川/巨量开放平台不支持通过开放API直接更新广告主基础信息或启停状态，
+	// 因此这里统一返回 501，并在 hint 中给出替代方案说明。
+	util.NotImplemented(
+		c,
+		"广告主更新功能暂未实现",
+		"当前千川开放平台暂不支持通过API更新广告主信息或启停状态，请在千川后台修改账户，或通过调整账户/计划预算控制投放。",
+	)
 }
 
 // ==================== 账户扩展（批次C） ====================
@@ -160,25 +135,31 @@ func (h *AdvertiserHandler) GetBudget(c *gin.Context) {
 
 	log.Printf("Get account budget: advertiser_id=%d", advertiserId)
 
-	// SDK 暂未实现账户预算接口，返回 501
-	c.JSON(http.StatusNotImplemented, gin.H{
-		"code":    501,
-		"message": "账户预算查询功能暂未实现",
-		"hint":    "SDK 正在对接千川账户预算API，请稍后使用。建议通过广告组/计划预算管理",
-		"data": gin.H{
-			"advertiser_id": advertiserId,
-			"budget":        0,
-			"budget_mode":   "BUDGET_MODE_INFINITE",
-		},
-		"session": userSession,
+	// 调用 Service（底层若不支持会返回501）
+	resp, err := h.service.GetAdvertiserBudget(c.Request.Context(), userSession.AccessToken, advertiserId)
+	if err != nil {
+		util.ServerError(c, "获取账户预算失败: "+err.Error())
+		return
+	}
+	if resp.Code == 501 {
+		util.NotImplemented(c, "账户预算查询功能暂未实现", "SDK 正在对接千川账户预算API，请稍后使用。建议通过广告组/计划预算管理")
+		return
+	}
+	if resp.Code != 0 {
+		util.BadRequest(c, fmt.Sprintf("获取账户预算失败[%d]: %s", resp.Code, resp.Message))
+		return
+	}
+	// 返回数据给前端（字段名保持一致）
+	util.Success(c, gin.H{
+		"advertiser_id": advertiserId,
+		"budget":        resp.Data.Budget,
+		"budget_mode":   resp.Data.BudgetMode,
 	})
 }
 
 // UpdateBudget 更新账户日预算
 // POST /qianchuan/advertiser/budget/update
 func (h *AdvertiserHandler) UpdateBudget(c *gin.Context) {
-	userSession, _ := middleware.GetUserSession(c)
-
 	var req struct {
 		AdvertiserId int64  `json:"advertiser_id" binding:"required"`
 		Budget       int64  `json:"budget" binding:"required"`
@@ -186,29 +167,29 @@ func (h *AdvertiserHandler) UpdateBudget(c *gin.Context) {
 	}
 
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"code":    400,
-			"message": "参数错误: " + err.Error(),
-		})
+		util.BadRequest(c, "参数错误: "+err.Error())
 		return
 	}
 
 	log.Printf("Update account budget: advertiser_id=%d, budget=%d, mode=%s",
 		req.AdvertiserId, req.Budget, req.BudgetMode)
 
-	// SDK 暂未实现账户预算更新接口，返回 501
-	c.JSON(http.StatusNotImplemented, gin.H{
-		"code":    501,
-		"message": "账户预算更新功能暂未实现",
-		"hint":    "SDK 正在对接千川账户预算API，请稍后使用。建议通过广告组/计划预算管理",
-		"data": gin.H{
-			"advertiser_id": req.AdvertiserId,
-			"budget":        req.Budget,
-			"budget_mode":   req.BudgetMode,
-			"updated":       false,
-		},
-		"session": userSession,
-	})
+	// 调用 Service（底层若不支持会返回501）
+	userSession, _ := middleware.GetUserSession(c)
+	resp, err := h.service.UpdateAdvertiserBudget(c.Request.Context(), userSession.AccessToken, req.AdvertiserId, req.Budget)
+	if err != nil {
+		util.ServerError(c, "更新账户预算失败: "+err.Error())
+		return
+	}
+	if resp.Code == 501 {
+		util.NotImplemented(c, "账户预算更新功能暂未实现", "SDK 正在对接千川账户预算API，请稍后使用。建议通过广告组/计划预算管理")
+		return
+	}
+	if resp.Code != 0 {
+		util.BadRequest(c, fmt.Sprintf("更新账户预算失败[%d]: %s", resp.Code, resp.Message))
+		return
+	}
+	util.Success(c, gin.H{"message":"更新成功"})
 }
 
 // GetAuthorizedAwemeList 获取千川账户下已授权抖音号
@@ -216,28 +197,40 @@ func (h *AdvertiserHandler) UpdateBudget(c *gin.Context) {
 func (h *AdvertiserHandler) GetAuthorizedAwemeList(c *gin.Context) {
 	userSession, _ := middleware.GetUserSession(c)
 	advertiserIdStr := c.Query("advertiser_id")
-	page := c.DefaultQuery("page", "1")
-	pageSize := c.DefaultQuery("page_size", "20")
+	pageStr := c.DefaultQuery("page", "1")
+	pageSizeStr := c.DefaultQuery("page_size", "20")
 
 	advertiserId, err := strconv.ParseInt(advertiserIdStr, 10, 64)
 	if err != nil || advertiserId == 0 {
 		advertiserId = userSession.AdvertiserID
 	}
 
-	log.Printf("Get authorized aweme list: advertiser_id=%d, page=%s, page_size=%s",
+	page, _ := strconv.ParseInt(pageStr, 10, 64)
+	pageSize, _ := strconv.ParseInt(pageSizeStr, 10, 64)
+
+	log.Printf("Get authorized aweme list: advertiser_id=%d, page=%d, page_size=%d",
 		advertiserId, page, pageSize)
 
-	// SDK 暂未实现授权抖音号列表接口，返回 501
-	c.JSON(http.StatusNotImplemented, gin.H{
-		"code":    501,
-		"message": "授权抖音号列表查询功能暂未实现",
-		"hint":    "SDK 正在对接千川授权管理API，请稍后使用",
-		"data": gin.H{
-			"list":  []gin.H{},
-			"total": 0,
-		},
-		"session": userSession,
+	// 调用 SDK AwemeAuthorizedGet
+	resp, err := h.service.Client.AwemeAuthorizedGet(c.Request.Context(), sdk.AwemeAuthorizedGetReq{
+		AccessToken:  userSession.AccessToken,
+		AdvertiserId: advertiserId,
+		Page:         page,
+		PageSize:     pageSize,
 	})
+
+	if err != nil {
+		log.Printf("Get authorized aweme list failed: %v", err)
+		util.ServerError(c, "获取授权抖音号列表失败: "+err.Error())
+		return
+	}
+
+	if resp.Code != 0 {
+		util.ErrorResponse(c, int(resp.Code), resp.Message)
+		return
+	}
+
+	util.Success(c, resp.Data)
 }
 
 // GetAwemeAuthList 获取抖音号授权列表
@@ -254,15 +247,7 @@ func (h *AdvertiserHandler) GetAwemeAuthList(c *gin.Context) {
 	log.Printf("Get aweme auth list: advertiser_id=%d", advertiserId)
 
 	// SDK 暂未实现抖音号授权列表接口，返回 501
-	c.JSON(http.StatusNotImplemented, gin.H{
-		"code":    501,
-		"message": "抖音号授权列表查询功能暂未实现",
-		"hint":    "SDK 正在对接千川授权管理API，请稍后使用",
-		"data": gin.H{
-			"list": []gin.H{},
-		},
-		"session": userSession,
-	})
+	util.NotImplemented(c, "抖音号授权列表查询功能暂未实现", "SDK 正在对接千川授权管理API，请稍后使用")
 }
 
 // GetShopAdvertiserList 获取店铺账户关联的广告账户列表
@@ -275,10 +260,7 @@ func (h *AdvertiserHandler) GetShopAdvertiserList(c *gin.Context) {
 
 	shopId, err := strconv.ParseInt(shopIdStr, 10, 64)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"code":    400,
-			"message": "参数错误: shop_id 必须为数字",
-		})
+		util.BadRequest(c, "shop_id 必须为数字")
 		return
 	}
 
@@ -288,35 +270,25 @@ func (h *AdvertiserHandler) GetShopAdvertiserList(c *gin.Context) {
 	log.Printf("Get shop advertiser list: shop_id=%d, page=%d, page_size=%d",
 		shopId, page, pageSize)
 
-	resp, err := h.service.Manager.ShopAdvertiserList(qianchuanSDK.ShopAdvertiserListReq{
+	resp, err := h.service.Client.ShopAdvertiserList(c.Request.Context(), sdk.ShopAdvertiserListReq{
 		ShopId:      shopId,
-		Page:        page,
-		PageSize:    pageSize,
+		Page:        int64(page),
+		PageSize:    int64(pageSize),
 		AccessToken: userSession.AccessToken,
 	})
 
 	if err != nil {
 		log.Printf("Get shop advertiser list failed: %v", err)
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"code":    500,
-			"message": "获取店铺广告账户列表失败: " + err.Error(),
-		})
+		util.ServerError(c, "获取店铺广告账户列表失败: "+err.Error())
 		return
 	}
 
 	if resp.Code != 0 {
-		c.JSON(http.StatusOK, gin.H{
-			"code":    resp.Code,
-			"message": resp.Message,
-		})
+		util.ErrorResponse(c, int(resp.Code), resp.Message)
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"code":    0,
-		"message": "success",
-		"data":    resp.Data,
-	})
+	util.Success(c, resp.Data)
 }
 
 // GetAgentAdvertiserList 获取代理商账户关联的广告账户列表
@@ -329,10 +301,7 @@ func (h *AdvertiserHandler) GetAgentAdvertiserList(c *gin.Context) {
 
 	agentId, err := strconv.ParseInt(agentIdStr, 10, 64)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"code":    400,
-			"message": "参数错误: agent_id 必须为数字",
-		})
+		util.BadRequest(c, "agent_id 必须为数字")
 		return
 	}
 
@@ -342,33 +311,23 @@ func (h *AdvertiserHandler) GetAgentAdvertiserList(c *gin.Context) {
 	log.Printf("Get agent advertiser list: agent_id=%d, page=%d, page_size=%d",
 		agentId, page, pageSize)
 
-	resp, err := h.service.Manager.AgentAdvertiserList(qianchuanSDK.AgentAdvertiserListReq{
+	resp, err := h.service.Client.AgentAdvertiserList(c.Request.Context(), sdk.AgentAdvertiserListReq{
 		AdvertiserId: agentId,
-		Page:         page,
-		PageSize:     pageSize,
+		Page:         int64(page),
+		PageSize:     int64(pageSize),
 		AccessToken:  userSession.AccessToken,
 	})
 
 	if err != nil {
 		log.Printf("Get agent advertiser list failed: %v", err)
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"code":    500,
-			"message": "获取代理商广告账户列表失败: " + err.Error(),
-		})
+		util.ServerError(c, "获取代理商广告账户列表失败: "+err.Error())
 		return
 	}
 
 	if resp.Code != 0 {
-		c.JSON(http.StatusOK, gin.H{
-			"code":    resp.Code,
-			"message": resp.Message,
-		})
+		util.ErrorResponse(c, int(resp.Code), resp.Message)
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"code":    0,
-		"message": "success",
-		"data":    resp.Data,
-	})
+	util.Success(c, resp.Data)
 }

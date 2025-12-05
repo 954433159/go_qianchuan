@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback, useRef, useEffect } from 'react'
+import React, { useState, useMemo, useCallback, useRef, useEffect } from 'react'
 import { List, ListImperativeAPI } from 'react-window'
 import { ChevronDown, ChevronUp, ChevronsUpDown } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -6,7 +6,6 @@ import { Checkbox } from './Checkbox'
 import Loading from './Loading'
 import EmptyState from './EmptyState'
 import Input from './Input'
-import Button from './Button'
 
 export interface ColumnDef<T> {
   key: string
@@ -144,8 +143,8 @@ export default function VirtualDataTable<T extends Record<string, unknown>>({
   // 是否使用虚拟滚动
   const useVirtualization = searchedData.length > threshold
 
-  // 虚拟滚动行渲染器
-  const Row = useCallback(({ index, style }: { index: number; style: React.CSSProperties }) => {
+  // 虚拟滚动行渲染组件
+  const VirtualRow = useCallback(({ index, style }: { index: number; style: React.CSSProperties }) => {
     const row = searchedData[index]
     if (!row) return null
     const key = getRowKey(row)
@@ -194,11 +193,61 @@ export default function VirtualDataTable<T extends Record<string, unknown>>({
     )
   }, [searchedData, selectedRows, getRowKey, selectable, columns, handleSelectRow])
 
+  // Memoized component for virtual scrolling
+  const MemoizedVirtualRow = React.memo(VirtualRow)
+
+  // 普通行渲染
+  const RegularRow = useCallback(({ row, index }: { row: T; index: number }) => {
+    const key = getRowKey(row)
+    const isSelected = selectedRows.has(key)
+
+    return (
+      <div
+        className={cn(
+          'flex border-b hover:bg-muted/50 transition-colors',
+          isSelected && 'bg-muted/50'
+        )}
+      >
+        {selectable && (
+          <div className="w-12 px-4 py-3 flex items-center">
+            <Checkbox
+              checked={isSelected}
+              onCheckedChange={(checked: boolean | 'indeterminate') =>
+                handleSelectRow(row, checked as boolean)
+              }
+            />
+          </div>
+        )}
+        {columns.map((column) => (
+          <div
+            key={column.key}
+            className={cn(
+              'px-4 py-3 text-sm flex items-center',
+              column.align === 'center' && 'justify-center',
+              column.align === 'right' && 'justify-end'
+            )}
+            style={{ width: column.width || 'auto', flexShrink: 0 }}
+          >
+            {column.render
+              ? column.render(
+                  column.dataIndex ? row[column.dataIndex] : undefined,
+                  row,
+                  index
+                )
+              : column.dataIndex
+              ? String((row[column.dataIndex] as string | number | boolean) ?? '')
+              : ''}
+          </div>
+        ))}
+      </div>
+    )
+  }, [selectedRows, getRowKey, selectable, columns, handleSelectRow])
+
   useEffect(() => {
     // 数据变化时滚动到顶部 (react-window v2)
     if (listRef.current && useVirtualization) {
       try {
-        listRef.current.scrollToItem(0, 'start')
+        listRef.current.scrollToRow({ index: 0 })
       } catch {
         // Fallback for API incompatibility
       }
@@ -285,26 +334,20 @@ export default function VirtualDataTable<T extends Record<string, unknown>>({
         {searchedData.length === 0 ? (
           <EmptyState title={emptyText} />
         ) : useVirtualization ? (
-          // 虚拟滚动模式 (react-window v2)
-          <List
-            ref={listRef}
-            height={virtualHeight}
-            itemCount={searchedData.length}
-            itemSize={rowHeight}
-            width="100%"
-          >
-            {Row as React.ComponentType<any>}
-          </List>
+          // 虚拟滚动模式 (react-window)
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          <List height={virtualHeight} itemCount={searchedData.length} itemSize={rowHeight} width="100%">{VirtualRow}</List>
         ) : (
           // 普通渲染模式
           <div>
             {searchedData.map((row, index) => {
               const key = getRowKey(row)
               return (
-                <Row
+                <RegularRow
                   key={String(key)}
+                  row={row}
                   index={index}
-                  style={{}}
                 />
               )
             })}

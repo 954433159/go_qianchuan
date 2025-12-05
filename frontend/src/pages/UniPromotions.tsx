@@ -9,6 +9,7 @@ import {
 } from '../api/uniPromotion'
 import { useAuthStore } from '../store/authStore'
 import { toast } from '../components/ui/Toast'
+import { FeatureBanner } from '../components/common/FeatureBadge'
 
 /**
  * 全域推广列表页面
@@ -165,6 +166,14 @@ export default function UniPromotions() {
           多场景智能投放，覆盖抖音、今日头条、西瓜视频等多个平台
         </p>
       </div>
+
+      {/* Feature Status Banner */}
+      <FeatureBanner 
+        status="not-implemented" 
+        title="全域推广功能开发中"
+        description="全域推广功能正在开发中，当前后端接口尚未实现。如需使用此功能，请联系管理员或等待后续更新。"
+        className="mb-6"
+      />
 
       {/* Toolbar */}
       <div className="bg-white rounded-lg shadow mb-6 p-4">

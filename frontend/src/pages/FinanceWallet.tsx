@@ -151,7 +151,7 @@ export default function FinanceWallet() {
             <FileText className="w-5 h-5 mr-2" />
             账单详情
           </Link>
-          <button className="qc-btn qc-btn-primary">
+          <button className="qc-btn qc-btn-primary" onClick={() => toast.info('充值功能开发中')}>
             <DollarSign className="w-5 h-5 mr-2" />
             立即充值
           </button>

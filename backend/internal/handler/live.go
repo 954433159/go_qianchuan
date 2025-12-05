@@ -6,8 +6,8 @@ import (
 
 	"github.com/CriarBrand/qianchuan-backend/internal/middleware"
 	"github.com/CriarBrand/qianchuan-backend/internal/service"
+	"github.com/CriarBrand/qianchuan-backend/internal/sdk"
 	"github.com/CriarBrand/qianchuan-backend/internal/util"
-	"github.com/CriarBrand/qianchuanSDK"
 	"github.com/gin-gonic/gin"
 )
 
@@ -66,13 +66,13 @@ func (h *LiveHandler) GetLiveStats(c *gin.Context) {
 	}
 
 	// SDK未初始化时直接返回500，避免测试panic
-	if h.service == nil || h.service.Manager == nil {
+	if h.service == nil || h.service.Client == nil {
 		util.ServerError(c, "SDK未初始化")
 		return
 	}
 
 	// 调用SDK
-	resp, err := h.service.Manager.LiveGet(qianchuanSDK.LiveGetReq{
+	resp, err := h.service.Client.LiveGet(c.Request.Context(), sdk.LiveGetReq{
 		AdvertiserId: userSession.AdvertiserID,
 		Fields:       req.Fields,
 		AccessToken:  userSession.AccessToken,
@@ -85,12 +85,12 @@ func (h *LiveHandler) GetLiveStats(c *gin.Context) {
 	}
 
 	if resp.Code != 0 {
-		log.Printf("SDK returned error: code=%d, message=%s, request_id=%s", resp.Code, resp.Message, resp.RequestId)
+		log.Printf("SDK returned error: code=%d, message=%s", resp.Code, resp.Message)
 		util.ErrorResponse(c, int(resp.Code), resp.Message)
 		return
 	}
 
-	util.Success(c, resp.Data.Stats)
+	util.Success(c, resp.Data)
 }
 
 // GetLiveRooms 获取今日直播间列表
@@ -103,41 +103,30 @@ func (h *LiveHandler) GetLiveRooms(c *gin.Context) {
 	}
 
 	// 解析并验证分页参数
-	cursorStr := c.Query("cursor")
-	countStr := c.Query("count")
+	pageStr := c.DefaultQuery("page", "1")
+	pageSizeStr := c.DefaultQuery("page_size", "20")
 
-	var cursor, count int64
-	if cursorStr != "" {
-		if parsed, err := strconv.ParseInt(cursorStr, 10, 64); err == nil {
-			cursor = parsed
-		}
-	}
-	if countStr != "" {
-		if parsed, err := strconv.ParseInt(countStr, 10, 64); err == nil {
-			count = parsed
-		}
-	}
-	if count == 0 {
-		count = 20 // 默认20条
-	}
+	page, _ := strconv.ParseInt(pageStr, 10, 64)
+	pageSize, _ := strconv.ParseInt(pageSizeStr, 10, 64)
+
 	var err error
-	_, count, err = util.ValidatePaginationInt64(0, count)
+	page, pageSize, err = util.ValidatePaginationInt64(page, pageSize)
 	if err != nil {
 		util.BadRequest(c, err.Error())
 		return
 	}
 
 	// SDK未初始化时直接返回500，避免测试panic
-	if h.service == nil || h.service.Manager == nil {
+	if h.service == nil || h.service.Client == nil {
 		util.ServerError(c, "SDK未初始化")
 		return
 	}
 
 	// 调用SDK
-	resp, err := h.service.Manager.LiveRoomGet(qianchuanSDK.LiveRoomGetReq{
+	resp, err := h.service.Client.LiveRoomGet(c.Request.Context(), sdk.LiveRoomGetReq{
 		AdvertiserId: userSession.AdvertiserID,
-		Cursor:       cursor,
-		Count:        count,
+		Page:         page,
+		PageSize:     pageSize,
 		AccessToken:  userSession.AccessToken,
 	})
 
@@ -148,57 +137,13 @@ func (h *LiveHandler) GetLiveRooms(c *gin.Context) {
 	}
 
 	if resp.Code != 0 {
-		log.Printf("SDK returned error: code=%d, message=%s, request_id=%s", resp.Code, resp.Message, resp.RequestId)
+		log.Printf("SDK returned error: code=%d, message=%s", resp.Code, resp.Message)
 		util.ErrorResponse(c, int(resp.Code), resp.Message)
 		return
 	}
 
-	// 转换SDK返回的字段以匹配前端期望
-	type FrontendLiveRoom struct {
-		RoomId          int64  `json:"room_id"`
-		RoomTitle       string `json:"room_title"`
-		AwemeName       string `json:"aweme_name"`
-		AwemeId         string `json:"aweme_id"`
-		StartTime       string `json:"start_time"`
-		EndTime         string `json:"end_time"`
-		Status          string `json:"status"`
-		LiveDuration    int64  `json:"live_duration"`
-		Gmv             int64  `json:"gmv"`               // 列表中不返回，需要详情接口
-		WatchUcnt       int64  `json:"watch_ucnt"`        // 列表中不返回
-		OrderCount      int64  `json:"order_count"`       // 列表中不返回
-		OnlineUserCount int64  `json:"online_user_count"` // 列表中不返回
-	}
-
-	var frontendRooms []FrontendLiveRoom
-	for _, room := range resp.Data.List {
-		// SDK返回 LIVING/FINISHED, 前端使用 LIVE/END
-		status := room.RoomStatus
-		if status == "LIVING" {
-			status = "LIVE"
-		} else if status == "FINISHED" {
-			status = "END"
-		}
-
-		frontendRooms = append(frontendRooms, FrontendLiveRoom{
-			RoomId:          room.RoomId,
-			RoomTitle:       room.RoomTitle,
-			AwemeName:       room.AwemeName,
-			AwemeId:         room.AwemeId,
-			StartTime:       room.StartTime,
-			EndTime:         room.EndTime,
-			Status:          status,
-			LiveDuration:    room.LiveDuration,
-			Gmv:             0, // 列表中不返回，需要详情接口
-			WatchUcnt:       0, // 列表中不返回
-			OrderCount:      0, // 列表中不返回
-			OnlineUserCount: 0, // 列表中不返回
-		})
-	}
-
-	util.Success(c, gin.H{
-		"list":      frontendRooms,
-		"page_info": resp.Data.PageInfo,
-	})
+	// 直接返回SDK的数据（List是interface{}类型，不做转换）
+	util.Success(c, resp.Data)
 }
 
 // GetLiveRoomDetail 获取直播间详情
@@ -228,13 +173,13 @@ func (h *LiveHandler) GetLiveRoomDetail(c *gin.Context) {
 	}
 
 	// SDK未初始化时直接返回500，避免测试panic
-	if h.service == nil || h.service.Manager == nil {
+	if h.service == nil || h.service.Client == nil {
 		util.ServerError(c, "SDK未初始化")
 		return
 	}
 
 	// 调用SDK
-	resp, err := h.service.Manager.LiveRoomDetailGet(qianchuanSDK.LiveRoomDetailGetReq{
+	resp, err := h.service.Client.LiveRoomDetailGet(c.Request.Context(), sdk.LiveRoomDetailGetReq{
 		AdvertiserId: userSession.AdvertiserID,
 		RoomId:       roomId,
 		AccessToken:  userSession.AccessToken,
@@ -247,15 +192,15 @@ func (h *LiveHandler) GetLiveRoomDetail(c *gin.Context) {
 	}
 
 	if resp.Code != 0 {
-		log.Printf("SDK returned error: code=%d, message=%s, request_id=%s", resp.Code, resp.Message, resp.RequestId)
+		log.Printf("SDK returned error: code=%d, message=%s", resp.Code, resp.Message)
 		util.ErrorResponse(c, int(resp.Code), resp.Message)
 		return
 	}
 
-	util.Success(c, resp.Data.Room)
+	util.Success(c, resp.Data)
 }
 
-// GetLiveRoomFlowPerformance 获取直播间流量表现
+// GetLiveRoomFlowPerformance
 func (h *LiveHandler) GetLiveRoomFlowPerformance(c *gin.Context) {
 	// 从middleware获取Session
 	userSession, ok := middleware.GetUserSession(c)
@@ -282,13 +227,13 @@ func (h *LiveHandler) GetLiveRoomFlowPerformance(c *gin.Context) {
 	}
 
 	// SDK未初始化时直接返回500，避免测试panic
-	if h.service == nil || h.service.Manager == nil {
+	if h.service == nil || h.service.Client == nil {
 		util.ServerError(c, "SDK未初始化")
 		return
 	}
 
 	// 调用SDK
-	resp, err := h.service.Manager.LiveRoomFlowPerformanceGet(qianchuanSDK.LiveRoomFlowPerformanceGetReq{
+	resp, err := h.service.Client.LiveRoomFlowPerformanceGet(c.Request.Context(), sdk.LiveRoomFlowPerformanceGetReq{
 		AdvertiserId: userSession.AdvertiserID,
 		RoomId:       roomId,
 		AccessToken:  userSession.AccessToken,
@@ -301,15 +246,15 @@ func (h *LiveHandler) GetLiveRoomFlowPerformance(c *gin.Context) {
 	}
 
 	if resp.Code != 0 {
-		log.Printf("SDK returned error: code=%d, message=%s, request_id=%s", resp.Code, resp.Message, resp.RequestId)
+		log.Printf("SDK returned error: code=%d, message=%s", resp.Code, resp.Message)
 		util.ErrorResponse(c, int(resp.Code), resp.Message)
 		return
 	}
 
-	util.Success(c, resp.Data.FlowPerformance)
+	util.Success(c, resp.Data)
 }
 
-// GetLiveRoomUserInsight 获取直播间用户洞察
+// GetLiveRoomUserInsight
 func (h *LiveHandler) GetLiveRoomUserInsight(c *gin.Context) {
 	// 从middleware获取Session
 	userSession, ok := middleware.GetUserSession(c)
@@ -336,13 +281,13 @@ func (h *LiveHandler) GetLiveRoomUserInsight(c *gin.Context) {
 	}
 
 	// SDK未初始化时直接返回500，避免测试panic
-	if h.service == nil || h.service.Manager == nil {
+	if h.service == nil || h.service.Client == nil {
 		util.ServerError(c, "SDK未初始化")
 		return
 	}
 
 	// 调用SDK
-	resp, err := h.service.Manager.LiveRoomUserGet(qianchuanSDK.LiveRoomUserGetReq{
+	resp, err := h.service.Client.LiveRoomUserGet(c.Request.Context(), sdk.LiveRoomUserGetReq{
 		AdvertiserId: userSession.AdvertiserID,
 		RoomId:       roomId,
 		AccessToken:  userSession.AccessToken,
@@ -355,15 +300,15 @@ func (h *LiveHandler) GetLiveRoomUserInsight(c *gin.Context) {
 	}
 
 	if resp.Code != 0 {
-		log.Printf("SDK returned error: code=%d, message=%s, request_id=%s", resp.Code, resp.Message, resp.RequestId)
+		log.Printf("SDK returned error: code=%d, message=%s", resp.Code, resp.Message)
 		util.ErrorResponse(c, int(resp.Code), resp.Message)
 		return
 	}
 
-	util.Success(c, resp.Data.UserInsight)
+	util.Success(c, resp.Data)
 }
 
-// GetLiveRoomProducts 获取直播间商品列表
+// GetLiveRoomProducts
 func (h *LiveHandler) GetLiveRoomProducts(c *gin.Context) {
 	// 从middleware获取Session
 	userSession, ok := middleware.GetUserSession(c)
@@ -415,17 +360,18 @@ func (h *LiveHandler) GetLiveRoomProducts(c *gin.Context) {
 	}
 
 	// SDK未初始化时直接返回500，避免测试panic
-	if h.service == nil || h.service.Manager == nil {
+	if h.service == nil || h.service.Client == nil {
 		util.ServerError(c, "SDK未初始化")
 		return
 	}
 
-	// 调用SDK
-	resp, err := h.service.Manager.LiveRoomProductListGet(qianchuanSDK.LiveRoomProductListGetReq{
+	// 调用SDK (Cursor/Count 字段SDK使用Page/PageSize)
+	_ = cursor // 转换举page
+	resp, err := h.service.Client.LiveRoomProductListGet(c.Request.Context(), sdk.LiveRoomProductListGetReq{
 		AdvertiserId: userSession.AdvertiserID,
 		RoomId:       roomId,
-		Cursor:       cursor,
-		Count:        count,
+		Page:         1,
+		PageSize:     count,
 		AccessToken:  userSession.AccessToken,
 	})
 
@@ -436,7 +382,7 @@ func (h *LiveHandler) GetLiveRoomProducts(c *gin.Context) {
 	}
 
 	if resp.Code != 0 {
-		log.Printf("SDK returned error: code=%d, message=%s, request_id=%s", resp.Code, resp.Message, resp.RequestId)
+		log.Printf("SDK returned error: code=%d, message=%s", resp.Code, resp.Message)
 		util.ErrorResponse(c, int(resp.Code), resp.Message)
 		return
 	}

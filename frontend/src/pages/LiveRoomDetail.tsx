@@ -162,7 +162,7 @@ export default function LiveRoomDetail() {
   const formatNumber = (num: number | undefined): string => {
     if (!num) return '0'
     if (num >= 10000) {
-      return (num / 10000).toFixed(1) + '万'
+      return `${(num / 10000).toFixed(1)  }万`
     }
     return num.toLocaleString()
   }
@@ -188,7 +188,7 @@ export default function LiveRoomDetail() {
         观看人数: flow.watch_ucnt,
         订单数: flow.order_count,
         GMV: flow.gmv,
-        转化率: (flow.conversion_rate * 100).toFixed(2) + '%'
+        转化率: `${(flow.conversion_rate * 100).toFixed(2)  }%`
       }))
     : []
 
@@ -355,7 +355,7 @@ export default function LiveRoomDetail() {
                 { gender: '男性', count: userInsight.gender_distribution.male }
               ].map((item, index) => {
                 const total = userInsight.gender_distribution.male + userInsight.gender_distribution.female
-                const percentage = ((item.count / total) * 100).toFixed(1) + '%'
+                const percentage = `${((item.count / total) * 100).toFixed(1)  }%`
                 return (
                   <div key={index}>
                     <div className="flex justify-between mb-2">
@@ -379,7 +379,7 @@ export default function LiveRoomDetail() {
             <div className="space-y-4">
               {Object.entries(userInsight.device_distribution).map(([device, count], index) => {
                 const total = Object.values(userInsight.device_distribution).reduce((sum: number, c) => sum + (c as number), 0)
-                const percentage = (((count as number) / total) * 100).toFixed(1) + '%'
+                const percentage = `${(((count as number) / total) * 100).toFixed(1)  }%`
                 return (
                   <div key={index}>
                     <div className="flex justify-between mb-2">

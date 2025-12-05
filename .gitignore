@@ -54,3 +54,57 @@ docker-compose.override.yml
 PROJECT_ANALYSIS_*.md
 TODO.md
 NOTES.md
+# Claude Code configuration files
+.claude/mcp-servers.json
+.claude/settings.json
+.claude/settings.local.json
+.claude/hooks/
+
+# Node.js (if using npx MCP servers)
+node_modules/
+
+# Python (if using analyzer)
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+PYTHON_ARGCOMPLETE_OK
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Warp configuration (may contain sensitive tokens)
+.warp/
+
+# Teams directory - MCP configurations with secrets
+Teams/mcp-servers-config.local.json
+Teams/*.local.json

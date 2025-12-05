@@ -15,6 +15,7 @@ import { formatDistanceToNow } from 'date-fns'
 import { zhCN } from 'date-fns/locale'
 import GMVCard from '@/components/dashboard/GMVCard'
 import { useAdvertiserStore } from '@/store/advertiserStore'
+import { useDashboardStats } from '@/hooks/useDashboardStats'
 
 export default function Dashboard() {
   const { currentAdvertiser } = useAdvertiserStore()
@@ -22,6 +23,9 @@ export default function Dashboard() {
   const [activitiesLoading, setActivitiesLoading] = useState(true)
   const [balance, setBalance] = useState<Balance | null>(null)
   const [balanceLoading, setBalanceLoading] = useState(true)
+  
+  // 获取真实的仪表板统计数据
+  const { stats: dashboardStats, trendData: realTrendData, loading: statsLoading } = useDashboardStats()
 
   // 初始加载
   useEffect(() => {
@@ -115,30 +119,62 @@ export default function Dashboard() {
     }
   }
 
-  const stats = [
-    { name: '今日消耗', value: '￥12,845', icon: DollarSign, bgColor: 'bg-blue-50 dark:bg-blue-950', iconColor: 'text-blue-600 dark:text-blue-400', change: '+12.5%', changeColor: 'text-green-600' },
-    { name: '展示次数', value: '245,890', icon: Eye, bgColor: 'bg-green-50 dark:bg-green-950', iconColor: 'text-green-600 dark:text-green-400', change: '+8.2%', changeColor: 'text-green-600' },
-    { name: '点击次数', value: '18,432', icon: TrendingUp, bgColor: 'bg-purple-50 dark:bg-purple-950', iconColor: 'text-purple-600 dark:text-purple-400', change: '+15.3%', changeColor: 'text-green-600' },
-    { name: '成交订单', value: '1,024', icon: Package, bgColor: 'bg-orange-50 dark:bg-orange-950', iconColor: 'text-orange-600 dark:text-orange-400', change: '+22.1%', changeColor: 'text-green-600' },
-  ]
+  // 使用真实 API 数据构造统计卡片
+  const formatNumber = (num: number) => num.toLocaleString('zh-CN')
+  const formatChange = (change: number) => {
+    const sign = change >= 0 ? '+' : ''
+    return `${sign}${change.toFixed(1)}%`
+  }
+  const getChangeColor = (change: number) => change >= 0 ? 'text-green-600' : 'text-red-600'
   
-  // 近7天趋势数据
-  const trendData = [
-    { date: '01-15', '消耗': 10200, '展示': 198000, '点击': 14500 },
-    { date: '01-16', '消耗': 11300, '展示': 215000, '点击': 15800 },
-    { date: '01-17', '消耗': 9800, '展示': 189000, '点击': 13900 },
-    { date: '01-18', '消耗': 12100, '展示': 232000, '点击': 17200 },
-    { date: '01-19', '消耗': 11800, '展示': 225000, '点击': 16500 },
-    { date: '01-20', '消耗': 13200, '展示': 251000, '点击': 18900 },
-    { date: '01-21', '消耗': 12845, '展示': 245890, '点击': 18432 },
-  ]
+  const stats = dashboardStats ? [
+    { 
+      name: '今日消耗', 
+      value: `￥${formatNumber(Math.round(dashboardStats.todayCost))}`, 
+      icon: DollarSign, 
+      bgColor: 'bg-blue-50 dark:bg-blue-950', 
+      iconColor: 'text-blue-600 dark:text-blue-400', 
+      change: formatChange(dashboardStats.costChange), 
+      changeColor: getChangeColor(dashboardStats.costChange) 
+    },
+    { 
+      name: '展示次数', 
+      value: formatNumber(dashboardStats.todayShow), 
+      icon: Eye, 
+      bgColor: 'bg-green-50 dark:bg-green-950', 
+      iconColor: 'text-green-600 dark:text-green-400', 
+      change: formatChange(dashboardStats.showChange), 
+      changeColor: getChangeColor(dashboardStats.showChange) 
+    },
+    { 
+      name: '点击次数', 
+      value: formatNumber(dashboardStats.todayClick), 
+      icon: TrendingUp, 
+      bgColor: 'bg-purple-50 dark:bg-purple-950', 
+      iconColor: 'text-purple-600 dark:text-purple-400', 
+      change: formatChange(dashboardStats.clickChange), 
+      changeColor: getChangeColor(dashboardStats.clickChange) 
+    },
+    { 
+      name: '成交订单', 
+      value: formatNumber(dashboardStats.todayConvert), 
+      icon: Package, 
+      bgColor: 'bg-orange-50 dark:bg-orange-950', 
+      iconColor: 'text-orange-600 dark:text-orange-400', 
+      change: formatChange(dashboardStats.convertChange), 
+      changeColor: getChangeColor(dashboardStats.convertChange) 
+    },
+  ] : []
   
-  // 转化漏斗数据
-  const funnelData = [
-    { name: '展示', value: 245890, color: 'blue' },
-    { name: '点击', value: 18432, color: 'green' },
-    { name: '转化', value: 1024, color: 'purple' },
-  ]
+  // 使用真实 API 数据的趋势
+  const trendData = realTrendData.length > 0 ? realTrendData : []
+  
+  // 使用真实数据的转化漏斗
+  const funnelData = dashboardStats ? [
+    { name: '展示', value: dashboardStats.todayShow, color: 'blue' },
+    { name: '点击', value: dashboardStats.todayClick, color: 'green' },
+    { name: '转化', value: dashboardStats.todayConvert, color: 'purple' },
+  ] : []
   
   // 广告计划排行
   const topCampaigns = [

@@ -284,7 +284,7 @@ export default function ReportAd() {
         <CardContent>
           <Table
             columns={columns as any}
-            dataSource={reportData}
+            data={reportData}
             rowKey="date"
           />
         </CardContent>

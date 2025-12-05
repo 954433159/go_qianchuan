@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react'
-import { Video, Play, Eye, Heart, MessageCircle, Share2, Check } from 'lucide-react'
+import { Video, Eye, Heart, MessageCircle, Share2, Check, Play } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/Card'
-import Button from '@/components/ui/Button'
 import Input from '@/components/ui/Input'
 import Loading from '@/components/ui/Loading'
 import EmptyState from '@/components/ui/EmptyState'

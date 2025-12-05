@@ -23,6 +23,20 @@ let isRefreshing = false
 let refreshSubscribers: Array<(token: string) => void> = []
 const MAX_REFRESH_ATTEMPTS = 3 // 最大刷新次数
 
+// CSRF Token管理
+let csrfToken: string | null = null
+
+// 设置CSRF Token
+function setCSRFToken(token: string) {
+  csrfToken = token
+  logger.log('CSRF Token set:', token)
+}
+
+// 获取CSRF Token
+function getCSRFToken(): string | null {
+  return csrfToken
+}
+
 // 创建Axios实例
 const apiClient: AxiosInstance = axios.create({
   baseURL: API_CONFIG.BASE_URL,
@@ -36,7 +50,15 @@ const apiClient: AxiosInstance = axios.create({
 // 请求拦截器
 apiClient.interceptors.request.use(
   (config) => {
-    // 请求配置（预留空间，待CSRF实装后在此添加）
+    // 自动添加CSRF Token（对于修改类请求）
+    const method = config.method?.toUpperCase()
+    if (method && ['POST', 'PUT', 'DELETE', 'PATCH'].includes(method)) {
+      const token = getCSRFToken()
+      if (token) {
+        config.headers['X-CSRF-Token'] = token
+      }
+    }
+    
     return config
   },
   (error) => {
@@ -48,6 +70,12 @@ apiClient.interceptors.request.use(
 // 响应拦截器
 apiClient.interceptors.response.use(
   (response) => {
+    // 捕获并存储服务器返回的CSRF Token
+    const csrfTokenFromResponse = response.headers['x-csrf-token']
+    if (csrfTokenFromResponse) {
+      setCSRFToken(csrfTokenFromResponse)
+    }
+    
     // 如果请求标记了跳过响应拦截器，直接返回原始响应
     const config = response.config as RetryConfig
     if (config._skipResponseInterceptor) {

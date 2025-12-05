@@ -2,9 +2,10 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Store, Building2, Users, CreditCard, Plus, RefreshCw, Eye, Settings } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle, PageHeader, Loading, Button, Badge, Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui'
-import { getAdvertiserList, getShopInfo, getAgentInfo } from '@/api/advertiser'
+import { getAdvertiserList } from '@/api/advertiser'
 import { Advertiser } from '@/api/types'
 import { useToast } from '@/hooks/useToast'
+import { toast } from '@/components/ui/Toast'
 
 interface ShopAccount {
   shop_id: string
@@ -34,7 +35,7 @@ interface AwemeAccount {
 
 export default function AccountCenter() {
   const navigate = useNavigate()
-  const { success } = useToast()
+  const _toast = useToast()
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState('overview')
   
@@ -334,7 +335,7 @@ export default function AccountCenter() {
             <CardHeader>
               <div className="flex items-center justify-between">
                 <CardTitle>店铺列表 ({shops.length})</CardTitle>
-                <Button size="sm">
+                <Button size="sm" onClick={() => toast.info('添加店铺功能开发中')}>
                   <Plus className="h-4 w-4 mr-2" />
                   添加店铺
                 </Button>
@@ -468,7 +469,7 @@ export default function AccountCenter() {
                         </div>
                       </div>
                       <div className="flex gap-2">
-                        <Button size="sm" variant="outline">
+                        <Button size="sm" variant="outline" onClick={() => navigate(`/aweme-auth/${aweme.aweme_id}`)}>
                           <Eye className="h-4 w-4 mr-1" />
                           详情
                         </Button>

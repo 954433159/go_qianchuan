@@ -109,7 +109,7 @@ export default function FinanceTransactions() {
       ).join('\n')
       
       // 创建下载
-      const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' }) // BOM for Excel UTF-8
+      const blob = new Blob([`\uFEFF${  csvContent}`], { type: 'text/csv;charset=utf-8;' }) // BOM for Excel UTF-8
       const url = URL.createObjectURL(blob)
       const link = document.createElement('a')
       link.href = url

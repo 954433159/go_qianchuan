@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft, Edit, Play, Pause, Trash2, BarChart3, TrendingUp, DollarSign, Eye, MousePointer, ShoppingCart, Target, Image as ImageIcon, FileText } from 'lucide-react'
+import { ArrowLeft, Edit, Play, Pause, FileText, Target, Image as ImageIcon, BarChart3 } from 'lucide-react'
 import { getAdDetail } from '@/api/ad'
 import { Ad } from '@/api/types'
-import { PageHeader, Card, CardContent, CardHeader, CardTitle, Button, Badge, Loading, ErrorState } from '@/components/ui'
+import { PageHeader, Card, CardContent, Button, Badge, Loading, ErrorState } from '@/components/ui'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/Tabs'
 import { useAuthStore } from '@/store/authStore'
 

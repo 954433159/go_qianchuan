@@ -220,8 +220,8 @@ export default function ReportVideoUserLose() {
         <CardContent>
           <Table
             columns={columns as any}
-            dataSource={reportData}
-            rowKey={(record) => String(record.video_id)}
+            data={reportData as any}
+            rowKey={(record: any) => String(record.video_id)}
           />
         </CardContent>
       </Card>

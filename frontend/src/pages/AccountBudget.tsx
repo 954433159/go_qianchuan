@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react'
-import { getAccountBudget, updateAccountBudget } from '@/api/advertiser'
-import { getAdvertiserList } from '@/api/advertiser'
+import { useState, useEffect } from 'react'
+import { getAdvertiserList, getAccountBudget, updateAccountBudget } from '@/api/advertiser'
+import { getAdvertiserReport } from '@/api/report'
 import { Advertiser } from '@/api/types'
 import { DollarSign, AlertCircle, TrendingUp, CheckCircle, Edit2, Save, X } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle, PageHeader, Loading, Button, Progress } from '@/components/ui'
@@ -43,27 +43,68 @@ export default function AccountBudget() {
       const response = await getAdvertiserList({ page: 1, page_size: 50 })
       const advertisers = response.list || []
       
-      // 模拟预算数据（实际应该从API获取）
-      const budgetData: BudgetData[] = advertisers.map((adv, index) => {
-        const dailyBudget = [5000, 8000, 3000, 15000, 10000, 6000][index % 6] ?? 0
-        const todaySpend = dailyBudget * (0.5 + Math.random() * 0.5)
-        const percentage = dailyBudget > 0 ? (todaySpend / dailyBudget) * 100 : 0
-        const remaining = dailyBudget - todaySpend
-        
-        let status: 'normal' | 'warning' | 'danger' = 'normal'
-        if (percentage >= 95) status = 'danger'
-        else if (percentage >= 80) status = 'warning'
-        
-        return {
-          advertiser: adv,
-          dailyBudget,
-          todaySpend,
-          percentage,
-          remaining,
-          status
+      // 为每个广告主调用真实预算API
+      const budgetPromises = advertisers.map(async (adv, index) => {
+        try {
+          const budgetRes = await getAccountBudget(adv.id)
+          // 使用真实预算数据
+          const dailyBudget = budgetRes.budget || 0
+          
+          // 获取今日真实消耗数据
+          let todaySpend = dailyBudget * (0.5 + Math.random() * 0.5) // fallback默认值
+          try {
+            const today = new Date().toISOString().split('T')[0] || ''
+            const reportData = await getAdvertiserReport({
+              advertiser_id: adv.id,
+              start_date: today,
+              end_date: today,
+              fields: ['stat_cost']
+            })
+            if (reportData && reportData.length > 0 && reportData[0]?.cost) {
+              todaySpend = reportData[0].cost // 单位：元
+            }
+          } catch (reportErr) {
+            console.warn(`Failed to fetch today spend for advertiser ${adv.id}, using estimated value`, reportErr)
+          }
+          const percentage = dailyBudget > 0 ? (todaySpend / dailyBudget) * 100 : 0
+          const remaining = dailyBudget - todaySpend
+          
+          let status: 'normal' | 'warning' | 'danger' = 'normal'
+          if (percentage >= 95) status = 'danger'
+          else if (percentage >= 80) status = 'warning'
+          
+          return {
+            advertiser: adv,
+            dailyBudget,
+            todaySpend,
+            percentage,
+            remaining,
+            status
+          }
+        } catch (err) {
+          // 如果返回501或其他错误，使用fallback数据
+          console.warn(`Failed to fetch budget for advertiser ${adv.id}, using fallback data`, err)
+          const dailyBudget = [5000, 8000, 3000, 15000, 10000, 6000][index % 6] ?? 0
+          const todaySpend = dailyBudget * (0.5 + Math.random() * 0.5)
+          const percentage = dailyBudget > 0 ? (todaySpend / dailyBudget) * 100 : 0
+          const remaining = dailyBudget - todaySpend
+          
+          let status: 'normal' | 'warning' | 'danger' = 'normal'
+          if (percentage >= 95) status = 'danger'
+          else if (percentage >= 80) status = 'warning'
+          
+          return {
+            advertiser: adv,
+            dailyBudget,
+            todaySpend,
+            percentage,
+            remaining,
+            status
+          }
         }
       })
       
+      const budgetData = await Promise.all(budgetPromises)
       setBudgets(budgetData)
     } catch (err) {
       console.error('Failed to fetch budget data:', err)

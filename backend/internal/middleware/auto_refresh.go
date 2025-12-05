@@ -7,7 +7,6 @@ import (
 
 	"github.com/CriarBrand/qianchuan-backend/internal/service"
 	"github.com/CriarBrand/qianchuan-backend/pkg/session"
-	"github.com/CriarBrand/qianchuanSDK"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/sync/singleflight"
@@ -71,9 +70,7 @@ func AutoRefreshToken(qianchuanService *service.QianchuanService) gin.HandlerFun
 			log.Printf("[AutoRefresh] 开始刷新Token advertiser_id=%d", userSession.AdvertiserID)
 
 			// 调用SDK刷新Token
-			refreshResp, err := qianchuanService.Manager.OauthRefreshToken(qianchuanSDK.OauthRefreshTokenReq{
-				RefreshToken: userSession.RefreshToken,
-			})
+			refreshResp, err := qianchuanService.RefreshAccessToken(userSession.RefreshToken)
 
 			if err != nil {
 				log.Printf("[AutoRefresh] 刷新Token失败: %v advertiser_id=%d", err, userSession.AdvertiserID)
@@ -81,15 +78,14 @@ func AutoRefreshToken(qianchuanService *service.QianchuanService) gin.HandlerFun
 				return nil, err
 			}
 
-			// 创建新会话
-			newSession := session.NewSessionFromTokenResponse(&qianchuanSDK.OauthAccessTokenRes{
-				Data: qianchuanSDK.OauthAccessTokenResData{
-					AccessToken:           refreshResp.Data.AccessToken,
-					RefreshToken:          refreshResp.Data.RefreshToken,
-					ExpiresIn:             refreshResp.Data.ExpiresIn,
-					RefreshTokenExpiresIn: refreshResp.Data.RefreshTokenExpiresIn,
-				},
-			}, userSession.AdvertiserID)
+		// 创建新会话
+			newSession := session.NewSessionFromRefreshResponse(
+				refreshResp.Data.AccessToken,
+				refreshResp.Data.RefreshToken,
+				refreshResp.Data.ExpiresIn,
+				refreshResp.Data.RefreshTokenExpiresIn,
+				userSession.AdvertiserID,
+			)
 
 			// 保存新会话
 			sess.Set("user", newSession)

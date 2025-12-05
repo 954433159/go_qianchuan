@@ -6,8 +6,8 @@ import (
 
 	"github.com/CriarBrand/qianchuan-backend/internal/middleware"
 	"github.com/CriarBrand/qianchuan-backend/internal/service"
+	"github.com/CriarBrand/qianchuan-backend/internal/sdk"
 	"github.com/CriarBrand/qianchuan-backend/internal/util"
-	"github.com/CriarBrand/qianchuanSDK"
 	"github.com/gin-gonic/gin"
 )
 
@@ -41,13 +41,13 @@ func (h *FinanceHandler) GetWallet(c *gin.Context) {
 	log.Printf("[%s] Get wallet info: advertiser_id=%d", c.GetString("request_id"), advertiserId)
 
 	// SDK未初始化时直接返回500，避免测试panic
-	if h.service == nil || h.service.Manager == nil {
+	if h.service == nil || h.service.Client == nil {
 		util.ServerError(c, "SDK未初始化")
 		return
 	}
 
 	// 调用SDK
-	resp, err := h.service.Manager.WalletGet(qianchuanSDK.WalletGetReq{
+	resp, err := h.service.Client.WalletGet(c.Request.Context(), sdk.WalletGetReq{
 		AdvertiserId: advertiserId,
 		AccessToken:  userSession.AccessToken,
 	})
@@ -63,7 +63,7 @@ func (h *FinanceHandler) GetWallet(c *gin.Context) {
 		return
 	}
 
-	util.Success(c, resp.Data.Wallet)
+	util.Success(c, resp.Data)
 }
 
 // GetBalance 获取账户余额
@@ -84,15 +84,15 @@ func (h *FinanceHandler) GetBalance(c *gin.Context) {
 	log.Printf("[%s] Get balance: advertiser_id=%d", c.GetString("request_id"), advertiserId)
 
 	// SDK未初始化时直接返回500，避免测试panic
-	if h.service == nil || h.service.Manager == nil {
+	if h.service == nil || h.service.Client == nil {
 		util.ServerError(c, "SDK未初始化")
 		return
 	}
 
 	// 调用SDK
-	resp, err := h.service.Manager.BalanceGet(qianchuanSDK.BalanceGetReq{
-		AdvertiserIds: []int64{advertiserId},
-		AccessToken:   userSession.AccessToken,
+	resp, err := h.service.Client.BalanceGet(c.Request.Context(), sdk.BalanceGetReq{
+		AdvertiserId: advertiserId,
+		AccessToken:  userSession.AccessToken,
 	})
 
 	if err != nil {
@@ -106,15 +106,8 @@ func (h *FinanceHandler) GetBalance(c *gin.Context) {
 		return
 	}
 
-	// 返回第一个结果
-	var data interface{}
-	if len(resp.Data.List) > 0 {
-		data = resp.Data.List[0]
-	} else {
-		data = gin.H{"advertiser_id": advertiserId, "balance": 0, "cash": 0, "grant": 0}
-	}
-
-	util.Success(c, data)
+	// 返回余额数据
+	util.Success(c, resp.Data)
 }
 
 // GetFinanceDetail 获取财务流水
@@ -171,17 +164,17 @@ func (h *FinanceHandler) GetFinanceDetail(c *gin.Context) {
 		c.GetString("request_id"), advertiserId, startTime, endTime, page64, pageSize64)
 
 	// SDK未初始化时直接返回500，避免测试panic
-	if h.service == nil || h.service.Manager == nil {
+	if h.service == nil || h.service.Client == nil {
 		util.ServerError(c, "SDK未初始化")
 		return
 	}
 
 	// 调用SDK
-	resp, err := h.service.Manager.DetailGet(qianchuanSDK.DetailGetReq{
+	_ = tradeType // TradeType 字段SDK暂不支持
+	resp, err := h.service.Client.DetailGet(c.Request.Context(), sdk.DetailGetReq{
 		AdvertiserId: advertiserId,
 		StartDate:    startTime,
 		EndDate:      endTime,
-		TradeType:    tradeType,
 		Page:         page64,
 		PageSize:     pageSize64,
 		AccessToken:  userSession.AccessToken,
@@ -224,7 +217,7 @@ func (h *FinanceHandler) CreateTransferSeq(c *gin.Context) {
 
 	// 参数验证
 	if req.Amount <= 0 {
-		util.BadRequest(c, "转账金额必须大于0")
+		util.BadRequest(c, "请求参数错误: 转账金额必须大于0")
 		return
 	}
 
@@ -232,17 +225,17 @@ func (h *FinanceHandler) CreateTransferSeq(c *gin.Context) {
 		c.GetString("request_id"), req.AgentId, req.AdvertiserId, req.Amount)
 
 	// SDK未初始化时直接返回500，避免测试panic
-	if h.service == nil || h.service.Manager == nil {
+	if h.service == nil || h.service.Client == nil {
 		util.ServerError(c, "SDK未初始化")
 		return
 	}
 
 	// 调用SDK
-	resp, err := h.service.Manager.FundTransferSeqCreate(qianchuanSDK.FundTransferSeqCreateReq{
-		AgentId:        req.AgentId,
-		AdvertiserId:   req.AdvertiserId,
-		TransferAmount: req.Amount,
-		AccessToken:    userSession.AccessToken,
+	resp, err := h.service.Client.FundTransferSeqCreate(c.Request.Context(), sdk.FundTransferSeqCreateReq{
+		AdvertiserId:       req.AdvertiserId,
+		TargetAdvertiserId: req.AgentId, // AgentId 作为 TargetAdvertiserId
+		TransferType:       "GRANT",     // 默认转赠类型
+		AccessToken:        userSession.AccessToken,
 	})
 
 	if err != nil {
@@ -282,16 +275,18 @@ func (h *FinanceHandler) CommitTransferSeq(c *gin.Context) {
 		c.GetString("request_id"), req.AgentId, req.TransferSeq)
 
 	// SDK未初始化时直接返回500，避免测试panic
-	if h.service == nil || h.service.Manager == nil {
+	if h.service == nil || h.service.Client == nil {
 		util.ServerError(c, "SDK未初始化")
 		return
 	}
 
 	// 调用SDK
-	resp, err := h.service.Manager.FundTransferSeqCommit(qianchuanSDK.FundTransferSeqCommitReq{
-		AgentId:     req.AgentId,
-		TransferSeq: req.TransferSeq,
-		AccessToken: userSession.AccessToken,
+	_ = req.AgentId // AgentId 字段SDK暂不支持
+	resp, err := h.service.Client.FundTransferSeqCommit(c.Request.Context(), sdk.FundTransferSeqCommitReq{
+		AdvertiserId: userSession.AdvertiserID,
+		TransferSeq:  req.TransferSeq,
+		Amount:       0, // 金额在create时已经指定
+		AccessToken:  userSession.AccessToken,
 	})
 
 	if err != nil {
@@ -339,17 +334,17 @@ func (h *FinanceHandler) CreateRefundSeq(c *gin.Context) {
 		c.GetString("request_id"), req.AgentId, req.AdvertiserId, req.Amount)
 
 	// SDK未初始化时直接返回500，避免测试panic
-	if h.service == nil || h.service.Manager == nil {
+	if h.service == nil || h.service.Client == nil {
 		util.ServerError(c, "SDK未初始化")
 		return
 	}
 
 	// 调用SDK
-	resp, err := h.service.Manager.RefundTransferSeqCreate(qianchuanSDK.RefundTransferSeqCreateReq{
-		AgentId:      req.AgentId,
-		AdvertiserId: req.AdvertiserId,
-		RefundAmount: req.Amount,
-		AccessToken:  userSession.AccessToken,
+	resp, err := h.service.Client.RefundTransferSeqCreate(c.Request.Context(), sdk.RefundTransferSeqCreateReq{
+		AdvertiserId:       req.AdvertiserId,
+		TargetAdvertiserId: req.AgentId, // AgentId 作为 TargetAdvertiserId
+		TransferType:       "GRANT",     // 默认类型
+		AccessToken:        userSession.AccessToken,
 	})
 
 	if err != nil {
@@ -389,16 +384,18 @@ func (h *FinanceHandler) CommitRefundSeq(c *gin.Context) {
 		c.GetString("request_id"), req.AgentId, req.RefundSeq)
 
 	// SDK未初始化时直接返回500，避免测试panic
-	if h.service == nil || h.service.Manager == nil {
+	if h.service == nil || h.service.Client == nil {
 		util.ServerError(c, "SDK未初始化")
 		return
 	}
 
 	// 调用SDK
-	resp, err := h.service.Manager.RefundTransferSeqCommit(qianchuanSDK.RefundTransferSeqCommitReq{
-		AgentId:     req.AgentId,
-		RefundSeq:   req.RefundSeq,
-		AccessToken: userSession.AccessToken,
+	_ = req.AgentId // AgentId 字段SDK暂不支持
+	resp, err := h.service.Client.RefundTransferSeqCommit(c.Request.Context(), sdk.RefundTransferSeqCommitReq{
+		AdvertiserId: userSession.AdvertiserID,
+		TransferSeq:  req.RefundSeq, // RefundSeq 作为 TransferSeq
+		Amount:       0,             // 金额在create时指定
+		AccessToken:  userSession.AccessToken,
 	})
 
 	if err != nil {

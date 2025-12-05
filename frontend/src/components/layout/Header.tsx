@@ -1,6 +1,7 @@
 import { useAuthStore } from '@/store/authStore'
 import { User, LogOut, Bell, Search, Settings, HelpCircle, Zap } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
+import { toast } from '@/components/ui/Toast'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -39,13 +40,23 @@ export default function Header() {
           {user && (
             <>
               {/* Search */}
-              <Button variant="ghost" size="icon" className="hidden lg:flex">
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="hidden lg:flex"
+                onClick={() => toast.info('搜索功能开发中')}
+              >
                 <Search className="h-5 w-5" />
                 <span className="sr-only">搜索</span>
               </Button>
 
               {/* Notifications */}
-              <Button variant="ghost" size="icon" className="relative">
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="relative"
+                onClick={() => toast.info('通知功能开发中')}
+              >
                 <Bell className="h-5 w-5" />
                 <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-destructive" />
                 <span className="sr-only">通知</span>

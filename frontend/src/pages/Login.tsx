@@ -10,24 +10,37 @@ export default function Login() {
   }, [])
   
   const handleOAuthLogin = () => {
+    console.log('🎯 [Login] handleOAuthLogin called')
     const appId = import.meta.env.VITE_OAUTH_APP_ID
-    
+    const redirectUri = import.meta.env.VITE_OAUTH_REDIRECT_URI
+
+    console.log('📋 [Login] Environment check:', {
+      appId: appId,
+      redirectUri: redirectUri,
+      env: import.meta.env
+    })
+
     // 校验配置
     if (!appId || appId === 'YOUR_APP_ID_HERE') {
+      console.error('❌ [Login] App ID not configured:', appId)
       alert('请先配置OAuth AppID\n\n修改文件: frontend/.env\n设置: VITE_OAUTH_APP_ID=您的实际AppID')
       return
     }
-    
-    const redirectUri = encodeURIComponent(import.meta.env.VITE_OAUTH_REDIRECT_URI)
+
     const state = Math.random().toString(36).substring(7)
-    
+
     // 存储state用于回调验证
     sessionStorage.setItem('oauth_state', state)
-    
+    console.log('✅ [Login] State saved:', state)
+
     // 跳转到千川OAuth授权页
     // rid参数从千川平台获取，用于标识授权请求
-    const rid = 'lyrqqtx5i8m' // 从千川平台应用配置获取
-    const oauthUrl = `https://qianchuan.jinritemai.com/openapi/qc/audit/oauth.html?app_id=${appId}&state=${state}&material_auth=1&rid=${rid}&redirect_uri=${redirectUri}`
+    // 注意：rid是可选参数，移除硬编码值，让系统自动处理
+    const encodedRedirectUri = encodeURIComponent(redirectUri)
+    const oauthUrl = `https://qianchuan.jinritemai.com/openapi/qc/audit/oauth.html?app_id=${appId}&state=${state}&material_auth=1&redirect_uri=${encodedRedirectUri}`
+
+    console.log('🚀 [Login] Redirecting to OAuth URL:', oauthUrl)
+    console.log('📌 [Login] Opening URL in current window')
     window.location.href = oauthUrl
   }
 

@@ -2,12 +2,14 @@ import { useState, useEffect } from 'react'
 import { RefreshCw, Wallet, TrendingUp, Clock } from 'lucide-react'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card'
 import PageHeader from '@/components/ui/PageHeader'
+import { useNavigate } from 'react-router-dom'
 import { getBalance, Balance } from '@/api/finance'
 import { useAdvertiserStore } from '@/store/advertiserStore'
 import { toast } from '@/components/ui/Toast'
 import { SkeletonList } from '@/components/ui'
 
 export default function FinanceBalance() {
+  const navigate = useNavigate()
   const { currentAdvertiser } = useAdvertiserStore()
   const [balance, setBalance] = useState<Balance | null>(null)
   const [loading, setLoading] = useState(true)
@@ -145,7 +147,7 @@ export default function FinanceBalance() {
                 <div className="mt-4 pt-4 border-t border-gray-200">
                   <div className="bg-blue-50 rounded-lg p-3">
                     <p className="text-xs text-blue-800">
-                      💡 余额数据每5分钟自动更新一次，如需查看最新余额请点击"刷新余额"按钮
+                      💡 余额数据每5分钟自动更新一次，如需查看最新余额请点击&quot;刷新余额&quot;按钮
                     </p>
                   </div>
                 </div>
@@ -223,16 +225,16 @@ export default function FinanceBalance() {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <button className="qc-btn qc-btn-secondary justify-center">
+                <button className="qc-btn qc-btn-secondary justify-center" onClick={() => toast.info('充值功能开发中')}>
                   充值
                 </button>
-                <button className="qc-btn qc-btn-secondary justify-center">
+                <button className="qc-btn qc-btn-secondary justify-center" onClick={() => navigate('/finance/transactions')}>
                   查看流水
                 </button>
-                <button className="qc-btn qc-btn-secondary justify-center">
+                <button className="qc-btn qc-btn-secondary justify-center" onClick={() => navigate('/finance/transfer')}>
                   转账记录
                 </button>
-                <button className="qc-btn qc-btn-secondary justify-center">
+                <button className="qc-btn qc-btn-secondary justify-center" onClick={() => navigate('/finance/refund')}>
                   退款记录
                 </button>
               </div>

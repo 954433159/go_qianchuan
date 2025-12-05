@@ -1,0 +1,62 @@
+version: '3.8'
+
+# 生产环境 Docker Compose 配置
+# 使用方法: docker-compose -f docker-compose.prod.yml up -d
+#
+# 前置条件:
+# 1. 已构建前端: cd frontend && npm run build
+# 2. 已配置 .env 文件: cp .env.example .env 并填入真实值
+
+services:
+  qianchuan-backend:
+    build:
+      # 从项目根目录构建，以便访问 oceanengineSDK
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: qianchuan-backend
+    restart: unless-stopped
+    # 后端端口不暴露到外网，仅通过 nginx 容器内部网络访问
+    expose:
+      - "8080"
+    volumes:
+      # 挂载 .env 配置文件
+      - ./backend/.env:/app/.env:ro
+    environment:
+      - PORT=8080
+      - GIN_MODE=release
+    networks:
+      - qianchuan-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  qianchuan-frontend:
+    image: nginx:alpine
+    container_name: qianchuan-frontend
+    restart: unless-stopped
+    ports:
+      # 生产环境直接监听 80 端口
+      - "80:80"
+    volumes:
+      # 挂载前端构建产物
+      - ./frontend/dist:/usr/share/nginx/html:ro
+      # 使用完整的 nginx 配置（包含 API 代理）
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      qianchuan-backend:
+        condition: service_healthy
+    networks:
+      - qianchuan-network
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost/"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+
+networks:
+  qianchuan-network:
+    driver: bridge

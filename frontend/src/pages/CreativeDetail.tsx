@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { ArrowLeft, Edit, Play, Image as ImageIcon, FileText, Calendar, CheckCircle, XCircle, Clock } from 'lucide-react'
+import { toast } from '@/components/ui/Toast'
 import { getCreativeDetail } from '@/api/creative'
 import { Creative } from '@/api/types'
 import { PageHeader, Card, CardContent, CardHeader, CardTitle, Button, Badge, Loading, ErrorState } from '@/components/ui'
@@ -183,12 +184,12 @@ export default function CreativeDetail() {
                   视频素材
                 </label>
                 <div className="mt-2 p-4 bg-gray-50 rounded-lg border">
-                  <div className="flex items-center justify-between">
+                    <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm text-gray-600">视频ID</p>
                       <p className="font-mono text-sm">{creative.video_id}</p>
                     </div>
-                    <Button size="sm" variant="outline">
+                    <Button size="sm" variant="outline" onClick={() => toast.info('视频预览功能开发中')}>
                       预览视频
                     </Button>
                   </div>

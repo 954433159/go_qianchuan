@@ -31,7 +31,6 @@ export function BatchOperator<T>({
   selectedItems,
   onSelectionChange,
   actions,
-  keyExtractor,
   className,
   disabled = false
 }: BatchOperatorProps<T>) {

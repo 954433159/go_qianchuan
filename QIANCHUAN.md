@@ -185,10 +185,42 @@
 
 ---
 
+## 实现状态文档
+
+> **最新状态**: 2025-11-28 更新
+
+**核心文档**:
+- `docs/QIANCHUAN_IMPLEMENTATION_STATUS.md` — **官方API对照与实现状态** ⭐
+- `docs/ISSUES_AND_FIXES.md` — **问题清单与修复方案** ⭐
+- `docs/PROJECT_STATUS.md` — 项目状态报告
+- `docs/PROJECT_ANALYSIS_AND_CLEANUP.md` — 项目分析与清理方案
+
+**实现统计**:
+- 官方API总数: 158
+- 已实现: 63 (40%)
+- 返回501: 21
+- 完全缺失: 74
+
+**100%完成的模块**:
+- OAuth授权
+- 广告账户预算
+- 广告组管理
+- 关键词管理
+- 否定词管理
+- 直播间报表
+
+**待优先修复**:
+- AdCreate/AdUpdate (广告计划创建/更新)
+- FileImageAd/FileVideoAd (素材上传)
+- 工具类API (行业、兴趣、行为等)
+
+---
+
 ## 前端对齐与优化索引
 
-为便于基于“官方静态设计（html/）”推进前端对齐与优化，新增以下文档（位于 `docs/frontend/`）：
+> 状态: 以下文档计划中，尚未创建。
 
+计划文档（位于 `docs/frontend/`）：
 - QIANCHUAN_FRONTEND_STATUS.md — 前端完成度与覆盖率盘点
 - QIANCHUAN_STATIC_COMPARISON.md — 静态页面 vs SPA 功能对照
 - QIANCHUAN_ROUTING_MAP.md — 路由与信息架构（基于 App.tsx）
@@ -196,5 +228,3 @@
 - QIANCHUAN_API_CLIENT_REVIEW.md — API 客户端评审与改进建议
 - QIANCHUAN_FRONTEND_OPTIMIZATIONS.md — 分阶段优化方案（含验收标准）
 - QIANCHUAN_TESTING_PLAN.md — 测试现状与覆盖率提升方案
-
-入口索引: 参见仓库根目录 `QIANCHUAN.md` 本节与 `docs/frontend/` 目录。

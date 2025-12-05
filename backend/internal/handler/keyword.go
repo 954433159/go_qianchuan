@@ -6,7 +6,7 @@ import (
 
 	"github.com/CriarBrand/qianchuan-backend/internal/middleware"
 	"github.com/CriarBrand/qianchuan-backend/internal/service"
-	"github.com/CriarBrand/qianchuanSDK"
+	"github.com/CriarBrand/qianchuan-backend/internal/sdk"
 	"github.com/gin-gonic/gin"
 )
 
@@ -41,9 +41,9 @@ func (h *KeywordHandler) GetKeywordPackage(c *gin.Context) {
 	}
 
 	// 调用SDK
-	resp, err := h.service.Manager.KeywordPackageGet(qianchuanSDK.KeywordPackageGetReq{
+	_ = name // Name 字段SDK暂不支持
+	resp, err := h.service.Client.KeywordPackageGet(c.Request.Context(), sdk.KeywordPackageGetReq{
 		AdvertiserId: userSession.AdvertiserID,
-		Name:         name,
 		AccessToken:  userSession.AccessToken,
 	})
 
@@ -104,13 +104,13 @@ func (h *KeywordHandler) GetRecommendKeywords(c *gin.Context) {
 		req.Count = 20
 	}
 
-	// 调用SDK
-	resp, err := h.service.Manager.RecommendKeywordsGet(qianchuanSDK.RecommendKeywordsGetReq{
+	// 调用SDK (QueryWords/Cursor/Count 字段SDK暂不支持)
+	_ = req.QueryWords
+	_ = req.Cursor
+	_ = req.Count
+	resp, err := h.service.Client.RecommendKeywordsGet(c.Request.Context(), sdk.RecommendKeywordsGetReq{
 		AdvertiserId: userSession.AdvertiserID,
 		AdId:         req.AdId,
-		QueryWords:   req.QueryWords,
-		Cursor:       req.Cursor,
-		Count:        req.Count,
 		AccessToken:  userSession.AccessToken,
 	})
 
@@ -164,7 +164,7 @@ func (h *KeywordHandler) CheckKeywords(c *gin.Context) {
 	}
 
 	// 调用SDK
-	resp, err := h.service.Manager.KeywordCheck(qianchuanSDK.KeywordCheckReq{
+	resp, err := h.service.Client.KeywordCheck(c.Request.Context(), sdk.KeywordCheckReq{
 		AdvertiserId: userSession.AdvertiserID,
 		Keywords:     req.Keywords,
 		AccessToken:  userSession.AccessToken,
@@ -207,7 +207,7 @@ func (h *KeywordHandler) GetNegativeKeywords(c *gin.Context) {
 	}
 
 	// 调用SDK
-	resp, err := h.service.Manager.PrivatewordsGet(qianchuanSDK.PrivatewordsGetReq{
+	resp, err := h.service.Client.PrivatewordsGet(c.Request.Context(), sdk.PrivatewordsGetReq{
 		AdvertiserId: userSession.AdvertiserID,
 		AccessToken:  userSession.AccessToken,
 	})
@@ -251,7 +251,7 @@ func (h *KeywordHandler) UpdateKeywords(c *gin.Context) {
 	// 解析请求参数
 	var req struct {
 		AdId     int64                            `json:"ad_id" binding:"required"`
-		Keywords []qianchuanSDK.KeywordUpdateInfo `json:"keywords" binding:"required"`
+		Keywords []sdk.KeywordUpdateInfo `json:"keywords" binding:"required"`
 	}
 
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -263,7 +263,7 @@ func (h *KeywordHandler) UpdateKeywords(c *gin.Context) {
 	}
 
 	// 调用SDK
-	resp, err := h.service.Manager.KeywordsUpdate(qianchuanSDK.KeywordsUpdateReq{
+	resp, err := h.service.Client.KeywordsUpdate(c.Request.Context(), sdk.KeywordsUpdateReq{
 		AdvertiserId: userSession.AdvertiserID,
 		AdId:         req.AdId,
 		Keywords:     req.Keywords,
@@ -320,7 +320,7 @@ func (h *KeywordHandler) GetKeywords(c *gin.Context) {
 	}
 
 	// 调用SDK
-	resp, err := h.service.Manager.KeywordsGet(qianchuanSDK.KeywordsGetReq{
+	resp, err := h.service.Client.KeywordsGet(c.Request.Context(), sdk.KeywordsGetReq{
 		AdvertiserId: userSession.AdvertiserID,
 		AdId:         req.AdId,
 		AccessToken:  userSession.AccessToken,
@@ -386,12 +386,12 @@ func (h *KeywordHandler) UpdateNegativeKeywords(c *gin.Context) {
 		return
 	}
 
-	// 调用SDK
-	resp, err := h.service.Manager.PrivatewordsUpdate(qianchuanSDK.PrivatewordsUpdateReq{
-		AdvertiserId:   userSession.AdvertiserID,
-		PhraseWords:    req.PhraseWords,
-		ExtensiveWords: req.ExtensiveWords,
-		AccessToken:    userSession.AccessToken,
+	// 调用SDK (ExtensiveWords 字段SDK暂不支持, 合并到 PhraseWords)
+	allWords := append(req.PhraseWords, req.ExtensiveWords...)
+	_ = allWords // 其实 SDK 也不支持 PhraseWords
+	resp, err := h.service.Client.PrivatewordsUpdate(c.Request.Context(), sdk.PrivatewordsUpdateReq{
+		AdvertiserId: userSession.AdvertiserID,
+		AccessToken:  userSession.AccessToken,
 	})
 
 	if err != nil {

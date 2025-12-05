@@ -1,0 +1,158 @@
+# =============================================================================
+# 腾讯云 SCF 云函数 - Serverless Framework 配置
+# 千川SDK管理平台
+# =============================================================================
+
+# 应用组件配置
+app: qianchuan-serverless
+stage: ${opt:stage, 'prod'}
+
+# 后端 API 服务
+component: scf
+name: qianchuan-api
+
+inputs:
+  # 函数名称
+  name: qianchuan-api-${stage}
+  
+  # 运行环境（使用自定义镜像）
+  runtime: CustomImage
+  
+  # 使用容器镜像部署
+  imageConfig:
+    # 腾讯云容器镜像仓库
+    imageUri: ccr.ccs.tencentyun.com/qianchuan/scf-backend:${opt:tag, 'latest'}
+    imageType: personal
+    
+  # 内存配置（MB）
+  memorySize: 512
+  
+  # 超时时间（秒）
+  timeout: 60
+  
+  # 并发配置
+  asyncRunEnable: false
+  
+  # 环境变量
+  environment:
+    variables:
+      PORT: "9000"
+      GIN_MODE: "release"
+      SCF_RUNTIME: "true"
+      # 敏感变量通过环境变量管理
+      # APP_ID: ${env:APP_ID}
+      # APP_SECRET: ${env:APP_SECRET}
+      # COOKIE_SECRET: ${env:COOKIE_SECRET}
+  
+  # VPC 配置（可选，用于访问内网资源）
+  # vpc:
+  #   vpcId: vpc-xxxxxxxx
+  #   subnetId: subnet-xxxxxxxx
+  
+  # 触发器配置 - API 网关
+  events:
+    - apigw:
+        parameters:
+          # API 网关名称
+          serviceName: qianchuan-api-gateway
+          serviceId: ${output:${stage}:qianchuan-api-gateway.serviceId, ''}
+          
+          protocols:
+            - https
+            - http
+          
+          # API 配置
+          endpoints:
+            # OAuth 授权
+            - path: /api/oauth/exchange
+              method: POST
+              function:
+                isIntegratedResponse: true
+            
+            # 健康检查
+            - path: /health
+              method: GET
+              function:
+                isIntegratedResponse: true
+            
+            # 所有 API 路由（通配符）
+            - path: /api/{proxy+}
+              method: ANY
+              function:
+                isIntegratedResponse: true
+          
+          # 自定义域名（可选）
+          # customDomains:
+          #   - domain: api.qianchuan.example.com
+          #     certificateId: xxxxxxxx
+          #     protocols:
+          #       - https
+  
+  # 地域
+  region: ap-guangzhou
+  
+  # 日志配置
+  cls:
+    logsetId: ${output:${stage}:qianchuan-cls.logsetId, ''}
+    topicId: ${output:${stage}:qianchuan-cls.topicId, ''}
+
+---
+# 前端静态网站（使用 COS + CDN）
+component: website
+name: qianchuan-frontend
+
+inputs:
+  # 源码目录
+  src:
+    src: ../../../frontend/dist
+    index: index.html
+    error: index.html
+  
+  # COS 存储桶配置
+  bucket: qianchuan-frontend-${stage}
+  
+  # 地域
+  region: ap-guangzhou
+  
+  # CDN 配置
+  cdn:
+    area: mainland
+    domain: qianchuan.example.com
+    https:
+      # 开启 HTTPS（需要先配置证书）
+      switch: on
+      http2: on
+      # certInfo:
+      #   certId: xxxxxxxx
+    
+    # 缓存配置
+    cache:
+      cacheRules:
+        - cacheType: file
+          cacheContents:
+            - js
+            - css
+            - png
+            - jpg
+            - jpeg
+            - gif
+            - ico
+            - svg
+            - woff
+            - woff2
+          cacheTime: 2592000  # 30 天
+        - cacheType: file
+          cacheContents:
+            - html
+          cacheTime: 0  # 不缓存
+    
+    # 安全头
+    responseHeader:
+      switch: on
+      headerRules:
+        - headerMode: set
+          headerName: X-Frame-Options
+          headerValue: SAMEORIGIN
+        - headerMode: set
+          headerName: X-Content-Type-Options
+          headerValue: nosniff

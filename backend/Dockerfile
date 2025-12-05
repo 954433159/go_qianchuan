@@ -1,45 +1,61 @@
-# Build stage
-FROM golang:1.21-alpine AS builder
+# 多阶段构建 - 减小最终镜像大小
+# 此 Dockerfile 需要从项目根目录构建，而不是 backend 目录
+# docker build -f backend/Dockerfile -t qianchuan-backend .
+FROM golang:1.20-alpine AS builder
 
+# 设置工作目录
 WORKDIR /app
 
-# Install build dependencies
-RUN apk add --no-cache git
+# 安装必要的依赖
+RUN apk add --no-cache ca-certificates git curl
 
-# Copy SDK first (from parent context)
-COPY qianchuanSDK /qianchuanSDK
+# 复制 oceanengineSDK 到指定位置
+COPY oceanengineSDK /app/oceanengineSDK
 
-# Copy go mod files
-COPY backend/go.mod backend/go.sum* ./
+# 复制 backend 的 go mod 文件
+COPY backend/go.mod backend/go.sum ./
 
-# Download dependencies
+# 下载依赖
+ENV GOPROXY=https://goproxy.cn,direct
 RUN go mod download
 
-# Copy backend source code
+# 复制 backend 源代码
 COPY backend/ .
 
-# Build application
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o server ./cmd/server
+# 构建应用
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o qianchuan-server ./cmd/server/main.go
 
-# Production stage
+# 使用更小的 alpine 镜像作为基础镜像
 FROM alpine:latest
 
-# Install ca-certificates for HTTPS requests and curl for health check
-RUN apk --no-cache add ca-certificates tzdata curl
+# 安装必要工具
+RUN apk --no-cache add ca-certificates curl
 
-WORKDIR /root/
+# 创建非 root 用户
+RUN addgroup -g 1001 -S appgroup && \
+    adduser -u 1001 -S appuser -G appgroup
 
-# Copy binary from builder
-COPY --from=builder /app/server .
+# 设置工作目录
+WORKDIR /app
 
-# Copy .env.example for reference
-COPY --from=builder /app/.env.example .
+# 从 builder 阶段复制二进制文件
+COPY --from=builder /app/qianchuan-server .
 
-# Expose port
+# 注意：.env 通过 docker-compose volumes 挂载，不在 Dockerfile 中复制
+# 这样可以在不重建镜像的情况下更新配置
+
+# 更改文件所有者为非 root 用户
+RUN chown -R appuser:appgroup /app
+
+# 切换到非 root 用户
+USER appuser
+
+# 暴露端口
 EXPOSE 8080
 
-# Health check
+# 健康检查
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD curl -fsS http://localhost:8080/health || exit 1
+  CMD curl -f http://localhost:8080/health || exit 1
 
-CMD ["./server"]
+# 启动应用
+CMD ["./qianchuan-server"]

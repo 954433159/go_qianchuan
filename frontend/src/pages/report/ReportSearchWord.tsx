@@ -187,7 +187,7 @@ export default function ReportSearchWord() {
         <CardContent>
           <Table
             columns={columns as any}
-            dataSource={reportData}
+            data={reportData}
             rowKey={(record) => String(record.search_word)}
           />
         </CardContent>

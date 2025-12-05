@@ -9,9 +9,9 @@ This file provides guidance to WARP (warp.dev) when working with code in this re
 **Tech Stack:**
 - **Frontend:** React 18 + TypeScript 5 + Vite 5 + Zustand + React Router v6 + Tailwind CSS 3
 - **Backend:** Go 1.21 + Gin + Session-based Auth
-- **SDK:** Custom Go SDK (`qianchuanSDK`) wrapping Qianchuan OpenAPI
+- **SDK:** oceanengineSDK (`github.com/bububa/oceanengine`) - Third-party Go SDK for Qianchuan OpenAPI
 
-**Project Completion:** ~72% (Core features complete, 27 endpoints return 501, mock data in use)
+**Project Completion:** ~85% (SDK migration complete, most API endpoints implemented)
 
 ## Commands
 
@@ -227,24 +227,20 @@ frontend/src/
 - `src/App.tsx` - Route definitions, protected routes
 - `vite.config.ts` - Build optimization, code splitting rules
 
-### qianchuanSDK Architecture
+### oceanengineSDK Architecture
 
-The SDK is a **facade pattern** over the Qianchuan OpenAPI with built-in:
-- **Rate Limiting:** Token bucket algorithm (configurable QPS)
-- **Auto Token Refresh:** Monitors token expiry, refreshes proactively
-- **OAuth2.0 Flow:** Authorization code exchange, refresh token handling
+The SDK uses the third-party `github.com/bububa/oceanengine` SDK which provides:
 - **Type-Safe API:** All API methods have typed request/response structs
+- **OAuth2.0 Flow:** Authorization code exchange, refresh token handling
+- **Complete API Coverage:** Supports Qianchuan, Ad Platform, and other Ocean Engine APIs
 
-**SDK Entry Point:** `qianchuanSDK/manager.go` → `Manager` struct coordinates all API modules
+**SDK Wrapper:** `backend/internal/sdk/sdk_client.go` wraps oceanengineSDK with project-specific types
 
-**Core SDK Files:**
-- `oauth.go` - OAuth token exchange and refresh
-- `token_manager.go` - Token lifecycle management
-- `ratelimit.go` - Rate limiting implementation
-- `ad.go`, `ad_campaign.go`, `ad_creative.go` - Ad management APIs
-- `advertiser.go` - Advertiser APIs
-- `file.go` - Media upload APIs
-- `ad_report.go` - Reporting APIs
+**Key SDK Packages Used:**
+- `marketing-api/api/qianchuan/` - Qianchuan API implementations
+- `marketing-api/model/qianchuan/` - Request/Response models
+- `marketing-api/core` - SDK client core
+- `marketing-api/api/oauth` - OAuth2.0 flow
 
 ### OAuth2.0 Flow
 
@@ -454,15 +450,16 @@ VITE_APP_VERSION=1.0.0
 - **Token expiry:** SDK auto-refreshes, but check `token_manager.go` logs
 - **CORS issues:** Verify `CORS_ORIGIN` in backend `.env` matches frontend URL
 
-### Working with qianchuanSDK
+### Working with oceanengineSDK
 
-When SDK needs updating (e.g., new Qianchuan API):
-1. Edit SDK files in `qianchuanSDK/`
-2. Update `go.mod` replace directive: `replace github.com/CriarBrand/qianchuanSDK => ../qianchuanSDK`
-3. Run `go mod tidy` in `backend/`
-4. Test changes in backend handlers
+When implementing new API endpoints:
+1. Check available APIs in `oceanengineSDK/marketing-api/api/qianchuan/`
+2. Add necessary import to `backend/internal/sdk/sdk_client.go`
+3. Implement method in `sdk_client.go` following existing patterns
+4. Run `go mod tidy` in `backend/`
+5. Test changes in backend handlers
 
-**SDK is a local module**, not fetched from remote. Changes to SDK immediately reflect in backend.
+**SDK is fetched from remote** (`github.com/bububa/oceanengine`).
 
 ## Important Notes
 
@@ -485,32 +482,34 @@ When SDK needs updating (e.g., new Qianchuan API):
 
 The following API endpoints return HTTP 501 due to SDK limitations or pending implementation:
 
-**Ad Management (`internal/handler/ad.go`):**
-- `POST /api/qianchuan/ad/update/region` - Update ad region targeting
-  - Workaround: Use `/api/qianchuan/ad/update` to update complete ad plan including region
-- `POST /api/qianchuan/ad/update/schedule_date` - Update ad schedule date
-  - Workaround: Use `/api/qianchuan/ad/update` to update complete ad plan
-- `POST /api/qianchuan/ad/update/schedule_time` - Update ad schedule time
-  - Workaround: Use `/api/qianchuan/ad/update` to update complete ad plan
-- `POST /api/qianchuan/ad/update/schedule_fixed_range` - Update ad fixed schedule range
-  - Workaround: Use `/api/qianchuan/ad/update` to update complete ad plan
+**Tools API (`internal/sdk/sdk_client.go`):**
+- `ToolsIndustryGet` - Get industry categories
+- `ToolsInterestActionInterestCategory` - Get interest categories
+- `ToolsInterestActionInterestKeyword` - Get interest keywords
+- `ToolsInterestActionActionCategory` - Get action categories
+- `ToolsInterestActionActionKeyword` - Get action keywords
+- `ToolsAwemeMultiLevelCategoryGet` - Get aweme multi-level categories
+- `ToolsAwemeAuthorInfoGet` - Get aweme author info
+- `ToolsCreativeWordSelect` - Get creative word recommendations
+- `DmpAudiencesGet` - Get DMP audiences
+  - Note: oceanengineSDK does not provide these Tools APIs
 
-**Creative Management (`internal/handler/creative.go`):**
-- `POST /api/qianchuan/creative/create` - Create creative independently
-  - Workaround: Creatives must be created via `/api/qianchuan/ad/create` during ad creation
-- `POST /api/qianchuan/creative/status/update` - Update creative status
-  - Pending SDK support
+**Finance API (`internal/sdk/sdk_client.go`):**
+- `FundTransferSeqCreate` - Create fund transfer sequence
+- `FundTransferSeqCommit` - Commit fund transfer
+- `RefundTransferSeqCreate` - Create refund transfer sequence
+- `RefundTransferSeqCommit` - Commit refund transfer
+  - Note: Pending SDK support for fund transfer operations
 
-**File Management (`internal/handler/file.go`):**
-- `GET /api/qianchuan/file/material/title/list` - Get AI-recommended creative titles
-  - Pending SDK support
+**Agent API (`internal/sdk/sdk_client.go`):**
+- `AgentAdvertiserList` - Get agent advertiser list
+  - Note: oceanengineSDK does not provide Agent API
 
 **Note:** All unimplemented endpoints return a response with:
 ```json
 {
   "code": 501,
-  "message": "<Feature> 暂未实现",
-  "hint": "<Workaround or alternative>"
+  "message": "<Feature> 暂未实现"
 }
 ```
 
@@ -527,7 +526,7 @@ The following API endpoints return HTTP 501 due to SDK limitations or pending im
   - `OAUTH_FLOW_AND_AUTH.md` - OAuth implementation details
   - `API_CONTRACTS.md` - API specifications
   - `PROJECT_DEEP_ANALYSIS_COMPREHENSIVE.md` - Deep dive analysis
-- SDK docs: `qianchuanSDK/README.md`
+- SDK docs: https://github.com/bububa/oceanengine
 - Frontend docs: `frontend/README.md`
 
 ## Cursor AI Rules

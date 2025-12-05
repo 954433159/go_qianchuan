@@ -29,6 +29,14 @@ help:
 	@echo "    make docker-up        - 启动Docker服务"
 	@echo "    make docker-down      - 停止Docker服务"
 	@echo ""
+	@echo "  腾讯云部署:"
+	@echo "    make deploy-init      - 初始化部署脚本权限"
+	@echo "    make tke-build        - 构建 TKE 镜像"
+	@echo "    make tke-deploy       - 部署到 TKE"
+	@echo "    make tke-status       - 查看 TKE 状态"
+	@echo "    make scf-build        - 构建 SCF 镜像"
+	@echo "    make scf-deploy       - 部署到 SCF"
+	@echo ""
 	@echo "  其他:"
 	@echo "    make clean            - 清理构建文件"
 	@echo "    make fmt              - 格式化代码"
@@ -127,3 +135,65 @@ version:
 	@echo "Go版本: $$(go version)"
 	@echo "Node版本: $$(node --version)"
 	@echo "npm版本: $$(npm --version)"
+
+# =============================================================================
+# 腾讯云部署
+# =============================================================================
+
+# TKE 容器服务部署
+.PHONY: tke-build tke-deploy tke-status tke-logs tke-rollback
+
+tke-build:
+	@echo "🐳 构建 TKE 镜像..."
+	@bash deploy/tencent/tke/deploy.sh build-all
+
+tke-deploy:
+	@echo "🚀 部署到 TKE..."
+	@bash deploy/tencent/tke/deploy.sh deploy
+
+tke-status:
+	@echo "📊 查看 TKE 状态..."
+	@bash deploy/tencent/tke/deploy.sh status
+
+tke-logs:
+	@echo "📜 查看 TKE 日志..."
+	@bash deploy/tencent/tke/deploy.sh logs
+
+tke-rollback:
+	@echo "⏪ 回滚 TKE 部署..."
+	@bash deploy/tencent/tke/deploy.sh rollback
+
+# SCF 云函数部署
+.PHONY: scf-build scf-deploy scf-info scf-logs scf-remove
+
+scf-build:
+	@echo "🔨 构建 SCF 镜像..."
+	@bash deploy/tencent/scf/deploy.sh build
+	@bash deploy/tencent/scf/deploy.sh push
+
+scf-deploy:
+	@echo "🚀 部署到 SCF..."
+	@bash deploy/tencent/scf/deploy.sh deploy
+
+scf-info:
+	@echo "ℹ️  查看 SCF 部署信息..."
+	@bash deploy/tencent/scf/deploy.sh info
+
+scf-logs:
+	@echo "📜 查看 SCF 日志..."
+	@bash deploy/tencent/scf/deploy.sh logs
+
+scf-remove:
+	@echo "🗑️  移除 SCF 部署..."
+	@bash deploy/tencent/scf/deploy.sh remove
+
+# 部署脚本权限设置
+.PHONY: deploy-init
+
+deploy-init:
+	@echo "🔧 初始化部署脚本..."
+	@chmod +x deploy/tencent/cvm/deploy.sh
+	@chmod +x deploy/tencent/tke/deploy.sh
+	@chmod +x deploy/tencent/scf/deploy.sh
+	@chmod +x deploy/tencent/lighthouse/deploy.sh
+	@echo "✅ 部署脚本权限设置完成"

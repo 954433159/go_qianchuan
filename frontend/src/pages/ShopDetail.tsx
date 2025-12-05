@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { getShopInfo } from '@/api/advertiser'
 import { Store, CheckCircle, Users, CreditCard, ArrowLeft } from 'lucide-react'
+import { toast } from '@/components/ui/Toast'
 import { Card, CardContent, CardHeader, CardTitle, PageHeader, Loading, Button, Badge } from '@/components/ui'
 
 interface ShopDetail {
@@ -185,9 +186,9 @@ export default function ShopDetail() {
                   <div className="font-medium">广告账户 {idx}</div>
                   <div className="text-sm text-gray-500">ID: 187654321098765{idx}</div>
                 </div>
-                <div className="flex gap-2">
+              <div className="flex gap-2">
                   <Badge className="bg-green-100 text-green-800">启用</Badge>
-                  <Button size="sm" variant="outline">查看</Button>
+                  <Button size="sm" variant="outline" onClick={() => toast.info(`查看广告账户 ${idx} 详情功能开发中`)}>查看</Button>
                 </div>
               </div>
             ))}
@@ -219,7 +220,7 @@ export default function ShopDetail() {
                 </div>
                 <div className="flex gap-2">
                   <Badge className="bg-green-100 text-green-800">已授权</Badge>
-                  <Button size="sm" variant="outline">详情</Button>
+                  <Button size="sm" variant="outline" onClick={() => toast.info(`查看抖音号 ${aweme.name} 详情功能开发中`)}>详情</Button>
                 </div>
               </div>
             ))}
@@ -234,13 +235,13 @@ export default function ShopDetail() {
         </CardHeader>
         <CardContent>
           <div className="flex gap-4">
-            <Button variant="outline">
+            <Button variant="outline" onClick={() => toast.info('刷新授权功能开发中')}>
               刷新授权
             </Button>
-            <Button variant="outline">
+            <Button variant="outline" onClick={() => toast.info('新客定向设置功能开发中')}>
               新客定向设置
             </Button>
-            <Button variant="outline" className="text-red-600 border-red-600 hover:bg-red-50">
+            <Button variant="outline" className="text-red-600 border-red-600 hover:bg-red-50" onClick={() => toast.warning('解除店铺授权功能开发中')}>
               解除店铺授权
             </Button>
           </div>

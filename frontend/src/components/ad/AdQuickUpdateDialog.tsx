@@ -13,12 +13,21 @@ import { Info, DollarSign, Target, MapPin, Clock } from 'lucide-react'
 // 更新类型
 export type UpdateType = 'budget' | 'bid' | 'roi' | 'region' | 'schedule'
 
+// 更新值类型
+type BudgetValues = z.infer<typeof budgetSchema>
+type BidValues = z.infer<typeof bidSchema>
+type RoiValues = z.infer<typeof roiSchema>
+type RegionValues = z.infer<typeof regionSchema>
+type ScheduleValues = z.infer<typeof scheduleSchema>
+
+type UpdateValues = BudgetValues | BidValues | RoiValues | RegionValues | ScheduleValues
+
 interface AdQuickUpdateDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   updateType: UpdateType
   adIds: number[]
-  onUpdate: (values: any) => Promise<void>
+  onUpdate: (values: UpdateValues) => Promise<void>
 }
 
 // 预算更新schema
@@ -132,7 +141,7 @@ export default function AdQuickUpdateDialog({
         : { schedule_type: 'SCHEDULE_FROM_NOW', start_time: '', end_time: '' },
   })
 
-  const onSubmit = async (values: any) => {
+  const onSubmit = async (values: UpdateValues) => {
     setSubmitting(true)
     try {
       await onUpdate(values)
@@ -263,7 +272,7 @@ export default function AdQuickUpdateDialog({
               <FormField
                 control={form.control}
                 name="regions"
-                render={({ field }) => (
+                render={() => (
                   <FormItem>
                     <FormLabel>投放地域</FormLabel>
                     <FormControl>

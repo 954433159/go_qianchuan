@@ -7,7 +7,7 @@ import (
 
 	"github.com/CriarBrand/qianchuan-backend/internal/middleware"
 	"github.com/CriarBrand/qianchuan-backend/internal/service"
-	"github.com/CriarBrand/qianchuanSDK"
+	"github.com/CriarBrand/qianchuan-backend/internal/sdk"
 	"github.com/gin-gonic/gin"
 )
 
@@ -61,15 +61,14 @@ func (h *CreativeHandler) List(c *gin.Context) {
 	}
 
 	// 构建过滤条件
-	filter := qianchuanSDK.CreativeGetReqFiltering{
+	filter := &sdk.CreativeGetReqFiltering{
 		AdIds:                req.AdIds,
 		CreativeMaterialMode: req.MaterialMode,
-		MarketingScene:       "FEED",
 		MarketingGoal:        "LIVE_PROM_GOODS",
 	}
 
 	// 调用SDK
-	resp, err := h.service.Manager.CreativeGet(qianchuanSDK.CreativeGetReq{
+	resp, err := h.service.Client.CreativeGet(c.Request.Context(), sdk.CreativeGetReq{
 		AdvertiserId: userSession.AdvertiserID,
 		Page:         req.Page,
 		PageSize:     req.PageSize,
@@ -133,12 +132,11 @@ func (h *CreativeHandler) Get(c *gin.Context) {
 	}
 
 	// 调用SDK（通过列表接口获取单个创意）
-	resp, err := h.service.Manager.CreativeGet(qianchuanSDK.CreativeGetReq{
+	resp, err := h.service.Client.CreativeGet(c.Request.Context(), sdk.CreativeGetReq{
 		AdvertiserId: userSession.AdvertiserID,
-		Filtering: qianchuanSDK.CreativeGetReqFiltering{
-			CreativeId:     creativeId,
-			MarketingScene: "FEED",
-			MarketingGoal:  "LIVE_PROM_GOODS",
+		Filtering: &sdk.CreativeGetReqFiltering{
+			CreativeId:    creativeId,
+			MarketingGoal: "LIVE_PROM_GOODS",
 		},
 		Page:        1,
 		PageSize:    1,
@@ -226,7 +224,7 @@ func (h *CreativeHandler) RejectReason(c *gin.Context) {
 	}
 
 	// 调用SDK
-	resp, err := h.service.Manager.CreativeRejectReason(qianchuanSDK.CreativeRejectReasonReq{
+	resp, err := h.service.Client.CreativeRejectReason(c.Request.Context(), sdk.CreativeRejectReasonReq{
 		AdvertiserId: userSession.AdvertiserID,
 		CreativeIds:  req.CreativeIds,
 		AccessToken:  userSession.AccessToken,

@@ -48,7 +48,7 @@ export default function BrandList() {
               onChange={(e) => setSearchQuery(e.target.value)}
               className="flex-1 px-3 py-2 border rounded-md"
             />
-            <Button>
+            <Button onClick={() => {/* 搜索功能已通过 onChange 实时过滤实现 */}}>
               <Search className="h-4 w-4 mr-2" /> 搜索
             </Button>
           </div>

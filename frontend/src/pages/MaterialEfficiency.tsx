@@ -98,7 +98,7 @@ export default function MaterialEfficiency() {
 
   const formatNumber = (num: number) => {
     if (num >= 10000) {
-      return (num / 10000).toFixed(1) + 'w'
+      return `${(num / 10000).toFixed(1)  }w`
     }
     return num.toLocaleString()
   }

@@ -6,8 +6,8 @@ import (
 	"strconv"
 
 	"github.com/CriarBrand/qianchuan-backend/internal/middleware"
+	"github.com/CriarBrand/qianchuan-backend/internal/sdk"
 	"github.com/CriarBrand/qianchuan-backend/internal/service"
-	"github.com/CriarBrand/qianchuanSDK"
 	"github.com/gin-gonic/gin"
 )
 
@@ -61,14 +61,14 @@ func (h *CampaignHandler) List(c *gin.Context) {
 	}
 
 	// 构建过滤条件
-	filter := qianchuanSDK.CampaignListGetFilter{
+	filter := sdk.CampaignListGetFilter{
 		Name:          req.Name,
 		MarketingGoal: req.MarketingGoal,
 		Status:        req.Status,
 	}
 
 	// 调用SDK
-	resp, err := h.service.Manager.CampaignListGet(qianchuanSDK.CampaignListGetReq{
+	resp, err := h.service.Client.CampaignListGet(c.Request.Context(), sdk.CampaignListGetReq{
 		AdvertiserId: userSession.AdvertiserID,
 		Page:         req.Page,
 		PageSize:     req.PageSize,
@@ -133,12 +133,12 @@ func (h *CampaignHandler) Get(c *gin.Context) {
 	}
 
 	// 使用SDK的filter功能通过ID精确查询
-	filter := qianchuanSDK.CampaignListGetFilter{
+	filter := sdk.CampaignListGetFilter{
 		Ids: []int64{campaignId},
 	}
 
 	// 调用SDK
-	resp, err := h.service.Manager.CampaignListGet(qianchuanSDK.CampaignListGetReq{
+	resp, err := h.service.Client.CampaignListGet(c.Request.Context(), sdk.CampaignListGetReq{
 		AdvertiserId: userSession.AdvertiserID,
 		Page:         1,
 		PageSize:     1, // 只需要一条
@@ -192,7 +192,7 @@ func (h *CampaignHandler) Create(c *gin.Context) {
 	}
 
 	// 解析请求Body
-	var reqBody qianchuanSDK.CampaignCreateBody
+	var reqBody sdk.CampaignCreateBody
 	if err := c.ShouldBindJSON(&reqBody); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"code":    400,
@@ -201,11 +201,27 @@ func (h *CampaignHandler) Create(c *gin.Context) {
 		return
 	}
 
+	// 参数验证
+	if reqBody.CampaignName == "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"code":    400,
+			"message": "广告组名称不能为空",
+		})
+		return
+	}
+	if reqBody.MarketingGoal == "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"code":    400,
+			"message": "营销目标不能为空",
+		})
+		return
+	}
+
 	// 设置广告主ID
 	reqBody.AdvertiserId = userSession.AdvertiserID
 
 	// 调用SDK
-	resp, err := h.service.Manager.CampaignCreate(qianchuanSDK.CampaignCreateReq{
+	resp, err := h.service.Client.CampaignCreate(c.Request.Context(), sdk.CampaignCreateReq{
 		AccessToken: userSession.AccessToken,
 		Body:        reqBody,
 	})
@@ -247,7 +263,7 @@ func (h *CampaignHandler) Update(c *gin.Context) {
 	}
 
 	// 解析请求Body
-	var reqBody qianchuanSDK.CampaignUpdateBody
+	var reqBody sdk.CampaignUpdateBody
 	if err := c.ShouldBindJSON(&reqBody); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"code":    400,
@@ -256,11 +272,20 @@ func (h *CampaignHandler) Update(c *gin.Context) {
 		return
 	}
 
+	// 参数验证
+	if reqBody.CampaignId == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"code":    400,
+			"message": "广告组ID不能为空",
+		})
+		return
+	}
+
 	// 设置广告主ID
 	reqBody.AdvertiserId = userSession.AdvertiserID
 
 	// 调用SDK
-	resp, err := h.service.Manager.CampaignUpdate(qianchuanSDK.CampaignUpdateReq{
+	resp, err := h.service.Client.CampaignUpdate(c.Request.Context(), sdk.CampaignUpdateReq{
 		AccessToken: userSession.AccessToken,
 		Body:        reqBody,
 	})
@@ -302,7 +327,7 @@ func (h *CampaignHandler) UpdateStatus(c *gin.Context) {
 	}
 
 	// 解析请求Body
-	var reqBody qianchuanSDK.BatchCampaignStatusUpdateBody
+	var reqBody sdk.BatchCampaignStatusUpdateBody
 	if err := c.ShouldBindJSON(&reqBody); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"code":    400,
@@ -311,11 +336,27 @@ func (h *CampaignHandler) UpdateStatus(c *gin.Context) {
 		return
 	}
 
+	// 参数验证
+	if len(reqBody.CampaignIds) == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"code":    400,
+			"message": "广告组ID不能为空",
+		})
+		return
+	}
+	if reqBody.OptStatus == "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"code":    400,
+			"message": "状态不能为空",
+		})
+		return
+	}
+
 	// 设置广告主ID
 	reqBody.AdvertiserId = userSession.AdvertiserID
 
 	// 调用SDK
-	resp, err := h.service.Manager.BatchCampaignStatusUpdate(qianchuanSDK.BatchCampaignStatusUpdateReq{
+	resp, err := h.service.Client.BatchCampaignStatusUpdate(c.Request.Context(), sdk.BatchCampaignStatusUpdateReq{
 		AccessToken: userSession.AccessToken,
 		Body:        reqBody,
 	})

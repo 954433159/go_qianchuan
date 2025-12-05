@@ -17,7 +17,7 @@ import {
 import Input from '@/components/ui/Input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/Select'
 import Button from '@/components/ui/Button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card'
+import { Card, CardContent } from '@/components/ui/Card'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/Accordion'
 import TargetingSelector, { TargetingValue } from '@/components/targeting/TargetingSelector'
 import RegionSelector from '@/components/targeting/RegionSelector'
@@ -118,9 +118,9 @@ export default function AdCreate() {
   const { create } = useAdMutations()
   const { user } = useAuthStore()
 
-  // 从URL参数获取
+  // 从URL参数或用户状态获取广告主ID
   const campaignIdFromUrl = Number(searchParams.get('campaign_id')) || undefined
-  const advertiserIdFromUrl = Number(searchParams.get('advertiser_id')) || user?.advertiserId || 1
+  const advertiserIdFromUrl = Number(searchParams.get('advertiser_id')) || user?.advertiserId || undefined
 
   const form = useForm<AdFormValues>({
     resolver: zodResolver(adFormSchema),
@@ -224,7 +224,7 @@ export default function AdCreate() {
       }
 
       await create({
-        advertiser_id: advertiserIdFromUrl,
+        advertiser_id: advertiserIdFromUrl!, // Non-null assertion safe: validated above
         campaign_id: values.campaign_id,
         ad_name: values.ad_name,
         delivery_setting: deliverySetting,
@@ -257,6 +257,45 @@ export default function AdCreate() {
     } finally {
       setSubmitting(false)
     }
+  }
+
+  // 验证广告主ID是否存在
+  if (!advertiserIdFromUrl) {
+    return (
+      <div className="space-y-6">
+        <PageHeader
+          title="📢 创建推广计划"
+          description="按照步骤填写信息，创建新的推广计划"
+          breadcrumbs={[
+            { label: '工作台', href: '/' },
+            { label: '推广计划', href: '/ads' },
+            { label: '创建计划' },
+          ]}
+        />
+        <Card>
+          <CardContent className="pt-6">
+            <div className="flex flex-col items-center justify-center py-12 text-center">
+              <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-4">
+                <Info className="w-8 h-8 text-red-600" />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">缺少广告主ID</h3>
+              <p className="text-gray-600 mb-6 max-w-md">
+                创建广告计划需要广告主ID。请从广告主页面进入，或确保已正确登录并选择了广告主。
+              </p>
+              <div className="flex gap-3">
+                <Button variant="outline" onClick={() => navigate('/advertisers')}>
+                  去选择广告主
+                </Button>
+                <Button onClick={() => navigate(-1)}>
+                  <ArrowLeft className="mr-2 h-4 w-4" />
+                  返回
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    )
   }
 
   return (

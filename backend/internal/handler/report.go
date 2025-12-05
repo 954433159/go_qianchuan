@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -9,8 +10,8 @@ import (
 
 	"github.com/CriarBrand/qianchuan-backend/internal/middleware"
 	"github.com/CriarBrand/qianchuan-backend/internal/service"
+	"github.com/CriarBrand/qianchuan-backend/internal/sdk"
 	"github.com/CriarBrand/qianchuan-backend/pkg/session"
-	"github.com/CriarBrand/qianchuanSDK"
 	"github.com/gin-gonic/gin"
 )
 
@@ -55,15 +56,15 @@ func (h *ReportHandler) GetAdvertiserReport(c *gin.Context) {
 		return
 	}
 
-	// 调用SDK
-	resp, err := h.service.Manager.AdvertiserReport(qianchuanSDK.AdvertiserReportReq{
+	// 调用SDK (OrderPlatform 字段SDK暂不支持)
+	_ = req.OrderPlatform
+	resp, err := h.service.Client.AdvertiserReport(c.Request.Context(), sdk.AdvertiserReportReq{
 		AdvertiserId: userSession.AdvertiserID,
 		StartDate:    req.StartDate,
 		EndDate:      req.EndDate,
 		Fields:       req.Fields,
-		Filtering: qianchuanSDK.AdvertiserReportFiltering{
+		Filtering: &sdk.AdvertiserReportFiltering{
 			MarketingGoal: req.MarketingGoal,
-			OrderPlatform: req.OrderPlatform,
 		},
 		AccessToken: userSession.AccessToken,
 	})
@@ -123,14 +124,13 @@ func (h *ReportHandler) GetCampaignReport(c *gin.Context) {
 	}
 
 	// 调用SDK
-	resp, err := h.service.Manager.AdvertiserReport(qianchuanSDK.AdvertiserReportReq{
+	resp, err := h.service.Client.AdvertiserReport(c.Request.Context(), sdk.AdvertiserReportReq{
 		AdvertiserId: userSession.AdvertiserID,
 		StartDate:    req.StartDate,
 		EndDate:      req.EndDate,
 		Fields:       req.Fields,
-		Filtering: qianchuanSDK.AdvertiserReportFiltering{
+		Filtering: &sdk.AdvertiserReportFiltering{
 			MarketingGoal: req.MarketingGoal,
-			OrderPlatform: req.OrderPlatform,
 		},
 		AccessToken: userSession.AccessToken,
 	})
@@ -201,12 +201,12 @@ func (h *ReportHandler) GetAdReport(c *gin.Context) {
 	}
 
 	// 调用SDK
-	resp, err := h.service.Manager.ReportAdGet(qianchuanSDK.ReportAdGetReq{
+	resp, err := h.service.Client.ReportAdGet(c.Request.Context(), sdk.ReportAdGetReq{
 		AdvertiserId: userSession.AdvertiserID,
 		StartDate:    req.StartDate,
 		EndDate:      req.EndDate,
 		Fields:       req.Fields,
-		Filtering: qianchuanSDK.ReportAdGetFiltering{
+		Filtering: &sdk.ReportAdGetFiltering{
 			AdIds:         req.AdIds,
 			MarketingGoal: req.MarketingGoal,
 		},
@@ -283,17 +283,15 @@ func (h *ReportHandler) GetCreativeReport(c *gin.Context) {
 	}
 
 	// 调用SDK
-	resp, err := h.service.Manager.ReportCreativeGet(qianchuanSDK.ReportCreativeGetReq{
+	resp, err := h.service.Client.ReportCreativeGet(c.Request.Context(), sdk.ReportCreativeGetReq{
 		AdvertiserId: userSession.AdvertiserID,
 		StartDate:    req.StartDate,
 		EndDate:      req.EndDate,
 		Fields:       req.Fields,
-		Filtering: qianchuanSDK.ReportCreativeGetFiltering{
+		Filtering: &sdk.ReportCreativeGetFiltering{
 			CreativeIds:   req.CreativeIds,
 			MarketingGoal: req.MarketingGoal,
 		},
-		OrderField:  req.OrderField,
-		OrderType:   req.OrderType,
 		Page:        req.Page,
 		PageSize:    req.PageSize,
 		AccessToken: userSession.AccessToken,
@@ -339,20 +337,18 @@ type exportReportRequest struct {
 }
 
 // fetchReportData 根据报表类型获取数据
-func (h *ReportHandler) fetchReportData(reportType string, req exportReportRequest, userSession *session.UserSession) (interface{}, error) {
+func (h *ReportHandler) fetchReportData(reportType string, req exportReportRequest, userSession *session.UserSession, ctx context.Context) (interface{}, error) {
 	switch reportType {
 	case "creative":
-		resp, err := h.service.Manager.ReportCreativeGet(qianchuanSDK.ReportCreativeGetReq{
+		resp, err := h.service.Client.ReportCreativeGet(ctx, sdk.ReportCreativeGetReq{
 			AdvertiserId: userSession.AdvertiserID,
 			StartDate:    req.StartDate,
 			EndDate:      req.EndDate,
 			Fields:       req.Fields,
-			Filtering: qianchuanSDK.ReportCreativeGetFiltering{
+			Filtering: &sdk.ReportCreativeGetFiltering{
 				CreativeIds:   req.CreativeIds,
 				MarketingGoal: req.MarketingGoal,
 			},
-			OrderField:  req.OrderField,
-			OrderType:   req.OrderType,
 			Page:        req.Page,
 			PageSize:    req.PageSize,
 			AccessToken: userSession.AccessToken,
@@ -362,12 +358,12 @@ func (h *ReportHandler) fetchReportData(reportType string, req exportReportReque
 		}
 		return resp.Data, nil
 	default: // ad
-		resp, err := h.service.Manager.ReportAdGet(qianchuanSDK.ReportAdGetReq{
+		resp, err := h.service.Client.ReportAdGet(ctx, sdk.ReportAdGetReq{
 			AdvertiserId: userSession.AdvertiserID,
 			StartDate:    req.StartDate,
 			EndDate:      req.EndDate,
 			Fields:       req.Fields,
-			Filtering: qianchuanSDK.ReportAdGetFiltering{
+			Filtering: &sdk.ReportAdGetFiltering{
 				AdIds:         req.AdIds,
 				MarketingGoal: req.MarketingGoal,
 			},
@@ -420,7 +416,7 @@ func (h *ReportHandler) ExportReport(c *gin.Context) {
 	}
 
 	// 获取报表数据
-	data, err := h.fetchReportData(reportType, req, userSession)
+	data, err := h.fetchReportData(reportType, req, userSession, c.Request.Context())
 	if err != nil {
 		log.Printf("Export report failed: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{

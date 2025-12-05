@@ -171,8 +171,8 @@ export default function IndustryList() {
         <CardContent>
           <Table
             columns={columns as any}
-            dataSource={industries}
-            rowKey={(record) => String(record.id)}
+            data={industries as any}
+            rowKey={(record: any) => String(record.id)}
           />
         </CardContent>
       </Card>

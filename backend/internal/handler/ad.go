@@ -6,9 +6,9 @@ import (
 	"strconv"
 
 	"github.com/CriarBrand/qianchuan-backend/internal/middleware"
+	"github.com/CriarBrand/qianchuan-backend/internal/sdk"
 	"github.com/CriarBrand/qianchuan-backend/internal/service"
 	"github.com/CriarBrand/qianchuan-backend/internal/util"
-	"github.com/CriarBrand/qianchuanSDK"
 	"github.com/gin-gonic/gin"
 )
 
@@ -68,7 +68,7 @@ func (h *AdHandler) List(c *gin.Context) {
 	}
 
 	// 构建过滤条件
-	filter := qianchuanSDK.AdListGetFiltering{
+	filter := sdk.AdListGetFiltering{
 		AdName:         req.AdName,
 		Status:         req.Status,
 		MarketingGoal:  req.MarketingGoal,
@@ -77,7 +77,7 @@ func (h *AdHandler) List(c *gin.Context) {
 	}
 
 	// 调用SDK
-	resp, err := h.service.Manager.AdListGet(qianchuanSDK.AdListGetReq{
+	resp, err := h.service.Client.AdListGet(c.Request.Context(), sdk.AdListGetReq{
 		AdvertiserId:     userSession.AdvertiserID,
 		RequestAwemeInfo: req.RequestAwemeInfo,
 		Page:             req.Page,
@@ -142,7 +142,7 @@ func (h *AdHandler) Get(c *gin.Context) {
 	}
 
 	// 调用SDK
-	resp, err := h.service.Manager.AdDetailGet(qianchuanSDK.AdDetailGetReq{
+	resp, err := h.service.Client.AdDetailGet(c.Request.Context(), sdk.AdDetailGetReq{
 		AdvertiserId: userSession.AdvertiserID,
 		AccessToken:  userSession.AccessToken,
 		AdId:         adId,
@@ -185,7 +185,7 @@ func (h *AdHandler) Create(c *gin.Context) {
 	}
 
 	// 解析请求Body
-	var reqBody qianchuanSDK.AdCreateBody
+	var reqBody sdk.AdCreateBody
 	if err := c.ShouldBindJSON(&reqBody); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"code":    400,
@@ -198,7 +198,7 @@ func (h *AdHandler) Create(c *gin.Context) {
 	reqBody.AdvertiserId = userSession.AdvertiserID
 
 	// 调用SDK
-	resp, err := h.service.Manager.AdCreate(qianchuanSDK.AdCreateReq{
+	resp, err := h.service.Client.AdCreate(c.Request.Context(), sdk.AdCreateReq{
 		AccessToken: userSession.AccessToken,
 		Body:        reqBody,
 	})
@@ -240,7 +240,7 @@ func (h *AdHandler) Update(c *gin.Context) {
 	}
 
 	// 解析请求Body
-	var reqBody qianchuanSDK.AdUpdateBody
+	var reqBody sdk.AdUpdateBody
 	if err := c.ShouldBindJSON(&reqBody); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"code":    400,
@@ -253,7 +253,7 @@ func (h *AdHandler) Update(c *gin.Context) {
 	reqBody.AdvertiserId = userSession.AdvertiserID
 
 	// 调用SDK
-	resp, err := h.service.Manager.AdUpdate(qianchuanSDK.AdUpdateReq{
+	resp, err := h.service.Client.AdUpdate(c.Request.Context(), sdk.AdUpdateReq{
 		AccessToken: userSession.AccessToken,
 		Body:        reqBody,
 	})
@@ -281,10 +281,9 @@ func (h *AdHandler) Update(c *gin.Context) {
 		"data":    resp.Data,
 	})
 }
-
 // UpdateStatus 更新广告计划状态
 func (h *AdHandler) UpdateStatus(c *gin.Context) {
-	// 从middleware获取Session
+	// 从 middleware获取Session
 	userSession, ok := middleware.GetUserSession(c)
 	if !ok {
 		c.JSON(http.StatusUnauthorized, gin.H{
@@ -295,7 +294,7 @@ func (h *AdHandler) UpdateStatus(c *gin.Context) {
 	}
 
 	// 解析请求Body
-	var reqBody qianchuanSDK.AdStatusUpdateBody
+	var reqBody sdk.AdStatusUpdateBody
 	if err := c.ShouldBindJSON(&reqBody); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"code":    400,
@@ -304,11 +303,27 @@ func (h *AdHandler) UpdateStatus(c *gin.Context) {
 		return
 	}
 
+	// 参数验证
+	if len(reqBody.AdIds) == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"code":    400,
+			"message": "广告计划ID不能为空",
+		})
+		return
+	}
+	if reqBody.OptStatus == "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"code":    400,
+			"message": "状态不能为空",
+		})
+		return
+	}
+
 	// 设置广告主ID
 	reqBody.AdvertiserId = userSession.AdvertiserID
 
 	// 调用SDK
-	resp, err := h.service.Manager.AdStatusUpdate(qianchuanSDK.AdStatusUpdateReq{
+	resp, err := h.service.Client.AdStatusUpdate(c.Request.Context(), sdk.AdStatusUpdateReq{
 		AccessToken: userSession.AccessToken,
 		Body:        reqBody,
 	})
@@ -350,7 +365,7 @@ func (h *AdHandler) UpdateBudget(c *gin.Context) {
 	}
 
 	// 解析请求Body
-	var reqBody qianchuanSDK.AdBudgetUpdateBody
+	var reqBody sdk.AdBudgetUpdateBody
 	if err := c.ShouldBindJSON(&reqBody); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"code":    400,
@@ -390,7 +405,7 @@ func (h *AdHandler) UpdateBudget(c *gin.Context) {
 	reqBody.AdvertiserId = userSession.AdvertiserID
 
 	// 调用SDK
-	resp, err := h.service.Manager.AdBudgetUpdate(qianchuanSDK.AdBudgetUpdateReq{
+	resp, err := h.service.Client.AdBudgetUpdate(c.Request.Context(), sdk.AdBudgetUpdateReq{
 		AccessToken: userSession.AccessToken,
 		Body:        reqBody,
 	})
@@ -432,7 +447,7 @@ func (h *AdHandler) UpdateBid(c *gin.Context) {
 	}
 
 	// 解析请求Body
-	var reqBody qianchuanSDK.AdBidUpdateBody
+	var reqBody sdk.AdBidUpdateBody
 	if err := c.ShouldBindJSON(&reqBody); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"code":    400,
@@ -465,7 +480,7 @@ func (h *AdHandler) UpdateBid(c *gin.Context) {
 	reqBody.AdvertiserId = userSession.AdvertiserID
 
 	// 调用SDK
-	resp, err := h.service.Manager.AdBidUpdate(qianchuanSDK.AdBidUpdateReq{
+	resp, err := h.service.Client.AdBidUpdate(c.Request.Context(), sdk.AdBidUpdateReq{
 		AccessToken: userSession.AccessToken,
 		Body:        reqBody,
 	})

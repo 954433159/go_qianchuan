@@ -281,7 +281,7 @@ export default function UniPromotionDetail() {
             </div>
           )}
 
-          {/* Delivery Settings */
+          {/* Delivery Settings */}
           {promotion.delivery_setting && (
             <div className="bg-white rounded-lg shadow p-6">
               <h2 className="text-lg font-semibold text-gray-900 mb-4">投放设置</h2>
@@ -292,8 +292,7 @@ export default function UniPromotionDetail() {
               </div>
             </div>
           )}
-
-          {/* Materials */}
+          
           <div className="bg-white rounded-lg shadow p-6">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-semibold text-gray-900">关联素材</h2>

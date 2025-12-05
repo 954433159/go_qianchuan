@@ -6,6 +6,7 @@ import { PageHeader, Card, CardContent, CardHeader, CardTitle, Button, Input, Lo
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/Select'
 import { useAuthStore } from '@/store/authStore'
 import { toast } from '@/components/ui/Toast'
+import { FeatureBanner } from '@/components/common/FeatureBadge'
 
 export default function AdSuggestTools() {
   const navigate = useNavigate()
@@ -395,6 +396,13 @@ export default function AdSuggestTools() {
             返回列表
           </Button>
         }
+      />
+
+      {/* Mock Data Banner */}
+      <FeatureBanner
+        status="mock-data"
+        title="演示数据提示"
+        description="当前显示的是模拟数据，仅供功能演示。建议数据基于行业平均水平，实际投放请根据具体情况调整。"
       />
 
       {/* 工具选择卡片 */}

@@ -1,0 +1,165 @@
+# =============================================================================
+# 腾讯云 TKE 容器服务 - ConfigMap & Secret
+# 千川SDK管理平台
+# =============================================================================
+
+# 应用配置
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: qianchuan-config
+  namespace: qianchuan
+  labels:
+    app: qianchuan
+data:
+  # 服务配置
+  PORT: "8080"
+  GIN_MODE: "release"
+  
+  # Cookie 配置
+  COOKIE_DOMAIN: "qianchuan.example.com"
+  COOKIE_SECURE: "true"
+  COOKIE_SAME_SITE: "lax"
+  SESSION_NAME: "qianchuan_session"
+  
+  # CORS 配置
+  CORS_ORIGIN: "https://qianchuan.example.com"
+
+---
+# Secret 模板（敏感配置）
+# 注意：实际部署时需要使用 kubectl create secret 或腾讯云密钥管理服务
+apiVersion: v1
+kind: Secret
+metadata:
+  name: qianchuan-secrets
+  namespace: qianchuan
+  labels:
+    app: qianchuan
+type: Opaque
+stringData:
+  # 千川 SDK 配置（必须替换为实际值）
+  APP_ID: "your_app_id"
+  APP_SECRET: "your_app_secret"
+  
+  # Session 密钥（必须替换为随机生成的值）
+  COOKIE_SECRET: "your_random_32_char_secret_key"
+  COOKIE_ENC_SECRET: "your_random_32_char_enc_secret"
+
+---
+# Nginx 配置
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: qianchuan-nginx-config
+  namespace: qianchuan
+data:
+  nginx.conf: |
+    worker_processes auto;
+    error_log /var/log/nginx/error.log warn;
+    pid /tmp/nginx.pid;
+
+    events {
+        worker_connections 1024;
+        use epoll;
+        multi_accept on;
+    }
+
+    http {
+        include /etc/nginx/mime.types;
+        default_type application/octet-stream;
+
+        log_format main '$remote_addr - $remote_user [$time_local] "$request" '
+                        '$status $body_bytes_sent "$http_referer" '
+                        '"$http_user_agent" "$http_x_forwarded_for"';
+
+        access_log /var/log/nginx/access.log main;
+
+        sendfile on;
+        tcp_nopush on;
+        tcp_nodelay on;
+        keepalive_timeout 65;
+        types_hash_max_size 2048;
+
+        # Gzip 压缩
+        gzip on;
+        gzip_vary on;
+        gzip_proxied any;
+        gzip_comp_level 6;
+        gzip_min_length 1024;
+        gzip_types text/plain text/css text/xml application/json application/javascript 
+                   application/rss+xml application/atom+xml image/svg+xml;
+
+        # 上游后端服务
+        upstream backend {
+            server qianchuan-backend:8080;
+            keepalive 32;
+        }
+
+        server {
+            listen 80;
+            server_name _;
+
+            # 安全头
+            add_header X-Frame-Options "SAMEORIGIN" always;
+            add_header X-Content-Type-Options "nosniff" always;
+            add_header X-XSS-Protection "1; mode=block" always;
+            add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+
+            # 健康检查（K8s 探针）
+            location /nginx-health {
+                access_log off;
+                return 200 "healthy\n";
+            }
+
+            # 静态资源
+            location / {
+                root /usr/share/nginx/html;
+                index index.html;
+                try_files $uri $uri/ /index.html;
+
+                # 静态资源缓存
+                location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$ {
+                    expires 30d;
+                    add_header Cache-Control "public, immutable";
+                }
+
+                # HTML 不缓存
+                location ~* \.html$ {
+                    expires -1;
+                    add_header Cache-Control "no-store, no-cache, must-revalidate";
+                }
+            }
+
+            # API 代理
+            location /api {
+                proxy_pass http://backend;
+                proxy_http_version 1.1;
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header X-Forwarded-Proto $scheme;
+                proxy_set_header Connection "";
+
+                # 超时
+                proxy_connect_timeout 60s;
+                proxy_send_timeout 60s;
+                proxy_read_timeout 60s;
+
+                # 缓冲
+                proxy_buffer_size 4k;
+                proxy_buffers 4 32k;
+                proxy_busy_buffers_size 64k;
+            }
+
+            # 后端健康检查代理
+            location /health {
+                proxy_pass http://backend/health;
+                proxy_http_version 1.1;
+            }
+
+            location /ready {
+                proxy_pass http://backend/ready;
+                proxy_http_version 1.1;
+            }
+        }
+    }

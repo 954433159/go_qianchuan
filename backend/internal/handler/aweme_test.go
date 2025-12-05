@@ -278,17 +278,17 @@ func TestAwemeHandler_GetVideoList_Pagination(t *testing.T) {
 	testCases := []struct {
 		name         string
 		advertiserId string
-		cursor       string
-		count        string
+		awemeId      string
+		pageSize     string
 		expectError  bool
 		errorMsg     string
 	}{
-		{"valid_params", "123456", "0", "20", false, ""},
-		{"missing_advertiser_id", "", "0", "20", true, "格式错误"},
-		{"invalid_advertiser_id", "abc", "0", "20", true, "格式错误"},
-		{"zero_advertiser_id", "0", "0", "20", true, "无效"},
-		{"exceed_max_count", "123456", "0", "150", true, "最多返回100条"},
-		{"default_cursor_count", "123456", "", "", false, ""}, // 使用默认值
+		{"valid_params", "123456", "999", "20", false, ""},
+		{"missing_advertiser_id", "", "999", "20", true, "格式错误"},
+		{"invalid_advertiser_id", "abc", "999", "20", true, "格式错误"},
+		{"zero_advertiser_id", "0", "999", "20", true, "无效"},
+		{"exceed_max_page_size", "123456", "999", "150", true, "最多返回100条"},
+		{"default_pagination", "123456", "999", "", false, ""}, // 使用默认值
 	}
 
 	for _, tc := range testCases {
@@ -298,11 +298,11 @@ func TestAwemeHandler_GetVideoList_Pagination(t *testing.T) {
 			if tc.advertiserId != "" {
 				params = append(params, "advertiser_id="+tc.advertiserId)
 			}
-			if tc.cursor != "" {
-				params = append(params, "cursor="+tc.cursor)
+			if tc.awemeId != "" {
+				params = append(params, "aweme_id="+tc.awemeId)
 			}
-			if tc.count != "" {
-				params = append(params, "count="+tc.count)
+			if tc.pageSize != "" {
+				params = append(params, "page_size="+tc.pageSize)
 			}
 			if len(params) > 0 {
 				path += "?" + strings.Join(params, "&")

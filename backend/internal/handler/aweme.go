@@ -5,9 +5,9 @@ import (
 	"strconv"
 
 	"github.com/CriarBrand/qianchuan-backend/internal/middleware"
+	"github.com/CriarBrand/qianchuan-backend/internal/sdk"
 	"github.com/CriarBrand/qianchuan-backend/internal/service"
 	"github.com/CriarBrand/qianchuan-backend/internal/util"
-	"github.com/CriarBrand/qianchuanSDK"
 	"github.com/gin-gonic/gin"
 )
 
@@ -59,12 +59,12 @@ func (h *AwemeHandler) GetOrderList(c *gin.Context) {
 	}
 
 	// SDK未初始化时直接返回500，避免测试panic
-	if h.service == nil || h.service.Manager == nil {
+	if h.service == nil || h.service.Client == nil {
 		util.ServerError(c, "SDK未初始化")
 		return
 	}
 
-	resp, err := h.service.Manager.AwemeOrderGet(qianchuanSDK.AwemeOrderGetReq{
+	resp, err := h.service.Client.AwemeOrderGet(c.Request.Context(), sdk.AwemeOrderGetReq{
 		AdvertiserId: advertiserId,
 		Page:         page,
 		PageSize:     pageSize,
@@ -78,7 +78,7 @@ func (h *AwemeHandler) GetOrderList(c *gin.Context) {
 	}
 
 	if resp.Code != 0 {
-		log.Printf("SDK returned error: code=%d, message=%s, request_id=%s", resp.Code, resp.Message, resp.RequestId)
+		log.Printf("SDK returned error: code=%d, message=%s", resp.Code, resp.Message)
 		util.ErrorResponse(c, int(resp.Code), resp.Message)
 		return
 	}
@@ -86,7 +86,7 @@ func (h *AwemeHandler) GetOrderList(c *gin.Context) {
 	util.Success(c, resp.Data)
 }
 
-// GetOrderDetail 获取随心推订单详情
+// GetOrderDetail
 func (h *AwemeHandler) GetOrderDetail(c *gin.Context) {
 	userSession, ok := middleware.GetUserSession(c)
 	if !ok {
@@ -119,12 +119,12 @@ func (h *AwemeHandler) GetOrderDetail(c *gin.Context) {
 	}
 
 	// SDK未初始化时直接返回500，避免测试panic
-	if h.service == nil || h.service.Manager == nil {
+	if h.service == nil || h.service.Client == nil {
 		util.ServerError(c, "SDK未初始化")
 		return
 	}
 
-	resp, err := h.service.Manager.AwemeOrderDetailGet(qianchuanSDK.AwemeOrderDetailGetReq{
+	resp, err := h.service.Client.AwemeOrderDetailGet(c.Request.Context(), sdk.AwemeOrderDetailGetReq{
 		AdvertiserId: advertiserId,
 		OrderId:      orderId,
 		AccessToken:  userSession.AccessToken,
@@ -137,7 +137,7 @@ func (h *AwemeHandler) GetOrderDetail(c *gin.Context) {
 	}
 
 	if resp.Code != 0 {
-		log.Printf("SDK returned error: code=%d, message=%s, request_id=%s", resp.Code, resp.Message, resp.RequestId)
+		log.Printf("SDK returned error: code=%d, message=%s", resp.Code, resp.Message)
 		util.ErrorResponse(c, int(resp.Code), resp.Message)
 		return
 	}
@@ -145,7 +145,7 @@ func (h *AwemeHandler) GetOrderDetail(c *gin.Context) {
 	util.Success(c, resp.Data)
 }
 
-// CreateOrder 创建随心推订单
+// CreateOrder
 func (h *AwemeHandler) CreateOrder(c *gin.Context) {
 	userSession, ok := middleware.GetUserSession(c)
 	if !ok {
@@ -153,7 +153,7 @@ func (h *AwemeHandler) CreateOrder(c *gin.Context) {
 		return
 	}
 
-	var req qianchuanSDK.AwemeOrderCreateReq
+	var req sdk.AwemeOrderCreateReq
 	if err := c.ShouldBindJSON(&req); err != nil {
 		util.BadRequest(c, "参数错误: "+err.Error())
 		return
@@ -161,7 +161,7 @@ func (h *AwemeHandler) CreateOrder(c *gin.Context) {
 
 	req.AccessToken = userSession.AccessToken
 
-	resp, err := h.service.Manager.AwemeOrderCreate(req)
+	resp, err := h.service.Client.AwemeOrderCreate(c.Request.Context(), req)
 
 	if err != nil {
 		log.Printf("Create aweme order failed: %v", err)
@@ -170,7 +170,7 @@ func (h *AwemeHandler) CreateOrder(c *gin.Context) {
 	}
 
 	if resp.Code != 0 {
-		log.Printf("SDK returned error: code=%d, message=%s, request_id=%s", resp.Code, resp.Message, resp.RequestId)
+		log.Printf("SDK returned error: code=%d, message=%s", resp.Code, resp.Message)
 		util.ErrorResponse(c, int(resp.Code), resp.Message)
 		return
 	}
@@ -178,7 +178,7 @@ func (h *AwemeHandler) CreateOrder(c *gin.Context) {
 	util.Success(c, resp.Data)
 }
 
-// TerminateOrder 终止随心推订单
+// TerminateOrder
 func (h *AwemeHandler) TerminateOrder(c *gin.Context) {
 	userSession, ok := middleware.GetUserSession(c)
 	if !ok {
@@ -186,7 +186,7 @@ func (h *AwemeHandler) TerminateOrder(c *gin.Context) {
 		return
 	}
 
-	var req qianchuanSDK.AwemeOrderTerminateReq
+	var req sdk.AwemeOrderTerminateReq
 	if err := c.ShouldBindJSON(&req); err != nil {
 		util.BadRequest(c, "参数错误: "+err.Error())
 		return
@@ -194,7 +194,7 @@ func (h *AwemeHandler) TerminateOrder(c *gin.Context) {
 
 	req.AccessToken = userSession.AccessToken
 
-	resp, err := h.service.Manager.AwemeOrderTerminate(req)
+	resp, err := h.service.Client.AwemeOrderTerminate(c.Request.Context(), req)
 
 	if err != nil {
 		log.Printf("Terminate aweme order failed: %v", err)
@@ -203,7 +203,7 @@ func (h *AwemeHandler) TerminateOrder(c *gin.Context) {
 	}
 
 	if resp.Code != 0 {
-		log.Printf("SDK returned error: code=%d, message=%s, request_id=%s", resp.Code, resp.Message, resp.RequestId)
+		log.Printf("SDK returned error: code=%d, message=%s", resp.Code, resp.Message)
 		util.ErrorResponse(c, int(resp.Code), resp.Message)
 		return
 	}
@@ -211,7 +211,7 @@ func (h *AwemeHandler) TerminateOrder(c *gin.Context) {
 	util.SuccessWithMessage(c, nil, "订单已终止")
 }
 
-// GetVideoList 获取随心推视频列表
+// GetVideoList
 func (h *AwemeHandler) GetVideoList(c *gin.Context) {
 	userSession, ok := middleware.GetUserSession(c)
 	if !ok {
@@ -221,9 +221,9 @@ func (h *AwemeHandler) GetVideoList(c *gin.Context) {
 
 	// 解析并验证参数
 	advertiserIDStr := c.Query("advertiser_id")
-	awemeId := c.Query("aweme_id")
-	cursorStr := c.DefaultQuery("cursor", "0")
-	countStr := c.DefaultQuery("count", "20")
+	awemeIdStr := c.Query("aweme_id")
+	pageStr := c.DefaultQuery("page", "1")
+	pageSizeStr := c.DefaultQuery("page_size", "20")
 
 	advertiserId, err := strconv.ParseInt(advertiserIDStr, 10, 64)
 	if err != nil {
@@ -235,31 +235,37 @@ func (h *AwemeHandler) GetVideoList(c *gin.Context) {
 		return
 	}
 
-	cursor, err := strconv.ParseInt(cursorStr, 10, 64)
+	awemeId, err := strconv.ParseInt(awemeIdStr, 10, 64)
 	if err != nil {
-		cursor = 0
+		util.BadRequest(c, "aweme_id格式错误")
+		return
 	}
-	count, err := strconv.ParseInt(countStr, 10, 64)
+
+	page, err := strconv.ParseInt(pageStr, 10, 64)
 	if err != nil {
-		count = 20
+		page = 1
 	}
-	_, count, err = util.ValidatePaginationInt64(0, count)
+	pageSize, err := strconv.ParseInt(pageSizeStr, 10, 64)
+	if err != nil {
+		pageSize = 20
+	}
+	page, pageSize, err = util.ValidatePaginationInt64(page, pageSize)
 	if err != nil {
 		util.BadRequest(c, err.Error())
 		return
 	}
 
 	// SDK未初始化时直接返回500，避免测试panic
-	if h.service == nil || h.service.Manager == nil {
+	if h.service == nil || h.service.Client == nil {
 		util.ServerError(c, "SDK未初始化")
 		return
 	}
 
-	resp, err := h.service.Manager.AwemeVideoGet(qianchuanSDK.AwemeVideoGetReq{
+	resp, err := h.service.Client.AwemeVideoGet(c.Request.Context(), sdk.AwemeVideoGetReq{
 		AdvertiserId: advertiserId,
 		AwemeId:      awemeId,
-		Cursor:       cursor,
-		Count:        count,
+		Page:         page,
+		PageSize:     pageSize,
 		AccessToken:  userSession.AccessToken,
 	})
 
@@ -270,7 +276,7 @@ func (h *AwemeHandler) GetVideoList(c *gin.Context) {
 	}
 
 	if resp.Code != 0 {
-		log.Printf("SDK returned error: code=%d, message=%s, request_id=%s", resp.Code, resp.Message, resp.RequestId)
+		log.Printf("SDK returned error: code=%d, message=%s", resp.Code, resp.Message)
 		util.ErrorResponse(c, int(resp.Code), resp.Message)
 		return
 	}
@@ -286,7 +292,7 @@ func (h *AwemeHandler) AddBudget(c *gin.Context) {
 		return
 	}
 
-	var req qianchuanSDK.AwemeOrderBudgetAddReq
+	var req sdk.AwemeOrderBudgetAddReq
 	if err := c.ShouldBindJSON(&req); err != nil {
 		util.BadRequest(c, "参数错误: "+err.Error())
 		return
@@ -294,7 +300,7 @@ func (h *AwemeHandler) AddBudget(c *gin.Context) {
 
 	req.AccessToken = userSession.AccessToken
 
-	resp, err := h.service.Manager.AwemeOrderBudgetAdd(req)
+	resp, err := h.service.Client.AwemeOrderBudgetAdd(c.Request.Context(), req)
 
 	if err != nil {
 		log.Printf("Add aweme order budget failed: %v", err)
@@ -303,7 +309,7 @@ func (h *AwemeHandler) AddBudget(c *gin.Context) {
 	}
 
 	if resp.Code != 0 {
-		log.Printf("SDK returned error: code=%d, message=%s, request_id=%s", resp.Code, resp.Message, resp.RequestId)
+		log.Printf("SDK returned error: code=%d, message=%s", resp.Code, resp.Message)
 		util.ErrorResponse(c, int(resp.Code), resp.Message)
 		return
 	}
@@ -319,7 +325,7 @@ func (h *AwemeHandler) GetSuggestBid(c *gin.Context) {
 		return
 	}
 
-	var req qianchuanSDK.AwemeSuggestBidReq
+	var req sdk.AwemeSuggestBidReq
 	if err := c.ShouldBindJSON(&req); err != nil {
 		util.BadRequest(c, "参数错误: "+err.Error())
 		return
@@ -327,7 +333,7 @@ func (h *AwemeHandler) GetSuggestBid(c *gin.Context) {
 
 	req.AccessToken = userSession.AccessToken
 
-	resp, err := h.service.Manager.AwemeSuggestBid(req)
+	resp, err := h.service.Client.AwemeSuggestBid(c.Request.Context(), req)
 
 	if err != nil {
 		log.Printf("Get aweme suggest bid failed: %v", err)
@@ -336,7 +342,7 @@ func (h *AwemeHandler) GetSuggestBid(c *gin.Context) {
 	}
 
 	if resp.Code != 0 {
-		log.Printf("SDK returned error: code=%d, message=%s, request_id=%s", resp.Code, resp.Message, resp.RequestId)
+		log.Printf("SDK returned error: code=%d, message=%s", resp.Code, resp.Message)
 		util.ErrorResponse(c, int(resp.Code), resp.Message)
 		return
 	}
@@ -344,7 +350,7 @@ func (h *AwemeHandler) GetSuggestBid(c *gin.Context) {
 	util.Success(c, resp.Data)
 }
 
-// GetEstimate 获取随心推预估数据
+// GetEstimate
 func (h *AwemeHandler) GetEstimate(c *gin.Context) {
 	userSession, ok := middleware.GetUserSession(c)
 	if !ok {
@@ -352,7 +358,7 @@ func (h *AwemeHandler) GetEstimate(c *gin.Context) {
 		return
 	}
 
-	var req qianchuanSDK.AwemeEstimateProfitReq
+	var req sdk.AwemeEstimateProfitReq
 	if err := c.ShouldBindJSON(&req); err != nil {
 		util.BadRequest(c, "参数错误: "+err.Error())
 		return
@@ -360,7 +366,7 @@ func (h *AwemeHandler) GetEstimate(c *gin.Context) {
 
 	req.AccessToken = userSession.AccessToken
 
-	resp, err := h.service.Manager.AwemeEstimateProfit(req)
+	resp, err := h.service.Client.AwemeEstimateProfit(c.Request.Context(), req)
 
 	if err != nil {
 		log.Printf("Get aweme estimate profit failed: %v", err)
@@ -369,7 +375,7 @@ func (h *AwemeHandler) GetEstimate(c *gin.Context) {
 	}
 
 	if resp.Code != 0 {
-		log.Printf("SDK returned error: code=%d, message=%s, request_id=%s", resp.Code, resp.Message, resp.RequestId)
+		log.Printf("SDK returned error: code=%d, message=%s", resp.Code, resp.Message)
 		util.ErrorResponse(c, int(resp.Code), resp.Message)
 		return
 	}
@@ -377,7 +383,7 @@ func (h *AwemeHandler) GetEstimate(c *gin.Context) {
 	util.Success(c, resp.Data)
 }
 
-// GetQuota 获取随心推配额
+// GetQuota
 func (h *AwemeHandler) GetQuota(c *gin.Context) {
 	userSession, ok := middleware.GetUserSession(c)
 	if !ok {
@@ -398,7 +404,7 @@ func (h *AwemeHandler) GetQuota(c *gin.Context) {
 		return
 	}
 
-	resp, err := h.service.Manager.AwemeOrderQuotaGet(qianchuanSDK.AwemeOrderQuotaGetReq{
+	resp, err := h.service.Client.AwemeOrderQuotaGet(c.Request.Context(), sdk.AwemeOrderQuotaGetReq{
 		AdvertiserId: advertiserId,
 		AccessToken:  userSession.AccessToken,
 	})
@@ -410,7 +416,7 @@ func (h *AwemeHandler) GetQuota(c *gin.Context) {
 	}
 
 	if resp.Code != 0 {
-		log.Printf("SDK returned error: code=%d, message=%s, request_id=%s", resp.Code, resp.Message, resp.RequestId)
+		log.Printf("SDK returned error: code=%d, message=%s", resp.Code, resp.Message)
 		util.ErrorResponse(c, int(resp.Code), resp.Message)
 		return
 	}

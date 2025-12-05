@@ -166,3 +166,69 @@ func ErrorResponse(c *gin.Context, code int, message string) {
 		Message: message,
 	})
 }
+
+// Error 统一错误响应处理
+// 支持AppError和普通error
+func Error(c *gin.Context, err error) {
+	// 如果是AppError，使用其定义的状态码和信息
+	if appErr, ok := err.(*AppError); ok {
+		httpStatus := appErr.GetHTTPStatus()
+		
+		response := ApiResponse{
+			Code:    httpStatus,
+			Message: appErr.Message,
+		}
+		
+		// 开发环境返回详细信息
+		if gin.Mode() == gin.DebugMode && appErr.Details != "" {
+			response.Data = gin.H{
+				"details": appErr.Details,
+			}
+		}
+		
+		c.JSON(httpStatus, response)
+		return
+	}
+	
+	// 普通错误，默认返回500
+	c.JSON(http.StatusInternalServerError, ApiResponse{
+		Code:    CodeServerError,
+		Message: "服务器内部错误",
+	})
+}
+
+// AbortWithError 中止请求并返回错误
+// 用于中间件中
+func AbortWithError(c *gin.Context, err error) {
+	Error(c, err)
+	c.Abort()
+}
+
+// AbortWithAppError 中止请求并返回AppError
+func AbortWithAppError(c *gin.Context, appErr *AppError) {
+	Error(c, appErr)
+	c.Abort()
+}
+
+// BindJSON 绑定JSON并验证
+func BindJSON(c *gin.Context, obj interface{}) error {
+	if err := c.ShouldBindJSON(obj); err != nil {
+		return NewBadRequestError("参数格式错误: " + err.Error())
+	}
+	return nil
+}
+
+// BindQuery 绑定查询参数并验证
+func BindQuery(c *gin.Context, obj interface{}) error {
+	if err := c.ShouldBindQuery(obj); err != nil {
+		return NewBadRequestError("查询参数格式错误: " + err.Error())
+	}
+	return nil
+}
+
+// RespondWithSDKError 响应SDK错误
+// 自动转换SDK错误为友好的错误消息
+func RespondWithSDKError(c *gin.Context, err error, context string) {
+	appErr := NewSDKError(context+"失败", err)
+	Error(c, appErr)
+}

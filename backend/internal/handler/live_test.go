@@ -45,12 +45,12 @@ func TestLiveHandler_GetLiveRooms_InvalidCount(t *testing.T) {
 		handler.GetLiveRooms(c)
 	})
 
-	// 测试超过最大值
-	resp := DoRequest(router, "GET", "/qianchuan/report/live/room/list?count=200", nil)
+	// 测试超过最大值 (page_size > 100)
+	resp := DoRequest(router, "GET", "/qianchuan/report/live/room/list?page_size=200", nil)
 
 	// 验证：应该返回400错误
 	response := ParseResponse(resp, t)
-	assert.Equal(t, 400, response.Code, "Should return 400 for count > 100")
+	assert.Equal(t, 400, response.Code, "Should return 400 for page_size > 100")
 	assert.Contains(t, response.Message, "最多返回100条", "Message should indicate max page size")
 }
 

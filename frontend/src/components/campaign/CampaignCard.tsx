@@ -55,7 +55,14 @@ export default function CampaignCard({
       
       {/* 操作菜单 */}
       <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
-        <button className="p-1 hover:bg-gray-100 rounded">
+        <button 
+          className="p-1 hover:bg-gray-100 rounded"
+          onClick={(e) => {
+            e.stopPropagation()
+            // TODO: 实现更多操作菜单
+          }}
+          title="更多操作"
+        >
           <MoreVertical className="w-5 h-5 text-gray-600" />
         </button>
       </div>

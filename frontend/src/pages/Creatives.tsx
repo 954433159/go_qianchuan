@@ -376,7 +376,7 @@ export default function Creatives() {
                       </div>
                     )
                   ) : (
-                    selectedCreative.image_url || (selectedCreative.image_urls && selectedCreative.image_urls[0]) ? (
+                    selectedCreative.image_url || (selectedCreative.image_urls?.[0]) ? (
                       <img 
                         src={selectedCreative.image_url || selectedCreative.image_urls?.[0]} 
                         alt={selectedCreative.title}

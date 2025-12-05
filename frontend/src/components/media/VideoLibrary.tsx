@@ -200,9 +200,9 @@ export default function VideoLibrary({
   }
 
   const formatFileSize = (bytes: number) => {
-    if (bytes < 1024) return bytes + ' B'
-    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(2) + ' KB'
-    return (bytes / (1024 * 1024)).toFixed(2) + ' MB'
+    if (bytes < 1024) return `${bytes  } B`
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(2)  } KB`
+    return `${(bytes / (1024 * 1024)).toFixed(2)  } MB`
   }
 
   const formatDuration = (seconds: number) => {
@@ -291,7 +291,7 @@ export default function VideoLibrary({
 
             {/* 筛选 */}
             <div className="w-full md:w-48">
-              <Select value={filterStatus} onValueChange={(v: any) => setFilterStatus(v)}>
+              <Select value={filterStatus} onValueChange={(v: string) => setFilterStatus(v as typeof filterStatus)}>
                 <SelectTrigger>
                   <Filter className="w-4 h-4 mr-2" />
                   <SelectValue />

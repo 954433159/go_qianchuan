@@ -1,13 +1,14 @@
 package handler
 
 import (
+	"io"
 	"log"
 	"net/http"
 	"strconv"
 
 	"github.com/CriarBrand/qianchuan-backend/internal/service"
+	"github.com/CriarBrand/qianchuan-backend/internal/sdk"
 	"github.com/CriarBrand/qianchuan-backend/pkg/session"
-	"github.com/CriarBrand/qianchuanSDK"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 )
@@ -52,7 +53,7 @@ func (h *FileHandler) UploadImage(c *gin.Context) {
 		uploadType = "UPLOAD_BY_FILE"
 	}
 
-	var reqBody qianchuanSDK.FileImageAdReqBody
+	var reqBody sdk.FileImageAdReqBody
 	reqBody.AdvertiserId = userSession.AdvertiserID
 	reqBody.UploadType = uploadType
 
@@ -80,13 +81,23 @@ func (h *FileHandler) UploadImage(c *gin.Context) {
 		}
 		defer file.Close()
 
-		reqBody.ImageFile = file
+		// 读取文件内容到[]byte
+		fileBytes, err := io.ReadAll(file)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"code":    500,
+				"message": "读取文件内容失败: " + err.Error(),
+			})
+			return
+		}
+
+		reqBody.ImageFile = fileBytes
 		reqBody.Filename = header.Filename
 		reqBody.ImageSignature = c.PostForm("image_signature")
 	}
 
 	// 调用SDK
-	resp, err := h.service.Manager.FileImageAd(qianchuanSDK.FileImageAdReq{
+	resp, err := h.service.Client.FileImageAd(c.Request.Context(), sdk.FileImageAdReq{
 		AccessToken: userSession.AccessToken,
 		Body:        reqBody,
 	})
@@ -148,15 +159,25 @@ func (h *FileHandler) UploadVideo(c *gin.Context) {
 	}
 	defer file.Close()
 
-	reqBody := qianchuanSDK.FileVideoAdReqBody{
+	// 读取文件内容到[]byte
+	fileBytes, err := io.ReadAll(file)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"code":    500,
+			"message": "读取文件内容失败: " + err.Error(),
+		})
+		return
+	}
+
+	reqBody := sdk.FileVideoAdReqBody{
 		AdvertiserId:   userSession.AdvertiserID,
-		VideoFile:      file,
-		VideoName:      header.Filename,
+		VideoFile:      fileBytes,
+		Filename:       header.Filename,
 		VideoSignature: c.PostForm("video_signature"),
 	}
 
 	// 调用SDK
-	resp, err := h.service.Manager.FileVideoAd(qianchuanSDK.FileVideoAdReq{
+	resp, err := h.service.Client.FileVideoAd(c.Request.Context(), sdk.FileVideoAdReq{
 		AccessToken: userSession.AccessToken,
 		Body:        reqBody,
 	})
@@ -222,12 +243,12 @@ func (h *FileHandler) GetImageList(c *gin.Context) {
 	}
 
 	// 调用SDK
-	resp, err := h.service.Manager.FileImageGet(qianchuanSDK.FileImageGetReq{
+	resp, err := h.service.Client.FileImageGet(c.Request.Context(), sdk.FileImageGetReq{
 		AdvertiserId: userSession.AdvertiserID,
 		AccessToken:  userSession.AccessToken,
 		Page:         page,
 		PageSize:     pageSize,
-		Filtering:    qianchuanSDK.FileImageGetReqFiltering{},
+		Filtering:    nil,
 	})
 
 	if err != nil {
@@ -291,12 +312,12 @@ func (h *FileHandler) GetVideoList(c *gin.Context) {
 	}
 
 	// 调用SDK
-	resp, err := h.service.Manager.FileVideoGet(qianchuanSDK.FileVideoGetReq{
+	resp, err := h.service.Client.FileVideoGet(c.Request.Context(), sdk.FileVideoGetReq{
 		AdvertiserId: userSession.AdvertiserID,
 		AccessToken:  userSession.AccessToken,
 		Page:         page,
 		PageSize:     pageSize,
-		Filtering:    qianchuanSDK.FileVideoGetReqFiltering{},
+		Filtering:    nil,
 	})
 
 	if err != nil {

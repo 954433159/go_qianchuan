@@ -35,6 +35,7 @@ export interface PromotionFilters {
   budget_mode?: string
   dateRange?: [string, string]
   searchQuery?: string
+  [key: string]: string | number | [string, string] | undefined
 }
 
 export interface SortConfig {

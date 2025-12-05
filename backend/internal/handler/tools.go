@@ -5,8 +5,8 @@ import (
 	"net/http"
 
 	"github.com/CriarBrand/qianchuan-backend/internal/middleware"
+	"github.com/CriarBrand/qianchuan-backend/internal/sdk"
 	"github.com/CriarBrand/qianchuan-backend/internal/service"
-	"github.com/CriarBrand/qianchuanSDK"
 	"github.com/gin-gonic/gin"
 )
 
@@ -46,7 +46,7 @@ func (h *ToolsHandler) GetIndustry(c *gin.Context) {
 		return
 	}
 
-	resp, err := h.service.Manager.ToolsIndustryGet(qianchuanSDK.ToolsIndustryGetReq{
+	resp, err := h.service.Client.ToolsIndustryGet(c.Request.Context(), sdk.ToolsIndustryGetReq{
 		AccessToken: userSession.AccessToken,
 		Level:       req.Level,
 		Type:        req.Type,
@@ -87,7 +87,7 @@ func (h *ToolsHandler) GetInterestCategory(c *gin.Context) {
 		return
 	}
 
-	resp, err := h.service.Manager.ToolsInterestActionInterestCategory(qianchuanSDK.ToolsInterestActionInterestCategoryReq{
+	resp, err := h.service.Client.ToolsInterestActionInterestCategory(c.Request.Context(), sdk.ToolsInterestActionInterestCategoryReq{
 		AccessToken:  userSession.AccessToken,
 		AdvertiserId: userSession.AdvertiserID,
 	})
@@ -139,7 +139,7 @@ func (h *ToolsHandler) GetInterestKeyword(c *gin.Context) {
 		return
 	}
 
-	resp, err := h.service.Manager.ToolsInterestActionInterestKeyword(qianchuanSDK.ToolsInterestActionInterestKeywordReq{
+	resp, err := h.service.Client.ToolsInterestActionInterestKeyword(c.Request.Context(), sdk.ToolsInterestActionInterestKeywordReq{
 		AccessToken:  userSession.AccessToken,
 		AdvertiserId: userSession.AdvertiserID,
 		QueryWords:   req.QueryWords,
@@ -193,7 +193,7 @@ func (h *ToolsHandler) GetActionCategory(c *gin.Context) {
 		return
 	}
 
-	resp, err := h.service.Manager.ToolsInterestActionActionCategory(qianchuanSDK.ToolsInterestActionActionCategoryReq{
+	resp, err := h.service.Client.ToolsInterestActionActionCategory(c.Request.Context(), sdk.ToolsInterestActionActionCategoryReq{
 		AccessToken:  userSession.AccessToken,
 		AdvertiserId: userSession.AdvertiserID,
 		ActionScene:  req.ActionScene,
@@ -249,7 +249,7 @@ func (h *ToolsHandler) GetActionKeyword(c *gin.Context) {
 		return
 	}
 
-	resp, err := h.service.Manager.ToolsInterestActionActionKeyword(qianchuanSDK.ToolsInterestActionActionKeywordReq{
+	resp, err := h.service.Client.ToolsInterestActionActionKeyword(c.Request.Context(), sdk.ToolsInterestActionActionKeywordReq{
 		AccessToken:  userSession.AccessToken,
 		AdvertiserId: userSession.AdvertiserID,
 		QueryWords:   req.QueryWords,
@@ -304,7 +304,7 @@ func (h *ToolsHandler) GetAwemeCategory(c *gin.Context) {
 		return
 	}
 
-	resp, err := h.service.Manager.ToolsAwemeMultiLevelCategoryGet(qianchuanSDK.ToolsAwemeMultiLevelCategoryGetReq{
+	resp, err := h.service.Client.ToolsAwemeMultiLevelCategoryGet(c.Request.Context(), sdk.ToolsAwemeMultiLevelCategoryGetReq{
 		AccessToken:  userSession.AccessToken,
 		AdvertiserId: userSession.AdvertiserID,
 		Behaviors:    req.Behaviors,
@@ -358,11 +358,10 @@ func (h *ToolsHandler) GetAwemeAuthorInfo(c *gin.Context) {
 		return
 	}
 
-	resp, err := h.service.Manager.ToolsAwemeAuthorInfoGet(qianchuanSDK.ToolsAwemeAuthorInfoGetReq{
+	resp, err := h.service.Client.ToolsAwemeAuthorInfoGet(c.Request.Context(), sdk.ToolsAwemeAuthorInfoGetReq{
 		AccessToken:  userSession.AccessToken,
 		AdvertiserId: userSession.AdvertiserID,
-		LabelIds:     req.LabelIds,
-		Behaviors:    req.Behaviors,
+		AwemeIds:     req.LabelIds,
 	})
 
 	if err != nil {
@@ -412,7 +411,7 @@ func (h *ToolsHandler) GetCreativeWord(c *gin.Context) {
 		return
 	}
 
-	resp, err := h.service.Manager.ToolsCreativeWordSelect(qianchuanSDK.ToolsCreativeWordSelectReq{
+	resp, err := h.service.Client.ToolsCreativeWordSelect(c.Request.Context(), sdk.ToolsCreativeWordSelectReq{
 		AccessToken:     userSession.AccessToken,
 		AdvertiserId:    userSession.AdvertiserID,
 		CreativeWordIds: req.CreativeWordIds,
@@ -472,7 +471,7 @@ func (h *ToolsHandler) GetAudienceList(c *gin.Context) {
 		req.Limit = 100
 	}
 
-	resp, err := h.service.Manager.DmpAudiencesGet(qianchuanSDK.DmpAudiencesGetReq{
+	resp, err := h.service.Client.DmpAudiencesGet(c.Request.Context(), sdk.DmpAudiencesGetReq{
 		AccessToken:         userSession.AccessToken,
 		AdvertiserId:        userSession.AdvertiserID,
 		RetargetingTagsType: req.RetargetingTagsType,

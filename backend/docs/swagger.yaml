@@ -1,0 +1,138 @@
+basePath: /api
+host: localhost:8080
+info:
+  contact:
+    email: support@example.com
+    name: API Support
+  description: |-
+    千川广告管理系统后端API，基于巨量引擎千川SDK
+    提供OAuth认证、广告投放、数据报表、创意管理等功能
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  title: 千川SDK管理平台 API
+  version: "1.0"
+paths:
+  /auth/logout:
+    post:
+      consumes:
+      - application/json
+      description: 清除用户会话
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 登出成功
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - SessionAuth: []
+      - CSRFToken: []
+      summary: 用户登出
+      tags:
+      - 认证
+  /auth/refresh:
+    post:
+      consumes:
+      - application/json
+      description: 使用RefreshToken刷新AccessToken
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 刷新成功
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: 会话过期
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: 内部错误
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - SessionAuth: []
+      summary: 刷新会话Token
+      tags:
+      - 认证
+  /oauth/exchange:
+    post:
+      consumes:
+      - application/json
+      description: 通过OAuth授权码exchange获取AccessToken并创建会话
+      parameters:
+      - description: OAuth授权码
+        in: body
+        name: request
+        required: true
+        schema:
+          properties:
+            code:
+              type: string
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 登录成功
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: 参数错误
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: 内部错误
+          schema:
+            additionalProperties: true
+            type: object
+      summary: OAuth授权登录
+      tags:
+      - 认证
+  /user/info:
+    get:
+      consumes:
+      - application/json
+      description: 获取已登录用户的详细信息
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 用户信息
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: 未登录
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: 内部错误
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - SessionAuth: []
+      summary: 获取当前用户信息
+      tags:
+      - 认证
+securityDefinitions:
+  CSRFToken:
+    description: CSRF protection token
+    in: header
+    name: X-CSRF-Token
+    type: apiKey
+  SessionAuth:
+    description: Session cookie for authentication
+    in: cookie
+    name: qianchuan_session
+    type: apiKey
+swagger: "2.0"

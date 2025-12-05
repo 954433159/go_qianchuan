@@ -20,6 +20,7 @@ export interface CampaignFilters {
   status?: string
   dateRange?: [string, string]
   searchQuery?: string
+  [key: string]: string | number | [string, string] | undefined
 }
 
 export interface SortConfig {

@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Users, CheckCircle, XCircle, Plus, RefreshCw, AlertTriangle, Video } from 'lucide-react'
 import { Card, CardContent, PageHeader, Loading, Button, Badge } from '@/components/ui'
+import { toast } from '@/components/ui/Toast'
 import { useAwemeAuth } from '@/hooks/useAwemeAuth'
 import { useAuthStore } from '@/store/authStore'
 
@@ -173,11 +174,15 @@ export default function AwemeAuthList() {
                     </div>
                   </div>
                   <div className="ml-4 flex flex-col gap-2">
-                    <Button size="sm" variant="outline">查看详情</Button>
+                    <Button size="sm" variant="outline" onClick={() => navigate(`/aweme-auth/${aweme.aweme_id}`)}>查看详情</Button>
                     {aweme.auth_status === 'AUTHORIZED' ? (
-                      <Button variant="outline" size="sm">解除授权</Button>
+                      <Button variant="outline" size="sm" onClick={() => {
+                        if (confirm(`确定要解除抖音号 ${aweme.aweme_name || aweme.aweme_id} 的授权吗？`)) {
+                          toast.info('解除授权功能开发中')
+                        }
+                      }}>解除授权</Button>
                     ) : (
-                      <Button variant="outline" size="sm">重新授权</Button>
+                      <Button variant="outline" size="sm" onClick={() => navigate('/aweme-auth/add')}>重新授权</Button>
                     )}
                   </div>
                 </div>

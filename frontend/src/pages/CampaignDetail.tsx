@@ -12,6 +12,7 @@ import Button from '@/components/ui/Button'
 import Table, { TableColumn } from '@/components/ui/Table'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/Tabs'
 import { ArrowLeft, Megaphone, DollarSign, Calendar, Edit, Pause, CheckCircle, XCircle, TrendingUp, Eye, MousePointer, ShoppingCart, BarChart3, Settings, Clock } from 'lucide-react'
+import { toast } from '@/components/ui/Toast'
 
 // 模拟统计数据
 interface CampaignStats {
@@ -475,8 +476,8 @@ export default function CampaignDetail() {
                   />
                 </div>
                 <div className="flex gap-3">
-                  <Button>保存修改</Button>
-                  <Button variant="outline">取消</Button>
+                  <Button onClick={() => toast.info('保存功能开发中')}>保存修改</Button>
+                  <Button variant="outline" onClick={() => setActiveTab('overview')}>取消</Button>
                 </div>
               </div>
             </TabsContent>

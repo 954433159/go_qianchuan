@@ -16,8 +16,8 @@ export interface FilterConfig {
 
 interface FilterBarProps {
   filters: FilterConfig[]
-  values: Record<string, any>
-  onChange: (key: string, value: any) => void
+  values: Record<string, string | number | [string, string] | undefined>
+  onChange: (key: string, value: string | number | [string, string] | undefined) => void
   onClear?: () => void
   className?: string
 }
@@ -51,7 +51,7 @@ export default function FilterBar({
                 <input
                   type="text"
                   placeholder={filter.placeholder || `搜索${filter.label}`}
-                  value={values[filter.key] || ''}
+                  value={(values[filter.key] as string) || ''}
                   onChange={(e) => onChange(filter.key, e.target.value)}
                   className="qc-input pl-10"
                 />
@@ -60,7 +60,7 @@ export default function FilterBar({
             
             {filter.type === 'select' && filter.options && (
               <select
-                value={values[filter.key] || ''}
+                value={(values[filter.key] as string) || ''}
                 onChange={(e) => onChange(filter.key, e.target.value)}
                 className="qc-input"
               >
@@ -76,7 +76,7 @@ export default function FilterBar({
             {filter.type === 'dateRange' && (
               <input
                 type="date"
-                value={values[filter.key] || ''}
+                value={(values[filter.key] as string) || ''}
                 onChange={(e) => onChange(filter.key, e.target.value)}
                 className="qc-input"
               />
