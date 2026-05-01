@@ -3,7 +3,6 @@ package handler
 import (
 	"fmt"
 	"log"
-	"os"
 	"strconv"
 	"strings"
 
@@ -24,23 +23,6 @@ func NewAdvertiserHandler(service *service.QianchuanService) *AdvertiserHandler 
 	return &AdvertiserHandler{
 		service: service,
 	}
-}
-
-// getManagedAdvertiserIDs 从环境变量读取代理商管理的投放账户ID列表
-func getManagedAdvertiserIDs() []int64 {
-	idsStr := os.Getenv("MANAGED_ADVERTISER_IDS")
-	if idsStr == "" {
-		return nil
-	}
-	parts := strings.Split(idsStr, ",")
-	ids := make([]int64, 0, len(parts))
-	for _, p := range parts {
-		p = strings.TrimSpace(p)
-		if id, err := strconv.ParseInt(p, 10, 64); err == nil && id > 0 {
-			ids = append(ids, id)
-		}
-	}
-	return ids
 }
 
 // List 获取广告主列表

@@ -53,6 +53,8 @@ func main() {
 	keywordHandler := handler.NewKeywordHandler(qianchuanService)
 	fileHandler := handler.NewFileHandler(qianchuanService)
 	uniPromotionHandler := handler.NewUniPromotionHandler(qianchuanService)
+	dashboardHandler := handler.NewDashboardHandler(qianchuanService)
+	diagnoseHandler := handler.NewDiagnoseHandler(qianchuanService)
 	activityHandler := handler.NewActivityHandler()
 	webhookHandler := handler.NewWebhookHandler()
 
@@ -250,6 +252,17 @@ func main() {
 
 	{
 		apiAuth.GET("/qianchuan/activity/list", activityHandler.List)
+	}
+
+	{
+		d := apiAuth.Group("/dashboard")
+		d.GET("/summary", dashboardHandler.Summary)
+	}
+
+	{
+		diag := apiAuth.Group("/diagnose")
+			diag.GET("/ad", diagnoseHandler.DiagnoseAd)
+		diag.GET("/account", diagnoseHandler.DiagnoseAccount)
 	}
 
 	log.Printf("Server starting on port %s (mode: %s)", port, ginMode)
