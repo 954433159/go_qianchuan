@@ -55,6 +55,7 @@ func main() {
 	uniPromotionHandler := handler.NewUniPromotionHandler(qianchuanService)
 	dashboardHandler := handler.NewDashboardHandler(qianchuanService)
 	diagnoseHandler := handler.NewDiagnoseHandler(qianchuanService)
+	aiHandler := handler.NewAIHandler(qianchuanService)
 	activityHandler := handler.NewActivityHandler()
 	webhookHandler := handler.NewWebhookHandler()
 
@@ -263,6 +264,12 @@ func main() {
 		diag := apiAuth.Group("/diagnose")
 			diag.GET("/ad", diagnoseHandler.DiagnoseAd)
 		diag.GET("/account", diagnoseHandler.DiagnoseAccount)
+	}
+
+	{
+		ai := apiAuth.Group("/ai")
+		ai.POST("/suggestions", aiHandler.GetSuggestions)
+		ai.GET("/status", aiHandler.GetStatus)
 	}
 
 	log.Printf("Server starting on port %s (mode: %s)", port, ginMode)
