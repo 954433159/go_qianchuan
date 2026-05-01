@@ -8,6 +8,7 @@ import (
 	"github.com/CriarBrand/qianchuan-backend/internal/middleware"
 	"github.com/CriarBrand/qianchuan-backend/internal/service"
 	"github.com/CriarBrand/qianchuan-backend/internal/sdk"
+	"github.com/CriarBrand/qianchuan-backend/internal/util"
 	"github.com/gin-gonic/gin"
 )
 
@@ -257,20 +258,30 @@ func (h *CreativeHandler) RejectReason(c *gin.Context) {
 // UpdateStatus 更新创意状态
 // 注意: 此功能需要SDK支持CreativeStatusUpdate方法
 func (h *CreativeHandler) UpdateStatus(c *gin.Context) {
-	_, ok := middleware.GetUserSession(c)
+	userSession, ok := middleware.GetUserSession(c)
 	if !ok {
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"code":    401,
-			"message": "未登录",
-		})
+		util.Unauthorized(c, "")
 		return
 	}
 
-	// SDK暂不支持创意状态更新
-	// 需要等待SDK更新
-	c.JSON(http.StatusNotImplemented, gin.H{
-		"code":    501,
-		"message": "创意状态更新功能暂未实现，SDK待支持",
-		"hint":    "可以先创建新创意或者等待SDK更新",
+	var req struct {
+		CreativeIds []int64 `json:"creative_ids" binding:"required"`
+		OptStatus   string  `json:"opt_status" binding:"required"`
+	}
+	if err := c.ShouldBindJSON(&req); err != nil {
+		util.BadRequest(c, "参数错误: "+err.Error())
+		return
+	}
+
+	resp, err := h.service.Client.CreativeUpdateStatus(c.Request.Context(), sdk.CreativeUpdateStatusReq{
+		AccessToken:  userSession.AccessToken,
+		AdvertiserId: userSession.AdvertiserID,
+		CreativeIds:  req.CreativeIds,
+		OptStatus:    req.OptStatus,
 	})
+	if err != nil {
+		util.RespondWithSDKError(c, err, "更新创意状态")
+		return
+	}
+	util.Success(c, resp.Data)
 }

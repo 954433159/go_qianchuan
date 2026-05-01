@@ -45,10 +45,24 @@ type QianchuanClient interface {
 	AdStatusUpdate(ctx context.Context, req AdStatusUpdateReq) (*AdStatusUpdateRes, error)
 	AdBudgetUpdate(ctx context.Context, req AdBudgetUpdateReq) (*AdBudgetUpdateRes, error)
 	AdBidUpdate(ctx context.Context, req AdBidUpdateReq) (*AdBidUpdateRes, error)
+	AdRoiGoalUpdate(ctx context.Context, req AdRoiGoalUpdateReq) (*AdRoiGoalUpdateRes, error)
+	AdScheduleDateUpdate(ctx context.Context, req AdScheduleDateUpdateReq) (*AdScheduleDateUpdateRes, error)
+	AdScheduleTimeUpdate(ctx context.Context, req AdScheduleTimeUpdateReq) (*AdScheduleTimeUpdateRes, error)
+	AdScheduleFixedRangeUpdate(ctx context.Context, req AdScheduleFixedRangeUpdateReq) (*AdScheduleFixedRangeUpdateRes, error)
+	AdRegionUpdate(ctx context.Context, req AdRegionUpdateReq) (*AdRegionUpdateRes, error)
+	AdRejectReason(ctx context.Context, req AdRejectReasonReq) (*AdRejectReasonRes, error)
+	AdLqAdGet(ctx context.Context, req AdLqAdGetReq) (*AdLqAdGetRes, error)
+	AdSuggestRoiGoal(ctx context.Context, req AdSuggestRoiGoalReq) (*AdSuggestRoiGoalRes, error)
+	AdSuggestBid(ctx context.Context, req AdSuggestBidReq) (*AdSuggestBidRes, error)
+	AdSuggestBudget(ctx context.Context, req AdSuggestBudgetReq) (*AdSuggestBudgetRes, error)
+	AdEstimateEffect(ctx context.Context, req AdEstimateEffectReq) (*AdEstimateEffectRes, error)
+	AdCompensateStatusGet(ctx context.Context, req AdCompensateStatusGetReq) (*AdCompensateStatusGetRes, error)
+	AdLearningStatusGet(ctx context.Context, req AdLearningStatusGetReq) (*AdLearningStatusGetRes, error)
 
 	// ===== Creative =====
 	CreativeGet(ctx context.Context, req CreativeGetReq) (*CreativeGetRes, error)
 	CreativeRejectReason(ctx context.Context, req CreativeRejectReasonReq) (*CreativeRejectReasonRes, error)
+	CreativeUpdateStatus(ctx context.Context, req CreativeUpdateStatusReq) (*CreativeUpdateStatusRes, error)
 
 	// ===== File / Material =====
 	FileImageAd(ctx context.Context, req FileImageAdReq) (*FileImageAdRes, error)
@@ -60,6 +74,12 @@ type QianchuanClient interface {
 	AdvertiserReport(ctx context.Context, req AdvertiserReportReq) (*AdvertiserReportRes, error)
 	ReportAdGet(ctx context.Context, req ReportAdGetReq) (*ReportAdGetRes, error)
 	ReportCreativeGet(ctx context.Context, req ReportCreativeGetReq) (*ReportCreativeGetRes, error)
+	ReportMaterialGet(ctx context.Context, req ReportMaterialGetReq) (*ReportMaterialGetRes, error)
+	ReportSearchWordGet(ctx context.Context, req ReportSearchWordGetReq) (*ReportSearchWordGetRes, error)
+	ReportVideoUserLoseGet(ctx context.Context, req ReportVideoUserLoseGetReq) (*ReportVideoUserLoseGetRes, error)
+	ReportUniPromotionGet(ctx context.Context, req ReportUniPromotionGetReq) (*ReportUniPromotionGetRes, error)
+	ReportCustomGet(ctx context.Context, req ReportCustomGetReq) (*ReportCustomGetRes, error)
+	ReportCustomConfigGet(ctx context.Context, req ReportCustomConfigGetReq) (*ReportCustomConfigGetRes, error)
 
 	// ===== Tools =====
 	ToolsIndustryGet(ctx context.Context, req ToolsIndustryGetReq) (*ToolsIndustryGetRes, error)

@@ -3,7 +3,9 @@ package handler
 import (
 	"fmt"
 	"log"
+	"os"
 	"strconv"
+	"strings"
 
 	"github.com/CriarBrand/qianchuan-backend/internal/middleware"
 	"github.com/CriarBrand/qianchuan-backend/internal/sdk"
@@ -24,35 +26,109 @@ func NewAdvertiserHandler(service *service.QianchuanService) *AdvertiserHandler 
 	}
 }
 
+// getManagedAdvertiserIDs 从环境变量读取代理商管理的投放账户ID列表
+func getManagedAdvertiserIDs() []int64 {
+	idsStr := os.Getenv("MANAGED_ADVERTISER_IDS")
+	if idsStr == "" {
+		return nil
+	}
+	parts := strings.Split(idsStr, ",")
+	ids := make([]int64, 0, len(parts))
+	for _, p := range parts {
+		p = strings.TrimSpace(p)
+		if id, err := strconv.ParseInt(p, 10, 64); err == nil && id > 0 {
+			ids = append(ids, id)
+		}
+	}
+	return ids
+}
+
 // List 获取广告主列表
-// 使用 Service 层封装的业务方法
 func (h *AdvertiserHandler) List(c *gin.Context) {
-	userSession, _ := middleware.GetUserSession(c)
-
-	// 调用 Service 层方法，获取带详细信息的广告主列表
-	infoResp, err := h.service.GetAdvertiserListWithDetails(
-		userSession.AccessToken,
-		[]string{"id", "name", "company", "role", "status", "first_industry_name", "second_industry_name", "create_time"},
-	)
-
-	if err != nil {
-		log.Printf("Get advertiser list failed: %v", err)
-		util.ServerError(c, "获取广告主列表失败: "+err.Error())
+	userSession, ok := middleware.GetUserSession(c)
+	if !ok {
+		util.Unauthorized(c, "")
 		return
 	}
 
-	// 构造响应数据
-	list := make([]gin.H, 0, len(infoResp.Data))
-	for _, info := range infoResp.Data {
-		list = append(list, gin.H{
-			"id":          info.AdvertiserId,
-			"name":        info.AdvertiserName,
-			"company":     info.Company,
-			"role":        "", // SDK 不提供角色字段
-			"status":      "", // SDK 不提供状态字段
-			"balance":     0,  // SDK 不提供余额字段
-			"create_time": "", // SDK 不提供创建时间字段
+	// 第一步：获取 OAuth 授权的账户列表
+	oauthList, _ := h.service.Client.AdvertiserList(c.Request.Context(), sdk.AdvertiserListReq{
+		AccessToken: userSession.AccessToken,
+		AppId:       h.service.AppId,
+		Secret:      h.service.AppSecret,
+	})
+
+	seen := make(map[int64]bool)
+	list := make([]gin.H, 0, 20)
+
+	// 先添加 OAuth 账户（管理层）
+	if oauthList != nil && oauthList.Code == 0 {
+		for _, item := range oauthList.Data.List {
+			if item.AdvertiserId == 0 || seen[item.AdvertiserId] {
+				continue
+			}
+			seen[item.AdvertiserId] = true
+			list = append(list, gin.H{
+				"id":           item.AdvertiserId,
+				"name":         item.AdvertiserName,
+				"is_valid":     item.IsValid,
+				"account_role": item.AccountRole,
+			})
+		}
+	}
+
+	// 第二步：批量查询代理商标下的投放账户详情
+	if len(getManagedAdvertiserIDs()) > 0 {
+		infoResp, err := h.service.Client.AdvertiserInfo(c.Request.Context(), sdk.AdvertiserInfoReq{
+			AccessToken:   userSession.AccessToken,
+			AdvertiserIds: getManagedAdvertiserIDs(),
 		})
+		if err == nil && infoResp != nil && infoResp.Code == 0 {
+			for _, info := range infoResp.Data {
+				if info.AdvertiserId == 0 || seen[info.AdvertiserId] {
+					continue
+				}
+				seen[info.AdvertiserId] = true
+				list = append(list, gin.H{
+					"id":                  info.AdvertiserId,
+					"name":                info.AdvertiserName,
+					"company":             info.Company,
+					"first_industry_name":  info.FirstIndustryName,
+					"second_industry_name": info.SecondIndustryName,
+					"is_valid":            true,
+					"account_role":        "ADVERTISER",
+				})
+			}
+		}
+	}
+
+	// 补充 OAuth 账户的公司信息
+	if oauthList != nil && oauthList.Code == 0 {
+		oauthIDs := make([]int64, 0)
+		for _, item := range oauthList.Data.List {
+			if item.AdvertiserId > 0 {
+				oauthIDs = append(oauthIDs, item.AdvertiserId)
+			}
+		}
+		if len(oauthIDs) > 0 {
+			infoResp, _ := h.service.Client.AdvertiserInfo(c.Request.Context(), sdk.AdvertiserInfoReq{
+				AccessToken:   userSession.AccessToken,
+				AdvertiserIds: oauthIDs,
+			})
+			if infoResp != nil && infoResp.Code == 0 {
+				detailMap := make(map[int64]sdk.AdvertiserInfoResData)
+				for _, info := range infoResp.Data {
+					detailMap[info.AdvertiserId] = info
+				}
+				for _, item := range list {
+					if detail, ok := detailMap[item["id"].(int64)]; ok {
+						if item["company"] == nil || item["company"] == "" {
+							item["company"] = detail.Company
+						}
+					}
+				}
+			}
+		}
 	}
 
 	util.Success(c, gin.H{"list": list})
@@ -329,5 +405,44 @@ func (h *AdvertiserHandler) GetAgentAdvertiserList(c *gin.Context) {
 		return
 	}
 
+	util.Success(c, resp.Data)
+}
+
+// LookupBatch 批量查询广告主信息
+func (h *AdvertiserHandler) LookupBatch(c *gin.Context) {
+	userSession, ok := middleware.GetUserSession(c)
+	if !ok {
+		util.Unauthorized(c, "")
+		return
+	}
+	idsStr := c.Query("ids")
+	if idsStr == "" {
+		util.BadRequest(c, "请提供ID列表，格式: ids=1,2,3")
+		return
+	}
+	parts := strings.Split(idsStr, ",")
+	ids := make([]int64, 0, len(parts))
+	for _, p := range parts {
+		p = strings.TrimSpace(p)
+		if id, err := strconv.ParseInt(p, 10, 64); err == nil && id > 0 {
+			ids = append(ids, id)
+		}
+	}
+	if len(ids) == 0 {
+		util.BadRequest(c, "未找到有效的广告主ID")
+		return
+	}
+	resp, err := h.service.Client.AdvertiserInfo(c.Request.Context(), sdk.AdvertiserInfoReq{
+		AccessToken:   userSession.AccessToken,
+		AdvertiserIds: ids,
+	})
+	if err != nil {
+		util.ServerError(c, "批量查询失败: "+err.Error())
+		return
+	}
+	if resp.Code != 0 {
+		util.ErrorResponse(c, int(resp.Code), resp.Message)
+		return
+	}
 	util.Success(c, resp.Data)
 }

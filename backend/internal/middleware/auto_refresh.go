@@ -85,6 +85,7 @@ func AutoRefreshToken(qianchuanService *service.QianchuanService) gin.HandlerFun
 				refreshResp.Data.ExpiresIn,
 				refreshResp.Data.RefreshTokenExpiresIn,
 				userSession.AdvertiserID,
+				userSession.AdvertiserIDs,
 			)
 
 			// 保存新会话

@@ -3,6 +3,7 @@ package sdk
 import (
 	"context"
 	"fmt"
+	"log"
 	"time"
 
 	oecore "github.com/bububa/oceanengine/marketing-api/core"
@@ -13,6 +14,7 @@ import (
 
 	// OAuth
 	oauthAPI "github.com/bububa/oceanengine/marketing-api/api/oauth"
+	oauthModel "github.com/bububa/oceanengine/marketing-api/model/oauth"
 
 	// Global Advertiser API (for PublicInfo)
 	globalAdvertiserAPI "github.com/bububa/oceanengine/marketing-api/api/advertiser"
@@ -50,6 +52,9 @@ import (
 	reportAPI "github.com/bububa/oceanengine/marketing-api/api/qianchuan/report"
 	shopAPI "github.com/bububa/oceanengine/marketing-api/api/qianchuan/shop"
 	uniPromotionAPI "github.com/bububa/oceanengine/marketing-api/api/qianchuan/uni_promotion"
+
+	// Root model
+	"github.com/bububa/oceanengine/marketing-api/model"
 
 	// Qianchuan Models
 	adModel "github.com/bububa/oceanengine/marketing-api/model/qianchuan/ad"
@@ -187,29 +192,75 @@ func (c *OceanengineClient) UserInfo(ctx context.Context, req UserInfoReq) (*Use
 // ===== Advertiser 实现 =====
 
 func (c *OceanengineClient) AdvertiserList(ctx context.Context, req AdvertiserListReq) (*AdvertiserListRes, error) {
-	data, err := oauthAPI.AdvertiserGet(ctx, c.client, req.AccessToken)
-	if err != nil {
+	// 自定义响应结构以捕获完整的 company_list（SDK 的 Company 结构不完整）
+	type fullCompany struct {
+		CustomerCompanyID   uint64 `json:"customer_company_id"`
+		CustomerCompanyName string `json:"customer_company_name"`
+		AdvertiserID        uint64 `json:"advertiser_id"`
+		AdvertiserName      string `json:"advertiser_name"`
+		AdvertiserRole      int    `json:"advertiser_role"`
+	}
+	type fullAdvertiser struct {
+		AdvertiserID    uint64        `json:"advertiser_id"`
+		AdvertiserName  string        `json:"advertiser_name"`
+		AdvertiserRole  int           `json:"advertiser_role"`
+		IsValid         bool          `json:"is_valid"`
+		AccountRole     string        `json:"account_role"`
+		CompanyList     []fullCompany `json:"company_list"`
+	}
+	type fullResponseData struct {
+		List []fullAdvertiser `json:"list"`
+	}
+	type fullResponse struct {
+		model.BaseResponse
+		Data *fullResponseData `json:"data"`
+	}
+
+	oeReq := &oauthModel.AdvertiserGetRequest{
+		AppId:       c.appId,
+		Secret:      c.appSecret,
+		AccessToken: req.AccessToken,
+	}
+
+	var resp fullResponse
+	if err := c.client.Get(ctx, "oauth2/advertiser/get", oeReq, &resp, req.AccessToken); err != nil {
 		return &AdvertiserListRes{
 			Code:    500,
 			Message: err.Error(),
 		}, nil
 	}
 
-	list := make([]AdvertiserListItem, len(data))
-	for i, item := range data {
-		list[i] = AdvertiserListItem{
-			AdvertiserId:   int64(item.AdvertiserID),
-			AdvertiserName: item.AdvertiserName,
-			IsValid:        item.IsValid,
-			AccountRole:    string(item.AccountRole),
-		}
-	}
-
 	res := &AdvertiserListRes{
 		Code:    0,
 		Message: "success",
 	}
-	res.Data.List = list
+
+	if resp.Data != nil {
+		for _, item := range resp.Data.List {
+			// 调试：记录 company_list 详情
+			if len(item.CompanyList) > 0 {
+				log.Printf("[AdvertiserList] Account %d (%s) has %d companies: %+v",
+					item.AdvertiserID, item.AdvertiserName, len(item.CompanyList), item.CompanyList)
+			}
+			res.Data.List = append(res.Data.List, AdvertiserListItem{
+				AdvertiserId:   int64(item.AdvertiserID),
+				AdvertiserName: item.AdvertiserName,
+				IsValid:        item.IsValid,
+				AccountRole:    item.AccountRole,
+			})
+			// 展开 company_list 中的子广告主
+			for _, comp := range item.CompanyList {
+				if comp.AdvertiserID > 0 {
+					res.Data.List = append(res.Data.List, AdvertiserListItem{
+						AdvertiserId:   int64(comp.AdvertiserID),
+						AdvertiserName: comp.AdvertiserName,
+						IsValid:        true,
+						AccountRole:    "ADVERTISER",
+					})
+				}
+			}
+		}
+	}
 	return res, nil
 }
 
@@ -491,18 +542,21 @@ func (c *OceanengineClient) CampaignListGet(ctx context.Context, req CampaignLis
 		PageSize:     int(req.PageSize),
 	}
 
-	if req.Filter.Name != "" || req.Filter.MarketingGoal != "" || req.Filter.Status != "" || len(req.Filter.Ids) > 0 {
-		oeReq.Filtering = &campaignModel.ListGetFiltering{
-			Name:   req.Filter.Name,
-			Status: req.Filter.Status,
+	marketingGoal := enum.MarketingGoal(req.Filter.MarketingGoal)
+	if marketingGoal == "" {
+		marketingGoal = enum.MarketingGoal_LIVE_PROM_GOODS // 默认直播带货
+	}
+	oeReq.Filtering = &campaignModel.ListGetFiltering{
+		Name:          req.Filter.Name,
+		Status:        req.Filter.Status,
+		MarketingGoal: marketingGoal,
+	}
+	if len(req.Filter.Ids) > 0 {
+		ids := make([]uint64, len(req.Filter.Ids))
+		for i, id := range req.Filter.Ids {
+			ids[i] = uint64(id)
 		}
-		if len(req.Filter.Ids) > 0 {
-			ids := make([]uint64, len(req.Filter.Ids))
-			for i, id := range req.Filter.Ids {
-				ids[i] = uint64(id)
-			}
-			oeReq.Filtering.IDs = ids
-		}
+		oeReq.Filtering.IDs = ids
 	}
 
 	data, err := campaignAPI.ListGet(ctx, c.client, req.AccessToken, oeReq)
@@ -637,11 +691,14 @@ func (c *OceanengineClient) AdListGet(ctx context.Context, req AdListGetReq) (*A
 		PageSize:         int(req.PageSize),
 	}
 
-	if req.Filtering.AdName != "" || req.Filtering.Status != "" || req.Filtering.CampaignId != 0 {
-		oeReq.Filtering = &adModel.GetFiltering{
-			AdName:     req.Filtering.AdName,
-			CampaignID: uint64(req.Filtering.CampaignId),
-		}
+	mg := enum.MarketingGoal(req.Filtering.MarketingGoal)
+	if mg == "" {
+		mg = enum.MarketingGoal_LIVE_PROM_GOODS
+	}
+	oeReq.Filtering = &adModel.GetFiltering{
+		AdName:        req.Filtering.AdName,
+		CampaignID:    uint64(req.Filtering.CampaignId),
+		MarketingGoal: mg,
 	}
 
 	data, err := adAPI.Get(ctx, c.client, req.AccessToken, oeReq)
@@ -909,6 +966,422 @@ func (c *OceanengineClient) AdBidUpdate(ctx context.Context, req AdBidUpdateReq)
 	return res, nil
 }
 
+func (c *OceanengineClient) AdRoiGoalUpdate(ctx context.Context, req AdRoiGoalUpdateReq) (*AdRoiGoalUpdateRes, error) {
+	adIds := make([]uint64, len(req.AdIds))
+	for i, id := range req.AdIds {
+		adIds[i] = uint64(id)
+	}
+
+	oeReq := &adModel.RoiGoalUpdateRequest{
+		AdvertiserID: uint64(req.AdvertiserId),
+		RoiGoalUpdates: []adModel.RoiGoalUpdate{
+			{AdID: uint64(req.AdIds[0]), RoiGoal: req.RoiGoal},
+		},
+	}
+
+	results, err := adAPI.RoiGoalUpdate(ctx, c.client, req.AccessToken, oeReq)
+	if err != nil {
+		return &AdRoiGoalUpdateRes{
+			Code:    500,
+			Message: err.Error(),
+		}, nil
+	}
+
+	res := &AdRoiGoalUpdateRes{
+		Code:    0,
+		Message: "success",
+	}
+	for _, r := range results {
+		res.Data.Results = append(res.Data.Results, AdOpResult{
+			AdId:    int64(r.AdID),
+			Success: r.Flat == 1,
+		})
+	}
+	return res, nil
+}
+
+func (c *OceanengineClient) AdScheduleDateUpdate(ctx context.Context, req AdScheduleDateUpdateReq) (*AdScheduleDateUpdateRes, error) {
+	adIds := make([]uint64, len(req.AdIds))
+	for i, id := range req.AdIds {
+		adIds[i] = uint64(id)
+	}
+
+	oeReq := &adModel.ScheduleDateUpdateRequest{
+		AdvertiserID: uint64(req.AdvertiserId),
+		AdIDs:        adIds,
+		ScheduleType: enum.ScheduleType("SCHEDULE_START_END"),
+		EndTime:      req.EndDate,
+	}
+
+	data, err := adAPI.ScheduleDateUpdate(ctx, c.client, req.AccessToken, oeReq)
+	if err != nil {
+		return &AdScheduleDateUpdateRes{
+			Code:    500,
+			Message: err.Error(),
+		}, nil
+	}
+
+	res := &AdScheduleDateUpdateRes{
+		Code:    0,
+		Message: "success",
+	}
+	if data != nil {
+		res.Data.AdIds = make([]int64, len(data.AdIDs))
+		for i, id := range data.AdIDs {
+			res.Data.AdIds[i] = int64(id)
+		}
+		for _, e := range data.Errors {
+			res.Data.Errors = append(res.Data.Errors, AdStatusError{
+				AdId:      int64(e.AdID),
+				ErrorCode: int64(e.ErrorCode),
+				ErrorMsg:  e.ErrorMessage,
+			})
+		}
+	}
+	return res, nil
+}
+
+func (c *OceanengineClient) AdScheduleTimeUpdate(ctx context.Context, req AdScheduleTimeUpdateReq) (*AdScheduleTimeUpdateRes, error) {
+	adIds := make([]uint64, len(req.AdIds))
+	for i, id := range req.AdIds {
+		adIds[i] = uint64(id)
+	}
+
+	oeReq := &adModel.ScheduleTimeUpdateRequest{
+		AdvertiserID: uint64(req.AdvertiserId),
+		AdIDs:        adIds,
+		ScheduleTime: req.ScheduleTime,
+	}
+
+	data, err := adAPI.ScheduleTimeUpdate(ctx, c.client, req.AccessToken, oeReq)
+	if err != nil {
+		return &AdScheduleTimeUpdateRes{
+			Code:    500,
+			Message: err.Error(),
+		}, nil
+	}
+
+	res := &AdScheduleTimeUpdateRes{
+		Code:    0,
+		Message: "success",
+	}
+	if data != nil {
+		res.Data.AdIds = make([]int64, len(data.AdIDs))
+		for i, id := range data.AdIDs {
+			res.Data.AdIds[i] = int64(id)
+		}
+	}
+	return res, nil
+}
+
+func (c *OceanengineClient) AdScheduleFixedRangeUpdate(ctx context.Context, req AdScheduleFixedRangeUpdateReq) (*AdScheduleFixedRangeUpdateRes, error) {
+	adIds := make([]uint64, len(req.AdIds))
+	for i, id := range req.AdIds {
+		adIds[i] = uint64(id)
+	}
+
+	oeReq := &adModel.ScheduleFixedRangeUpdateRequest{
+		AdvertiserID: uint64(req.AdvertiserId),
+		AdIDs:        adIds,
+		ScheduleFixedRange: int64(req.FixedRange),
+	}
+
+	data, err := adAPI.ScheduleFixedRangeUpdate(ctx, c.client, req.AccessToken, oeReq)
+	if err != nil {
+		return &AdScheduleFixedRangeUpdateRes{
+			Code:    500,
+			Message: err.Error(),
+		}, nil
+	}
+
+	res := &AdScheduleFixedRangeUpdateRes{
+		Code:    0,
+		Message: "success",
+	}
+	if data != nil {
+		res.Data.AdIds = make([]int64, len(data.AdIDs))
+		for i, id := range data.AdIDs {
+			res.Data.AdIds[i] = int64(id)
+		}
+	}
+	return res, nil
+}
+
+func (c *OceanengineClient) AdRegionUpdate(ctx context.Context, req AdRegionUpdateReq) (*AdRegionUpdateRes, error) {
+	adIds := make([]uint64, len(req.AdIds))
+	for i, id := range req.AdIds {
+		adIds[i] = uint64(id)
+	}
+
+	cityIds := make([]uint64, len(req.City))
+	for i, id := range req.City {
+		cityIds[i] = uint64(id)
+	}
+
+	oeReq := &adModel.RegionUpdateRequest{
+		AdvertiserID: uint64(req.AdvertiserId),
+		AdIDs:        adIds,
+		District:     enum.District(req.District),
+		City:         cityIds,
+		LocationType: enum.LocationType(req.LocationType),
+	}
+
+	data, err := adAPI.RegionUpdate(ctx, c.client, req.AccessToken, oeReq)
+	if err != nil {
+		return &AdRegionUpdateRes{
+			Code:    500,
+			Message: err.Error(),
+		}, nil
+	}
+
+	res := &AdRegionUpdateRes{
+		Code:    0,
+		Message: "success",
+	}
+	if data != nil {
+		res.Data.AdIds = make([]int64, len(data.AdIDs))
+		for i, id := range data.AdIDs {
+			res.Data.AdIds[i] = int64(id)
+		}
+	}
+	return res, nil
+}
+
+func (c *OceanengineClient) AdRejectReason(ctx context.Context, req AdRejectReasonReq) (*AdRejectReasonRes, error) {
+	adIds := make([]uint64, len(req.AdIds))
+	for i, id := range req.AdIds {
+		adIds[i] = uint64(id)
+	}
+
+	oeReq := &adModel.RejectReasonRequest{
+		AdvertiserID: uint64(req.AdvertiserId),
+		AdIDs:        adIds,
+	}
+
+	data, err := adAPI.RejectReason(ctx, c.client, req.AccessToken, oeReq)
+	if err != nil {
+		return &AdRejectReasonRes{
+			Code:    500,
+			Message: err.Error(),
+		}, nil
+	}
+
+	res := &AdRejectReasonRes{
+		Code:    0,
+		Message: "success",
+	}
+	list := make([]interface{}, len(data))
+	for i, item := range data {
+		list[i] = item
+	}
+	res.Data.List = list
+	return res, nil
+}
+
+func (c *OceanengineClient) AdLqAdGet(ctx context.Context, req AdLqAdGetReq) (*AdLqAdGetRes, error) {
+	oeReq := &adModel.LqAdGetRequest{
+		AdvertiserID: uint64(req.AdvertiserId),
+	}
+
+	data, err := adAPI.LqAdGet(ctx, c.client, req.AccessToken, oeReq)
+	if err != nil {
+		return &AdLqAdGetRes{
+			Code:    500,
+			Message: err.Error(),
+		}, nil
+	}
+
+	res := &AdLqAdGetRes{
+		Code:    0,
+		Message: "success",
+	}
+	res.Data.AdIds = make([]int64, len(data))
+	for i, id := range data {
+		res.Data.AdIds[i] = int64(id)
+	}
+	return res, nil
+}
+
+func (c *OceanengineClient) AdSuggestRoiGoal(ctx context.Context, req AdSuggestRoiGoalReq) (*AdSuggestRoiGoalRes, error) {
+	oeReq := &adModel.SuggestRoiGoalRequest{
+		AdvertiserID:   uint64(req.AdvertiserId),
+		MarketingGoal:  enum.MarketingGoal(req.MarketingGoal),
+		AwemeID:        uint64(req.AwemeId),
+		ProductID:      uint64(req.ProductId),
+		ExternalAction: qianchuan.ExternalAction(req.ExternalAction),
+	}
+
+	data, err := adAPI.SuggestRoiGoal(ctx, c.client, req.AccessToken, oeReq)
+	if err != nil {
+		return &AdSuggestRoiGoalRes{
+			Code:    500,
+			Message: err.Error(),
+		}, nil
+	}
+
+	res := &AdSuggestRoiGoalRes{
+		Code:    0,
+		Message: "success",
+	}
+	if data != nil {
+		res.Data.EcpRoiGoal = data.EcpRoiGoal
+		res.Data.RoiLowerBound = data.RoiLowerBound
+		res.Data.RoiUpperBound = data.RoiUpperBound
+	}
+	return res, nil
+}
+
+func (c *OceanengineClient) AdSuggestBid(ctx context.Context, req AdSuggestBidReq) (*AdSuggestBidRes, error) {
+	oeReq := &adModel.SuggestBidRequest{
+		AdvertiserID:   uint64(req.AdvertiserId),
+		MarketingGoal:  enum.MarketingGoal(req.MarketingGoal),
+		AwemeID:        uint64(req.AwemeId),
+		ProductID:      uint64(req.ProductId),
+		ExternalAction: qianchuan.ExternalAction(req.ExternalAction),
+	}
+
+	data, err := adAPI.SuggestBid(ctx, c.client, req.AccessToken, oeReq)
+	if err != nil {
+		return &AdSuggestBidRes{
+			Code:    500,
+			Message: err.Error(),
+		}, nil
+	}
+
+	res := &AdSuggestBidRes{
+		Code:    0,
+		Message: "success",
+	}
+	if data != nil {
+		res.Data.SuggestBidLow = data.SuggestBidLow
+		res.Data.SuggestBidHigh = data.SuggestBidHigh
+	}
+	return res, nil
+}
+
+func (c *OceanengineClient) AdSuggestBudget(ctx context.Context, req AdSuggestBudgetReq) (*AdSuggestBudgetRes, error) {
+	oeReq := &adModel.SuggestBudgetRequest{
+		AdvertiserID:       uint64(req.AdvertiserId),
+		AwemeID:            uint64(req.AwemeId),
+		LiveScheduleType:   enum.LiveScheduleType(req.LiveScheduleType),
+		StartTime:          req.StartTime,
+		EndTime:            req.EndTime,
+		ScheduleTime:       req.ScheduleTime,
+		ScheduleFixedRange: req.ScheduleFixedRange,
+	}
+
+	data, err := adAPI.SuggestBudget(ctx, c.client, req.AccessToken, oeReq)
+	if err != nil {
+		return &AdSuggestBudgetRes{
+			Code:    500,
+			Message: err.Error(),
+		}, nil
+	}
+
+	res := &AdSuggestBudgetRes{
+		Code:    0,
+		Message: "success",
+	}
+	if data != nil {
+		res.Data.SuggestBudgetLow = data.SuggestBudgetLow
+		res.Data.SuggestBudgetHigh = data.SuggestBudgetHigh
+	}
+	return res, nil
+}
+
+func (c *OceanengineClient) AdEstimateEffect(ctx context.Context, req AdEstimateEffectReq) (*AdEstimateEffectRes, error) {
+	oeReq := &adModel.EstimateEffectRequest{
+		AdvertiserID:       uint64(req.AdvertiserId),
+		AwemeID:            uint64(req.AwemeId),
+		ExternalAction:     qianchuan.ExternalAction(req.ExternalAction),
+		BudgetMode:         enum.BudgetMode(req.BudgetMode),
+		Budget:             req.Budget,
+		LiveScheduleType:   enum.LiveScheduleType(req.LiveScheduleType),
+		DeepExternalAction: qianchuan.ExternalAction(req.DeepExternalAction),
+		DeepBidType:        qianchuan.DeepBidType(req.DeepBidType),
+	}
+
+	data, err := adAPI.EstimateEffect(ctx, c.client, req.AccessToken, oeReq)
+	if err != nil {
+		return &AdEstimateEffectRes{
+			Code:    500,
+			Message: err.Error(),
+		}, nil
+	}
+
+	res := &AdEstimateEffectRes{
+		Code:    0,
+		Message: "success",
+	}
+	if data != nil {
+		res.Data.EstimateEffectLow = data.EstimateEffectLow
+		res.Data.EstimateEffectHigh = data.EstimateEffectHigh
+	}
+	return res, nil
+}
+
+func (c *OceanengineClient) AdCompensateStatusGet(ctx context.Context, req AdCompensateStatusGetReq) (*AdCompensateStatusGetRes, error) {
+	adIds := make([]uint64, len(req.AdIds))
+	for i, id := range req.AdIds {
+		adIds[i] = uint64(id)
+	}
+
+	oeReq := &adModel.CompensateStatusGetRequest{
+		AdvertiserID: uint64(req.AdvertiserId),
+		AdIDs:        adIds,
+	}
+
+	data, err := adAPI.CompensateStatusGet(ctx, c.client, req.AccessToken, oeReq)
+	if err != nil {
+		return &AdCompensateStatusGetRes{
+			Code:    500,
+			Message: err.Error(),
+		}, nil
+	}
+
+	res := &AdCompensateStatusGetRes{
+		Code:    0,
+		Message: "success",
+	}
+	list := make([]interface{}, len(data))
+	for i, item := range data {
+		list[i] = item
+	}
+	res.Data.List = list
+	return res, nil
+}
+
+func (c *OceanengineClient) AdLearningStatusGet(ctx context.Context, req AdLearningStatusGetReq) (*AdLearningStatusGetRes, error) {
+	adIds := make([]uint64, len(req.AdIds))
+	for i, id := range req.AdIds {
+		adIds[i] = uint64(id)
+	}
+
+	oeReq := &adModel.LearningStatusGetRequest{
+		AdvertiserID: uint64(req.AdvertiserId),
+		AdIDs:        adIds,
+	}
+
+	data, err := adAPI.LearningStatusGet(ctx, c.client, req.AccessToken, oeReq)
+	if err != nil {
+		return &AdLearningStatusGetRes{
+			Code:    500,
+			Message: err.Error(),
+		}, nil
+	}
+
+	res := &AdLearningStatusGetRes{
+		Code:    0,
+		Message: "success",
+	}
+	list := make([]interface{}, len(data))
+	for i, item := range data {
+		list[i] = item
+	}
+	res.Data.List = list
+	return res, nil
+}
+
 // ===== Creative 实现 =====
 
 func (c *OceanengineClient) CreativeGet(ctx context.Context, req CreativeGetReq) (*CreativeGetRes, error) {
@@ -978,6 +1451,39 @@ func (c *OceanengineClient) CreativeRejectReason(ctx context.Context, req Creati
 	}
 	res.Data.List = list
 
+	return res, nil
+}
+
+func (c *OceanengineClient) CreativeUpdateStatus(ctx context.Context, req CreativeUpdateStatusReq) (*CreativeUpdateStatusRes, error) {
+	creativeIds := make([]uint64, len(req.CreativeIds))
+	for i, id := range req.CreativeIds {
+		creativeIds[i] = uint64(id)
+	}
+
+	oeReq := &creativeModel.UpdateStatusRequest{
+		AdvertiserID: uint64(req.AdvertiserId),
+		CreativeIDs:  creativeIds,
+		OptStatus:    qianchuan.CreativeOptStatus(req.OptStatus),
+	}
+
+	data, err := creativeAPI.UpdateStatus(ctx, c.client, req.AccessToken, oeReq)
+	if err != nil {
+		return &CreativeUpdateStatusRes{
+			Code:    500,
+			Message: err.Error(),
+		}, nil
+	}
+
+	res := &CreativeUpdateStatusRes{
+		Code:    0,
+		Message: "success",
+	}
+	if data != nil && data.CreativeIDs != nil {
+		res.Data.CreativeIds = make([]int64, len(data.CreativeIDs))
+		for i, id := range data.CreativeIDs {
+			res.Data.CreativeIds[i] = int64(id)
+		}
+	}
 	return res, nil
 }
 
@@ -1161,11 +1667,18 @@ func parseDate(dateStr string) time.Time {
 }
 
 func (c *OceanengineClient) AdvertiserReport(ctx context.Context, req AdvertiserReportReq) (*AdvertiserReportRes, error) {
+	mg := enum.MarketingGoal_LIVE_PROM_GOODS
+	if req.Filtering != nil && req.Filtering.MarketingGoal != "" {
+		mg = enum.MarketingGoal(req.Filtering.MarketingGoal)
+	}
 	oeReq := &reportModel.GetRequest{
 		AdvertiserID: uint64(req.AdvertiserId),
 		StartDate:    parseDate(req.StartDate),
 		EndDate:      parseDate(req.EndDate),
 		Fields:       req.Fields,
+		Filtering: &reportModel.StatFiltering{
+			MarketingGoal: mg,
+		},
 	}
 
 	data, err := reportAPI.AdvertiserGet(ctx, c.client, req.AccessToken, oeReq)
@@ -1200,6 +1713,7 @@ func (c *OceanengineClient) ReportAdGet(ctx context.Context, req ReportAdGetReq)
 		Fields:       req.Fields,
 		Page:         int(req.Page),
 		PageSize:     int(req.PageSize),
+		Filtering:    &reportModel.StatFiltering{},
 	}
 
 	data, err := reportAPI.AdGet(ctx, c.client, req.AccessToken, oeReq)
@@ -1269,6 +1783,229 @@ func (c *OceanengineClient) ReportCreativeGet(ctx context.Context, req ReportCre
 		}
 	}
 
+	return res, nil
+}
+
+func (c *OceanengineClient) ReportMaterialGet(ctx context.Context, req ReportMaterialGetReq) (*ReportMaterialGetRes, error) {
+	oeReq := &reportModel.GetRequest{
+		AdvertiserID: uint64(req.AdvertiserId),
+		StartDate:    parseDate(req.StartDate),
+		EndDate:      parseDate(req.EndDate),
+		Fields:       req.Fields,
+		Page:         int(req.Page),
+		PageSize:     int(req.PageSize),
+	}
+
+	data, err := reportAPI.MaterialGet(ctx, c.client, req.AccessToken, oeReq)
+	if err != nil {
+		return &ReportMaterialGetRes{
+			Code:    500,
+			Message: err.Error(),
+		}, nil
+	}
+
+	res := &ReportMaterialGetRes{
+		Code:    0,
+		Message: "success",
+	}
+	if data != nil {
+		list := make([]interface{}, len(data.List))
+		for i, item := range data.List {
+			list[i] = item
+		}
+		res.Data.List = list
+		res.Data.PageInfo = PageInfo{
+			Page:        data.PageInfo.Page,
+			PageSize:    data.PageInfo.PageSize,
+			TotalNumber: int64(data.PageInfo.TotalNumber),
+			TotalPage:   data.PageInfo.TotalPage,
+		}
+	}
+	return res, nil
+}
+
+func (c *OceanengineClient) ReportSearchWordGet(ctx context.Context, req ReportSearchWordGetReq) (*ReportSearchWordGetRes, error) {
+	oeReq := &reportModel.GetRequest{
+		AdvertiserID: uint64(req.AdvertiserId),
+		StartDate:    parseDate(req.StartDate),
+		EndDate:      parseDate(req.EndDate),
+		Fields:       req.Fields,
+		Page:         int(req.Page),
+		PageSize:     int(req.PageSize),
+	}
+
+	data, err := reportAPI.SearchWordGet(ctx, c.client, req.AccessToken, oeReq)
+	if err != nil {
+		return &ReportSearchWordGetRes{
+			Code:    500,
+			Message: err.Error(),
+		}, nil
+	}
+
+	res := &ReportSearchWordGetRes{
+		Code:    0,
+		Message: "success",
+	}
+	if data != nil {
+		list := make([]interface{}, len(data.List))
+		for i, item := range data.List {
+			list[i] = item
+		}
+		res.Data.List = list
+		res.Data.PageInfo = PageInfo{
+			Page:        data.PageInfo.Page,
+			PageSize:    data.PageInfo.PageSize,
+			TotalNumber: int64(data.PageInfo.TotalNumber),
+			TotalPage:   data.PageInfo.TotalPage,
+		}
+	}
+	return res, nil
+}
+
+func (c *OceanengineClient) ReportVideoUserLoseGet(ctx context.Context, req ReportVideoUserLoseGetReq) (*ReportVideoUserLoseGetRes, error) {
+	oeReq := &reportModel.GetRequest{
+		AdvertiserID: uint64(req.AdvertiserId),
+		StartDate:    parseDate(req.StartDate),
+		EndDate:      parseDate(req.EndDate),
+		Fields:       req.Fields,
+		Page:         int(req.Page),
+		PageSize:     int(req.PageSize),
+	}
+
+	data, err := reportAPI.VideoUserLoseGet(ctx, c.client, req.AccessToken, oeReq)
+	if err != nil {
+		return &ReportVideoUserLoseGetRes{
+			Code:    500,
+			Message: err.Error(),
+		}, nil
+	}
+
+	res := &ReportVideoUserLoseGetRes{
+		Code:    0,
+		Message: "success",
+	}
+	if data != nil {
+		list := make([]interface{}, len(data.List))
+		for i, item := range data.List {
+			list[i] = item
+		}
+		res.Data.List = list
+		res.Data.PageInfo = PageInfo{
+			Page:        data.PageInfo.Page,
+			PageSize:    data.PageInfo.PageSize,
+			TotalNumber: int64(data.PageInfo.TotalNumber),
+			TotalPage:   data.PageInfo.TotalPage,
+		}
+	}
+	return res, nil
+}
+
+func (c *OceanengineClient) ReportUniPromotionGet(ctx context.Context, req ReportUniPromotionGetReq) (*ReportUniPromotionGetRes, error) {
+	oeReq := &reportModel.UniPromotionGetRequest{
+		AdvertiserID: uint64(req.AdvertiserId),
+		StartDate:    req.StartDate,
+		EndDate:      req.EndDate,
+		Fields:       req.Fields,
+	}
+
+	data, err := reportAPI.UniPromotionGet(ctx, c.client, req.AccessToken, oeReq)
+	if err != nil {
+		return &ReportUniPromotionGetRes{
+			Code:    500,
+			Message: err.Error(),
+		}, nil
+	}
+
+	return &ReportUniPromotionGetRes{
+		Code:    0,
+		Message: "success",
+		Data:    data,
+	}, nil
+}
+
+func (c *OceanengineClient) ReportCustomGet(ctx context.Context, req ReportCustomGetReq) (*ReportCustomGetRes, error) {
+	var filters []reportModel.CustomGetFilter
+	for _, f := range req.Filters {
+		filters = append(filters, reportModel.CustomGetFilter{
+			Field:    f.Field,
+			Values:   f.Values,
+			Type:     f.Type,
+			Operator: f.Operator,
+		})
+	}
+	var orderBy []reportModel.CustomGetOrderBy
+	for _, o := range req.OrderBy {
+		orderBy = append(orderBy, reportModel.CustomGetOrderBy{
+			Field: o.Field,
+			Type:  o.Type,
+		})
+	}
+
+	oeReq := &reportModel.CustomGetRequest{
+		AdvertiserID: uint64(req.AdvertiserId),
+		StartTime:    req.StartDate + " 00:00:00",
+		EndTime:      req.EndDate + " 23:59:59",
+		DataTopic:    qianchuan.DataTopic(req.DataTopic),
+		Dimensions:   req.Dimensions,
+		Metrics:      req.Metrics,
+		Filters:      filters,
+		OrderBy:      orderBy,
+		Page:         int(req.Page),
+		PageSize:     int(req.PageSize),
+	}
+
+	data, err := reportAPI.CustomGet(ctx, c.client, req.AccessToken, oeReq)
+	if err != nil {
+		return &ReportCustomGetRes{
+			Code:    500,
+			Message: err.Error(),
+		}, nil
+	}
+
+	res := &ReportCustomGetRes{
+		Code:    0,
+		Message: "success",
+	}
+	if data != nil {
+		for _, row := range data.Rows {
+			res.Data.List = append(res.Data.List, row)
+		}
+		if data.Pagination != nil {
+			res.Data.PageInfo = PageInfo{
+				Page:        data.Pagination.Page,
+				PageSize:    data.Pagination.PageSize,
+				TotalNumber: int64(data.Pagination.TotalNumber),
+				TotalPage:   data.Pagination.TotalPage,
+			}
+		}
+	}
+	return res, nil
+}
+
+func (c *OceanengineClient) ReportCustomConfigGet(ctx context.Context, req ReportCustomConfigGetReq) (*ReportCustomConfigGetRes, error) {
+	oeReq := &reportModel.CustomConfigGetRequest{
+		AdvertiserID: uint64(req.AdvertiserId),
+	}
+
+	data, err := reportAPI.CustomConfigGet(ctx, c.client, req.AccessToken, oeReq)
+	if err != nil {
+		return &ReportCustomConfigGetRes{
+			Code:    500,
+			Message: err.Error(),
+		}, nil
+	}
+
+	res := &ReportCustomConfigGetRes{
+		Code:    0,
+		Message: "success",
+	}
+	if data != nil {
+		list := make([]interface{}, len(data.CustomConfigDatas))
+		for i, item := range data.CustomConfigDatas {
+			list[i] = item
+		}
+		res.Data.List = list
+	}
 	return res, nil
 }
 
@@ -1559,12 +2296,26 @@ func (c *OceanengineClient) DmpAudiencesGet(ctx context.Context, req DmpAudience
 // ===== Finance 实现 =====
 
 func (c *OceanengineClient) WalletGet(ctx context.Context, req WalletGetReq) (*WalletGetRes, error) {
+	// 使用自定义结构体解析，避免 SDK 的 Wallet struct 有 JSON 类型不匹配 bug
+	type walletData struct {
+		TotalBalanceAbs            float64 `json:"total_balance_abs"`
+		GrantBalance               float64 `json:"grant_balance"`
+		GeneralBalanceValidNonGrant float64 `json:"general_balance_valid_non_grant"`
+		DefaultValidGrantBalance   float64 `json:"default_valid_grant_balance"`
+		GeneralBalanceValid        float64 `json:"general_balance_valid"`
+	}
+
+	type walletResponse struct {
+		model.BaseResponse
+		Data *walletData `json:"data"`
+	}
+
 	oeReq := &financeModel.WalletGetRequest{
 		AdvertiserID: uint64(req.AdvertiserId),
 	}
 
-	data, err := financeAPI.WalletGet(ctx, c.client, req.AccessToken, oeReq)
-	if err != nil {
+	var resp walletResponse
+	if err := c.client.Get(ctx, "v1.0/qianchuan/finance/wallet/get/", oeReq, &resp, req.AccessToken); err != nil {
 		return &WalletGetRes{
 			Code:    500,
 			Message: err.Error(),
@@ -1575,15 +2326,13 @@ func (c *OceanengineClient) WalletGet(ctx context.Context, req WalletGetReq) (*W
 		Code:    0,
 		Message: "success",
 	}
-
-	if data != nil {
-		res.Data.TotalBalance = data.TotalBalanceAbs
-		res.Data.GrantBalance = data.GrantBalance
-		res.Data.CashBalance = data.GeneralBalanceValidNoGrant
-		res.Data.ValidGrantBalance = data.DefaultValidGrantBalance
-		res.Data.ValidCashBalance = data.GeneralBalanceValid
+	if resp.Data != nil {
+		res.Data.TotalBalance = resp.Data.TotalBalanceAbs
+		res.Data.GrantBalance = resp.Data.GrantBalance
+		res.Data.CashBalance = resp.Data.GeneralBalanceValidNonGrant
+		res.Data.ValidGrantBalance = resp.Data.DefaultValidGrantBalance
+		res.Data.ValidCashBalance = resp.Data.GeneralBalanceValid
 	}
-
 	return res, nil
 }
 
@@ -1658,30 +2407,114 @@ func (c *OceanengineClient) DetailGet(ctx context.Context, req DetailGetReq) (*D
 }
 
 func (c *OceanengineClient) FundTransferSeqCreate(ctx context.Context, req FundTransferSeqCreateReq) (*FundTransferSeqCreateRes, error) {
+	oeReq := &agentModel.FundTransferSeqCreateRequest{
+		AccountID:    uint64(req.AdvertiserId),
+		TransferType: agentModel.FundTransferType(req.TransferType),
+		Amount:       req.Amount,
+	}
+	if req.TargetAdvertiserId > 0 {
+		oeReq.AgentID = uint64(req.TargetAdvertiserId)
+	}
+
+	transferSeq, err := agentAPI.FundTransferSeqCreate(ctx, c.client, req.AccessToken, oeReq)
+	if err != nil {
+		return &FundTransferSeqCreateRes{
+			Code:    500,
+			Message: err.Error(),
+		}, nil
+	}
+
 	return &FundTransferSeqCreateRes{
-		Code:    501,
-		Message: "FundTransferSeqCreate 暂未实现",
+		Code:    0,
+		Message: "success",
+		Data: struct {
+			TransferSeq string `json:"transfer_seq"`
+		}{
+			TransferSeq: transferSeq,
+		},
 	}, nil
 }
 
 func (c *OceanengineClient) FundTransferSeqCommit(ctx context.Context, req FundTransferSeqCommitReq) (*FundTransferSeqCommitRes, error) {
+	oeReq := &agentModel.FundTransferSeqCommitRequest{
+		TransferSeq: req.TransferSeq,
+	}
+	if req.AdvertiserId > 0 {
+		oeReq.AgentID = uint64(req.AdvertiserId)
+	}
+
+	transferSeq, err := agentAPI.FundTransferSeqCommit(ctx, c.client, req.AccessToken, oeReq)
+	if err != nil {
+		return &FundTransferSeqCommitRes{
+			Code:    500,
+			Message: err.Error(),
+		}, nil
+	}
+
 	return &FundTransferSeqCommitRes{
-		Code:    501,
-		Message: "FundTransferSeqCommit 暂未实现",
+		Code:    0,
+		Message: "success",
+		Data: struct {
+			TransferId string `json:"transfer_id"`
+		}{
+			TransferId: transferSeq,
+		},
 	}, nil
 }
 
 func (c *OceanengineClient) RefundTransferSeqCreate(ctx context.Context, req RefundTransferSeqCreateReq) (*RefundTransferSeqCreateRes, error) {
+	oeReq := &agentModel.FundTransferSeqCreateRequest{
+		AccountID:    uint64(req.AdvertiserId),
+		TransferType: agentModel.FundTransferType(req.TransferType),
+		Amount:       req.Amount,
+	}
+	if req.TargetAdvertiserId > 0 {
+		oeReq.AgentID = uint64(req.TargetAdvertiserId)
+	}
+
+	transferSeq, err := agentAPI.RefundTransferSeqCreate(ctx, c.client, req.AccessToken, oeReq)
+	if err != nil {
+		return &RefundTransferSeqCreateRes{
+			Code:    500,
+			Message: err.Error(),
+		}, nil
+	}
+
 	return &RefundTransferSeqCreateRes{
-		Code:    501,
-		Message: "RefundTransferSeqCreate 暂未实现",
+		Code:    0,
+		Message: "success",
+		Data: struct {
+			TransferSeq string `json:"transfer_seq"`
+		}{
+			TransferSeq: transferSeq,
+		},
 	}, nil
 }
 
 func (c *OceanengineClient) RefundTransferSeqCommit(ctx context.Context, req RefundTransferSeqCommitReq) (*RefundTransferSeqCommitRes, error) {
+	oeReq := &agentModel.FundTransferSeqCommitRequest{
+		TransferSeq: req.TransferSeq,
+	}
+	if req.AdvertiserId > 0 {
+		oeReq.AgentID = uint64(req.AdvertiserId)
+	}
+
+	transferSeq, err := agentAPI.RefundTransferSeqCommit(ctx, c.client, req.AccessToken, oeReq)
+	if err != nil {
+		return &RefundTransferSeqCommitRes{
+			Code:    500,
+			Message: err.Error(),
+		}, nil
+	}
+
 	return &RefundTransferSeqCommitRes{
-		Code:    501,
-		Message: "RefundTransferSeqCommit 暂未实现",
+		Code:    0,
+		Message: "success",
+		Data: struct {
+			TransferId string `json:"transfer_id"`
+		}{
+			TransferId: transferSeq,
+		},
 	}, nil
 }
 
@@ -2275,9 +3108,11 @@ func (c *OceanengineClient) PrivatewordsGet(ctx context.Context, req Privateword
 
 func (c *OceanengineClient) KeywordsUpdate(ctx context.Context, req KeywordsUpdateReq) (*KeywordsUpdateRes, error) {
 	keywords := make([]adModel.UpdateKeyword, len(req.Keywords))
-	for i := range req.Keywords {
+	for i, kw := range req.Keywords {
 		keywords[i] = adModel.UpdateKeyword{
-			// Note: SDK UpdateKeyword uses ID field, frontend sends Word
+			ID:         uint64(kw.ID),
+			MatchType:  enum.KeywordMatchType(kw.MatchType),
+			StatusType: qianchuan.KeywordStatus(kw.StatusType),
 		}
 	}
 

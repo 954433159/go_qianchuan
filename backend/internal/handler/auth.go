@@ -144,6 +144,10 @@ func (h *AuthHandler) OAuthExchange(c *gin.Context) {
 		log.Printf("⚠️ [OAuthExchange] No advertiser ID available, user will login without advertiser context")
 	}
 
+	// 日志：输出 OAuth 返回的全部 AdvertiserIDs
+	allAdvertiserIds := tokenResp.Data.AdvertiserIds
+	log.Printf("🔵 [OAuthExchange] OAuth returned %d advertiser IDs: %v", len(allAdvertiserIds), allAdvertiserIds)
+
 	// 创建会话
 	log.Printf("🔵 [OAuthExchange] Step 3: Creating session...")
 	userSession := session.NewSessionFromTokenResponse(&session.TokenResponse{
@@ -151,6 +155,7 @@ func (h *AuthHandler) OAuthExchange(c *gin.Context) {
 		RefreshToken:          tokenResp.Data.RefreshToken,
 		ExpiresIn:             tokenResp.Data.ExpiresIn,
 		RefreshTokenExpiresIn: tokenResp.Data.RefreshTokenExpiresIn,
+		AdvertiserIDs:         allAdvertiserIds,
 	}, advertiserId)
 
 	// 保存到Session
@@ -296,6 +301,7 @@ func (h *AuthHandler) RefreshSession(c *gin.Context) {
 		RefreshToken:          refreshResp.Data.RefreshToken,
 		ExpiresIn:             refreshResp.Data.ExpiresIn,
 		RefreshTokenExpiresIn: refreshResp.Data.RefreshTokenExpiresIn,
+		AdvertiserIDs:         userSession.AdvertiserIDs,
 	}, userSession.AdvertiserID)
 
 	sess.Set("user", newSession)

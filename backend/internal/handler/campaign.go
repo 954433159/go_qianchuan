@@ -39,6 +39,7 @@ func (h *CampaignHandler) List(c *gin.Context) {
 	var req struct {
 		Page          int64  `form:"page"`
 		PageSize      int64  `form:"page_size"`
+		AdvertiserId  int64  `form:"advertiser_id"`
 		Name          string `form:"name"`
 		MarketingGoal string `form:"marketing_goal"`
 		Status        string `form:"status"`
@@ -59,6 +60,9 @@ func (h *CampaignHandler) List(c *gin.Context) {
 	if req.PageSize == 0 {
 		req.PageSize = 10
 	}
+	if req.AdvertiserId == 0 {
+		req.AdvertiserId = userSession.AdvertiserID
+	}
 
 	// 构建过滤条件
 	filter := sdk.CampaignListGetFilter{
@@ -69,7 +73,7 @@ func (h *CampaignHandler) List(c *gin.Context) {
 
 	// 调用SDK
 	resp, err := h.service.Client.CampaignListGet(c.Request.Context(), sdk.CampaignListGetReq{
-		AdvertiserId: userSession.AdvertiserID,
+		AdvertiserId: req.AdvertiserId,
 		Page:         req.Page,
 		PageSize:     req.PageSize,
 		Filter:       filter,

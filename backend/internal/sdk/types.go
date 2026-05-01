@@ -354,7 +354,7 @@ type AdListGetFiltering struct {
 	CampaignScene     string  `json:"campaign_scene,omitempty"`
 	MarketingScene    string  `json:"marketing_scene,omitempty"`
 	PromotionWay      string  `json:"promotion_way,omitempty"`
-	MarketingGoal     string  `json:"marketing_goal,omitempty"`
+	MarketingGoal     string  `json:"marketing_goal"`
 	CampaignId        int64   `json:"campaign_id,omitempty"`
 	AdCreateStartDate string  `json:"ad_create_start_date,omitempty"`
 	AdCreateEndDate   string  `json:"ad_create_end_date,omitempty"`
@@ -508,6 +508,228 @@ type AdBidUpdateRes struct {
 	} `json:"data"`
 }
 
+type AdRoiGoalUpdateReq struct {
+	AccessToken  string `json:"access_token"`
+	AdvertiserId int64  `json:"advertiser_id"`
+	AdIds        []int64 `json:"ad_ids"`
+	RoiGoal      float64 `json:"roi_goal"`
+}
+
+type AdRoiGoalUpdateRes struct {
+	Code    int64  `json:"code"`
+	Message string `json:"message"`
+	Data    struct {
+		Results []AdOpResult `json:"results"`
+	} `json:"data"`
+}
+
+type AdOpResult struct {
+	AdId      int64  `json:"ad_id"`
+	Success   bool   `json:"success"`
+	ErrorCode int64  `json:"error_code,omitempty"`
+	ErrorMsg  string `json:"error_msg,omitempty"`
+}
+
+type AdScheduleDateUpdateReq struct {
+	AccessToken  string `json:"access_token"`
+	AdvertiserId int64  `json:"advertiser_id"`
+	AdIds        []int64 `json:"ad_ids"`
+	StartDate    string `json:"start_date,omitempty"`
+	EndDate      string `json:"end_date,omitempty"`
+}
+
+type AdScheduleDateUpdateRes struct {
+	Code    int64  `json:"code"`
+	Message string `json:"message"`
+	Data    struct {
+		AdIds  []int64         `json:"ad_ids"`
+		Errors []AdStatusError `json:"errors,omitempty"`
+	} `json:"data"`
+}
+
+type AdScheduleTimeUpdateReq struct {
+	AccessToken   string `json:"access_token"`
+	AdvertiserId  int64  `json:"advertiser_id"`
+	AdIds         []int64 `json:"ad_ids"`
+	ScheduleTime  string `json:"schedule_time,omitempty"`
+}
+
+type AdScheduleTimeUpdateRes struct {
+	Code    int64  `json:"code"`
+	Message string `json:"message"`
+	Data    struct {
+		AdIds  []int64         `json:"ad_ids"`
+		Errors []AdStatusError `json:"errors,omitempty"`
+	} `json:"data"`
+}
+
+type AdScheduleFixedRangeUpdateReq struct {
+	AccessToken  string `json:"access_token"`
+	AdvertiserId int64  `json:"advertiser_id"`
+	AdIds        []int64 `json:"ad_ids"`
+	FixedRange   float64 `json:"fixed_range,omitempty"`
+}
+
+type AdScheduleFixedRangeUpdateRes struct {
+	Code    int64  `json:"code"`
+	Message string `json:"message"`
+	Data    struct {
+		AdIds  []int64         `json:"ad_ids"`
+		Errors []AdStatusError `json:"errors,omitempty"`
+	} `json:"data"`
+}
+
+type AdRegionUpdateReq struct {
+	AccessToken  string `json:"access_token"`
+	AdvertiserId int64  `json:"advertiser_id"`
+	AdIds        []int64 `json:"ad_ids"`
+	District     string `json:"district,omitempty"`
+	City         []int64 `json:"city,omitempty"`
+	LocationType string `json:"location_type,omitempty"`
+}
+
+type AdRegionUpdateRes struct {
+	Code    int64  `json:"code"`
+	Message string `json:"message"`
+	Data    struct {
+		AdIds  []int64         `json:"ad_ids"`
+		Errors []AdStatusError `json:"errors,omitempty"`
+	} `json:"data"`
+}
+
+type AdRejectReasonReq struct {
+	AccessToken  string  `json:"access_token"`
+	AdvertiserId int64   `json:"advertiser_id"`
+	AdIds        []int64 `json:"ad_ids"`
+}
+
+type AdRejectReasonRes struct {
+	Code    int64  `json:"code"`
+	Message string `json:"message"`
+	Data    struct {
+		List []interface{} `json:"list"`
+	} `json:"data"`
+}
+
+type AdLqAdGetReq struct {
+	AccessToken  string `json:"access_token"`
+	AdvertiserId int64  `json:"advertiser_id"`
+}
+
+type AdLqAdGetRes struct {
+	Code    int64  `json:"code"`
+	Message string `json:"message"`
+	Data    struct {
+		AdIds []int64 `json:"ad_ids"`
+	} `json:"data"`
+}
+
+type AdSuggestRoiGoalReq struct {
+	AccessToken    string `json:"access_token"`
+	AdvertiserId   int64  `json:"advertiser_id"`
+	MarketingGoal  string `json:"marketing_goal,omitempty"`
+	AwemeId        int64  `json:"aweme_id,omitempty"`
+	ProductId      int64  `json:"product_id,omitempty"`
+	ExternalAction string `json:"external_action,omitempty"`
+}
+
+type AdSuggestRoiGoalRes struct {
+	Code    int64  `json:"code"`
+	Message string `json:"message"`
+	Data    struct {
+		EcpRoiGoal     float64 `json:"ecp_roi_goal"`
+		RoiLowerBound  float64 `json:"roi_lower_bound"`
+		RoiUpperBound  float64 `json:"roi_upper_bound"`
+	} `json:"data"`
+}
+
+type AdSuggestBidReq struct {
+	AccessToken    string `json:"access_token"`
+	AdvertiserId   int64  `json:"advertiser_id"`
+	MarketingGoal  string `json:"marketing_goal,omitempty"`
+	AwemeId        int64  `json:"aweme_id,omitempty"`
+	ProductId      int64  `json:"product_id,omitempty"`
+	ExternalAction string `json:"external_action,omitempty"`
+}
+
+type AdSuggestBidRes struct {
+	Code    int64  `json:"code"`
+	Message string `json:"message"`
+	Data    struct {
+		SuggestBidLow  float64 `json:"suggest_bid_low"`
+		SuggestBidHigh float64 `json:"suggest_bid_high"`
+	} `json:"data"`
+}
+
+type AdSuggestBudgetReq struct {
+	AccessToken        string `json:"access_token"`
+	AdvertiserId       int64  `json:"advertiser_id"`
+	AwemeId            int64  `json:"aweme_id,omitempty"`
+	LiveScheduleType   string `json:"live_schedule_type,omitempty"`
+	StartTime          string `json:"start_time,omitempty"`
+	EndTime            string `json:"end_time,omitempty"`
+	ScheduleTime       string `json:"schedule_time,omitempty"`
+	ScheduleFixedRange int64  `json:"schedule_fixed_range,omitempty"`
+}
+
+type AdSuggestBudgetRes struct {
+	Code    int64  `json:"code"`
+	Message string `json:"message"`
+	Data    struct {
+		SuggestBudgetLow  float64 `json:"suggest_budget_low"`
+		SuggestBudgetHigh float64 `json:"suggest_budget_high"`
+	} `json:"data"`
+}
+
+type AdEstimateEffectReq struct {
+	AccessToken        string  `json:"access_token"`
+	AdvertiserId       int64   `json:"advertiser_id"`
+	AwemeId            int64   `json:"aweme_id,omitempty"`
+	ExternalAction     string  `json:"external_action,omitempty"`
+	BudgetMode         string  `json:"budget_mode,omitempty"`
+	Budget             float64 `json:"budget"`
+	LiveScheduleType   string  `json:"live_schedule_type,omitempty"`
+	DeepExternalAction string  `json:"deep_external_action,omitempty"`
+	DeepBidType        string  `json:"deep_bid_type,omitempty"`
+}
+
+type AdEstimateEffectRes struct {
+	Code    int64  `json:"code"`
+	Message string `json:"message"`
+	Data    struct {
+		EstimateEffectLow  float64 `json:"estimate_effect_low"`
+		EstimateEffectHigh float64 `json:"estimate_effect_high"`
+	} `json:"data"`
+}
+
+type AdCompensateStatusGetReq struct {
+	AccessToken  string  `json:"access_token"`
+	AdvertiserId int64   `json:"advertiser_id"`
+	AdIds        []int64 `json:"ad_ids"`
+}
+
+type AdCompensateStatusGetRes struct {
+	Code    int64  `json:"code"`
+	Message string `json:"message"`
+	Data    struct {
+		List []interface{} `json:"list"`
+	} `json:"data"`
+}
+
+type AdLearningStatusGetReq struct {
+	AccessToken  string  `json:"access_token"`
+	AdvertiserId int64   `json:"advertiser_id"`
+	AdIds        []int64 `json:"ad_ids"`
+}
+
+type AdLearningStatusGetRes struct {
+	Code    int64  `json:"code"`
+	Message string `json:"message"`
+	Data    struct {
+		List []interface{} `json:"list"`
+	} `json:"data"`
+}
+
 // ===== Creative Types =====
 
 type CreativeGetReq struct {
@@ -549,6 +771,21 @@ type CreativeRejectReasonRes struct {
 	Message string `json:"message"`
 	Data    struct {
 		List []interface{} `json:"list"`
+	} `json:"data"`
+}
+
+type CreativeUpdateStatusReq struct {
+	AccessToken  string  `json:"access_token"`
+	AdvertiserId int64   `json:"advertiser_id"`
+	CreativeIds  []int64 `json:"creative_ids"`
+	OptStatus    string  `json:"opt_status"`
+}
+
+type CreativeUpdateStatusRes struct {
+	Code    int64  `json:"code"`
+	Message string `json:"message"`
+	Data    struct {
+		CreativeIds []int64 `json:"creative_ids"`
 	} `json:"data"`
 }
 
@@ -740,6 +977,125 @@ type ReportCreativeGetRes struct {
 	} `json:"data"`
 }
 
+type ReportMaterialGetReq struct {
+	AccessToken  string   `json:"access_token"`
+	AdvertiserId int64    `json:"advertiser_id"`
+	StartDate    string   `json:"start_date"`
+	EndDate      string   `json:"end_date"`
+	Page         int64    `json:"page"`
+	PageSize     int64    `json:"page_size"`
+	Fields       []string `json:"fields,omitempty"`
+}
+
+type ReportMaterialGetRes struct {
+	Code    int64  `json:"code"`
+	Message string `json:"message"`
+	Data    struct {
+		List     []interface{} `json:"list"`
+		PageInfo PageInfo      `json:"page_info"`
+	} `json:"data"`
+}
+
+type ReportSearchWordGetReq struct {
+	AccessToken  string   `json:"access_token"`
+	AdvertiserId int64    `json:"advertiser_id"`
+	StartDate    string   `json:"start_date"`
+	EndDate      string   `json:"end_date"`
+	Page         int64    `json:"page"`
+	PageSize     int64    `json:"page_size"`
+	Fields       []string `json:"fields,omitempty"`
+}
+
+type ReportSearchWordGetRes struct {
+	Code    int64  `json:"code"`
+	Message string `json:"message"`
+	Data    struct {
+		List     []interface{} `json:"list"`
+		PageInfo PageInfo      `json:"page_info"`
+	} `json:"data"`
+}
+
+type ReportVideoUserLoseGetReq struct {
+	AccessToken  string   `json:"access_token"`
+	AdvertiserId int64    `json:"advertiser_id"`
+	StartDate    string   `json:"start_date"`
+	EndDate      string   `json:"end_date"`
+	Page         int64    `json:"page"`
+	PageSize     int64    `json:"page_size"`
+	Fields       []string `json:"fields,omitempty"`
+}
+
+type ReportVideoUserLoseGetRes struct {
+	Code    int64  `json:"code"`
+	Message string `json:"message"`
+	Data    struct {
+		List     []interface{} `json:"list"`
+		PageInfo PageInfo      `json:"page_info"`
+	} `json:"data"`
+}
+
+type ReportUniPromotionGetReq struct {
+	AccessToken  string `json:"access_token"`
+	AdvertiserId int64  `json:"advertiser_id"`
+	StartDate    string `json:"start_date"`
+	EndDate      string `json:"end_date"`
+	Fields       []string `json:"fields,omitempty"`
+}
+
+type ReportUniPromotionGetRes struct {
+	Code    int64       `json:"code"`
+	Message string      `json:"message"`
+	Data    interface{} `json:"data,omitempty"`
+}
+
+type ReportCustomGetReq struct {
+	AccessToken  string          `json:"access_token"`
+	AdvertiserId int64           `json:"advertiser_id"`
+	StartDate    string          `json:"start_date"`
+	EndDate      string          `json:"end_date"`
+	DataTopic    string          `json:"data_topic,omitempty"`
+	Page         int64           `json:"page"`
+	PageSize     int64           `json:"page_size"`
+	Dimensions   []string        `json:"dimensions,omitempty"`
+	Metrics      []string        `json:"metrics,omitempty"`
+	Filters      []ReportFilter  `json:"filters,omitempty"`
+	OrderBy      []ReportOrderBy `json:"order_by,omitempty"`
+}
+
+type ReportFilter struct {
+	Field    string   `json:"field"`
+	Type     int      `json:"type,omitempty"`
+	Operator int      `json:"operator,omitempty"`
+	Values   []string `json:"values"`
+}
+
+type ReportOrderBy struct {
+	Field string `json:"field"`
+	Type  int    `json:"type"`
+}
+
+type ReportCustomGetRes struct {
+	Code    int64  `json:"code"`
+	Message string `json:"message"`
+	Data    struct {
+		List     []interface{} `json:"list"`
+		PageInfo PageInfo      `json:"page_info"`
+	} `json:"data"`
+}
+
+type ReportCustomConfigGetReq struct {
+	AccessToken  string `json:"access_token"`
+	AdvertiserId int64  `json:"advertiser_id"`
+}
+
+type ReportCustomConfigGetRes struct {
+	Code    int64  `json:"code"`
+	Message string `json:"message"`
+	Data    struct {
+		List []interface{} `json:"list"`
+	} `json:"data"`
+}
+
 // ===== Tools Types =====
 
 type ToolsIndustryGetReq struct {
@@ -927,10 +1283,11 @@ type DetailGetRes struct {
 }
 
 type FundTransferSeqCreateReq struct {
-	AccessToken        string `json:"access_token"`
-	AdvertiserId       int64  `json:"advertiser_id"`
-	TargetAdvertiserId int64  `json:"target_advertiser_id"`
-	TransferType       string `json:"transfer_type"`
+	AccessToken        string  `json:"access_token"`
+	AdvertiserId       int64   `json:"advertiser_id"`
+	TargetAdvertiserId int64   `json:"target_advertiser_id"`
+	TransferType       string  `json:"transfer_type"`
+	Amount             float64 `json:"amount"`
 }
 
 type FundTransferSeqCreateRes struct {
@@ -957,10 +1314,11 @@ type FundTransferSeqCommitRes struct {
 }
 
 type RefundTransferSeqCreateReq struct {
-	AccessToken        string `json:"access_token"`
-	AdvertiserId       int64  `json:"advertiser_id"`
-	TargetAdvertiserId int64  `json:"target_advertiser_id"`
-	TransferType       string `json:"transfer_type"`
+	AccessToken        string  `json:"access_token"`
+	AdvertiserId       int64   `json:"advertiser_id"`
+	TargetAdvertiserId int64   `json:"target_advertiser_id"`
+	TransferType       string  `json:"transfer_type"`
+	Amount             float64 `json:"amount"`
 }
 
 type RefundTransferSeqCreateRes struct {
@@ -1264,8 +1622,10 @@ type KeywordsUpdateReq struct {
 }
 
 type KeywordUpdateInfo struct {
-	Word      string `json:"word"`
-	MatchType string `json:"match_type"`
+	ID         int64  `json:"id,omitempty"`
+	Word       string `json:"word"`
+	MatchType  string `json:"match_type,omitempty"`
+	StatusType string `json:"status_type,omitempty"`
 }
 
 type KeywordsUpdateRes struct {

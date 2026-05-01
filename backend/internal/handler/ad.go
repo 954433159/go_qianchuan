@@ -40,6 +40,7 @@ func (h *AdHandler) List(c *gin.Context) {
 	var req struct {
 		Page             int64  `form:"page"`
 		PageSize         int64  `form:"page_size"`
+		AdvertiserId     int64  `form:"advertiser_id"`
 		RequestAwemeInfo int64  `form:"request_aweme_info"`
 		AdName           string `form:"ad_name"`
 		Status           string `form:"status"`
@@ -66,6 +67,9 @@ func (h *AdHandler) List(c *gin.Context) {
 	if req.MarketingScene == "" {
 		req.MarketingScene = "FEED"
 	}
+	if req.AdvertiserId == 0 {
+		req.AdvertiserId = userSession.AdvertiserID
+	}
 
 	// 构建过滤条件
 	filter := sdk.AdListGetFiltering{
@@ -78,7 +82,7 @@ func (h *AdHandler) List(c *gin.Context) {
 
 	// 调用SDK
 	resp, err := h.service.Client.AdListGet(c.Request.Context(), sdk.AdListGetReq{
-		AdvertiserId:     userSession.AdvertiserID,
+		AdvertiserId:     req.AdvertiserId,
 		RequestAwemeInfo: req.RequestAwemeInfo,
 		Page:             req.Page,
 		PageSize:         req.PageSize,
@@ -510,185 +514,298 @@ func (h *AdHandler) UpdateBid(c *gin.Context) {
 }
 
 // UpdateRegion 更新广告计划地域定向
-// 注意: 此功能需要SDK支持AdRegionUpdate方法
 func (h *AdHandler) UpdateRegion(c *gin.Context) {
-	util.NotImplemented(c,
-		"地域专项更新功能暂未实现，请使用广告计划更新接口",
-		"可使用 POST /api/qianchuan/ad/update 接口更新包含地域定向在内的完整广告计划")
+	userSession, ok := middleware.GetUserSession(c)
+	if !ok {
+		util.Unauthorized(c, "")
+		return
+	}
+
+	var req sdk.AdRegionUpdateReq
+	if err := c.ShouldBindJSON(&req); err != nil {
+		util.BadRequest(c, "参数错误: "+err.Error())
+		return
+	}
+	req.AccessToken = userSession.AccessToken
+
+	resp, err := h.service.Client.AdRegionUpdate(c.Request.Context(), req)
+	if err != nil {
+		util.RespondWithSDKError(c, err, "更新地域定向")
+		return
+	}
+	util.Success(c, resp.Data)
 }
 
 // UpdateScheduleDate 更新广告计划投放日期
-// 注意: 此功能需要SDK支持
 func (h *AdHandler) UpdateScheduleDate(c *gin.Context) {
-	util.NotImplemented(c,
-		"投放日期专项更新功能暂未实现，请使用广告计划更新接口",
-		"可使用 POST /api/qianchuan/ad/update 接口更新包含 schedule_start_date 和 schedule_end_date 的完整广告计划")
+	userSession, ok := middleware.GetUserSession(c)
+	if !ok {
+		util.Unauthorized(c, "")
+		return
+	}
+
+	var req sdk.AdScheduleDateUpdateReq
+	if err := c.ShouldBindJSON(&req); err != nil {
+		util.BadRequest(c, "参数错误: "+err.Error())
+		return
+	}
+	req.AccessToken = userSession.AccessToken
+
+	resp, err := h.service.Client.AdScheduleDateUpdate(c.Request.Context(), req)
+	if err != nil {
+		util.RespondWithSDKError(c, err, "更新投放日期")
+		return
+	}
+	util.Success(c, resp.Data)
 }
 
 // UpdateScheduleTime 更新广告计划投放时段
-// 注意: 此功能需要SDK支持
 func (h *AdHandler) UpdateScheduleTime(c *gin.Context) {
-	util.NotImplemented(c,
-		"投放时段专项更新功能暂未实现，请使用广告计划更新接口",
-		"可使用 POST /api/qianchuan/ad/update 接口更新包含 schedule_time 的完整广告计划")
+	userSession, ok := middleware.GetUserSession(c)
+	if !ok {
+		util.Unauthorized(c, "")
+		return
+	}
+
+	var req sdk.AdScheduleTimeUpdateReq
+	if err := c.ShouldBindJSON(&req); err != nil {
+		util.BadRequest(c, "参数错误: "+err.Error())
+		return
+	}
+	req.AccessToken = userSession.AccessToken
+
+	resp, err := h.service.Client.AdScheduleTimeUpdate(c.Request.Context(), req)
+	if err != nil {
+		util.RespondWithSDKError(c, err, "更新投放时段")
+		return
+	}
+	util.Success(c, resp.Data)
 }
 
 // UpdateScheduleFixedRange 更新广告计划固定投放时长
-// 注意: 此功能需要SDK支持
 func (h *AdHandler) UpdateScheduleFixedRange(c *gin.Context) {
-	util.NotImplemented(c,
-		"投放时长专项更新功能暂未实现，请使用广告计划更新接口",
-		"可使用 POST /api/qianchuan/ad/update 接口更新包含 schedule_type 和 schedule_fixed_range 的完整广告计划")
+	userSession, ok := middleware.GetUserSession(c)
+	if !ok {
+		util.Unauthorized(c, "")
+		return
+	}
+
+	var req sdk.AdScheduleFixedRangeUpdateReq
+	if err := c.ShouldBindJSON(&req); err != nil {
+		util.BadRequest(c, "参数错误: "+err.Error())
+		return
+	}
+	req.AccessToken = userSession.AccessToken
+
+	resp, err := h.service.Client.AdScheduleFixedRangeUpdate(c.Request.Context(), req)
+	if err != nil {
+		util.RespondWithSDKError(c, err, "更新投放时长")
+		return
+	}
+	util.Success(c, resp.Data)
 }
 
 // GetLowQualityAds 获取低效计划列表
 func (h *AdHandler) GetLowQualityAds(c *gin.Context) {
-	_, ok := middleware.GetUserSession(c)
+	userSession, ok := middleware.GetUserSession(c)
 	if !ok {
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"code":    401,
-			"message": "未登录",
-		})
+		util.Unauthorized(c, "")
 		return
 	}
 
-	// SDK暂不支持此功能，返回空列表
-	// TODO: 等待SDK支持或通过其他API实现
-	c.JSON(http.StatusOK, gin.H{
-		"code":    0,
-		"message": "success",
-		"data": gin.H{
-			"ad_ids": []int64{},
-		},
+	resp, err := h.service.Client.AdLqAdGet(c.Request.Context(), sdk.AdLqAdGetReq{
+		AccessToken:  userSession.AccessToken,
+		AdvertiserId: userSession.AdvertiserID,
 	})
+	if err != nil {
+		util.RespondWithSDKError(c, err, "获取低效计划")
+		return
+	}
+	util.Success(c, resp.Data)
 }
 
 // SuggestBid 建议出价
 func (h *AdHandler) SuggestBid(c *gin.Context) {
-	_, ok := middleware.GetUserSession(c)
+	userSession, ok := middleware.GetUserSession(c)
 	if !ok {
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"code":    401,
-			"message": "未登录",
-		})
+		util.Unauthorized(c, "")
 		return
 	}
 
-	// SDK暂不支持千川计划建议出价（仅支持随心推）
-	// 返回一个合理的默认值范围
-	c.JSON(http.StatusOK, gin.H{
-		"code":    0,
-		"message": "success",
-		"data": gin.H{
-			"suggested_bid": 50.0,
-			"bid_range": gin.H{
-				"min": 30.0,
-				"max": 100.0,
-			},
-			"is_mock_data": true,
-			"note":         "⚠️ 测试数据：建议出价基于行业平均水平，实际出价请根据效果调整",
-		},
+	marketingGoal := c.DefaultQuery("marketing_goal", "LIVE_PROM_GOODS")
+	awemeId, _ := strconv.ParseInt(c.Query("aweme_id"), 10, 64)
+
+	resp, err := h.service.Client.AdSuggestBid(c.Request.Context(), sdk.AdSuggestBidReq{
+		AccessToken:   userSession.AccessToken,
+		AdvertiserId:  userSession.AdvertiserID,
+		MarketingGoal: marketingGoal,
+		AwemeId:       awemeId,
 	})
+	if err != nil {
+		util.RespondWithSDKError(c, err, "获取建议出价")
+		return
+	}
+	util.Success(c, resp.Data)
 }
 
 // SuggestBudget 建议预算
 func (h *AdHandler) SuggestBudget(c *gin.Context) {
-	_, ok := middleware.GetUserSession(c)
+	userSession, ok := middleware.GetUserSession(c)
 	if !ok {
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"code":    401,
-			"message": "未登录",
-		})
+		util.Unauthorized(c, "")
 		return
 	}
 
-	// SDK暂不支持千川计划建议预算
-	// 返回一个合理的默认值范围
-	c.JSON(http.StatusOK, gin.H{
-		"code":    0,
-		"message": "success",
-		"data": gin.H{
-			"suggested_budget": 500.0,
-			"budget_range": gin.H{
-				"min": 300.0,
-				"max": 5000.0,
-			},
-			"is_mock_data": true,
-			"note":         "⚠️ 测试数据：建议预算基于行业平均水平，实际预算请根据投放目标调整",
-		},
+	awemeId, _ := strconv.ParseInt(c.Query("aweme_id"), 10, 64)
+
+	resp, err := h.service.Client.AdSuggestBudget(c.Request.Context(), sdk.AdSuggestBudgetReq{
+		AccessToken:      userSession.AccessToken,
+		AdvertiserId:     userSession.AdvertiserID,
+		AwemeId:          awemeId,
+		LiveScheduleType: "SCHEDULE_FROM_NOW",
 	})
+	if err != nil {
+		util.RespondWithSDKError(c, err, "获取建议预算")
+		return
+	}
+	util.Success(c, resp.Data)
 }
 
 // SuggestRoiGoal 建议ROI目标
 func (h *AdHandler) SuggestRoiGoal(c *gin.Context) {
-	_, ok := middleware.GetUserSession(c)
+	userSession, ok := middleware.GetUserSession(c)
 	if !ok {
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"code":    401,
-			"message": "未登录",
-		})
+		util.Unauthorized(c, "")
 		return
 	}
 
-	// SDK暂不支持千川计划建议ROI目标
-	// 返回一个合理的默认值范围
-	c.JSON(http.StatusOK, gin.H{
-		"code":    0,
-		"message": "success",
-		"data": gin.H{
-			"suggested_roi_goal": 2.0,
-			"roi_range": gin.H{
-				"min": 1.5,
-				"max": 5.0,
-			},
-			"is_mock_data": true,
-			"note":         "⚠️ 测试数据：建议ROI目标基于行业平均水平，实际目标请根据商品毛利调整",
-		},
+	marketingGoal := c.DefaultQuery("marketing_goal", "LIVE_PROM_GOODS")
+	awemeId, _ := strconv.ParseInt(c.Query("aweme_id"), 10, 64)
+
+	resp, err := h.service.Client.AdSuggestRoiGoal(c.Request.Context(), sdk.AdSuggestRoiGoalReq{
+		AccessToken:   userSession.AccessToken,
+		AdvertiserId:  userSession.AdvertiserID,
+		MarketingGoal: marketingGoal,
+		AwemeId:       awemeId,
 	})
+	if err != nil {
+		util.RespondWithSDKError(c, err, "获取建议ROI目标")
+		return
+	}
+	util.Success(c, resp.Data)
 }
 
 // EstimateEffect 预估效果
 func (h *AdHandler) EstimateEffect(c *gin.Context) {
-	_, ok := middleware.GetUserSession(c)
+	userSession, ok := middleware.GetUserSession(c)
 	if !ok {
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"code":    401,
-			"message": "未登录",
-		})
+		util.Unauthorized(c, "")
 		return
 	}
 
-	var req struct {
-		Budget float64 `json:"budget" binding:"required"`
-		Bid    float64 `json:"bid" binding:"required"`
-	}
-
+	var req sdk.AdEstimateEffectReq
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"code":    400,
-			"message": "参数错误: " + err.Error(),
-		})
+		util.BadRequest(c, "参数错误: "+err.Error())
+		return
+	}
+	req.AccessToken = userSession.AccessToken
+
+	resp, err := h.service.Client.AdEstimateEffect(c.Request.Context(), req)
+	if err != nil {
+		util.RespondWithSDKError(c, err, "预估效果")
+		return
+	}
+	util.Success(c, resp.Data)
+}
+
+// RejectReason 获取计划审核建议
+func (h *AdHandler) RejectReason(c *gin.Context) {
+	userSession, ok := middleware.GetUserSession(c)
+	if !ok {
+		util.Unauthorized(c, "")
 		return
 	}
 
-	// SDK暂不支持千川计划效果预估
-	// 返回基于预算和出价的简单估算
-	estimatedImpressions := int64(req.Budget / req.Bid * 1000)
-	estimatedClicks := int64(float64(estimatedImpressions) * 0.05) // 假设5%点击率
-	estimatedConversions := int64(float64(estimatedClicks) * 0.1)  // 假设10%转化率
+	var req sdk.AdRejectReasonReq
+	if err := c.ShouldBindJSON(&req); err != nil {
+		util.BadRequest(c, "参数错误: "+err.Error())
+		return
+	}
+	req.AccessToken = userSession.AccessToken
 
-	c.JSON(http.StatusOK, gin.H{
-		"code":    0,
-		"message": "success",
-		"data": gin.H{
-			"estimated_impressions": estimatedImpressions,
-			"estimated_clicks":      estimatedClicks,
-			"estimated_conversions": estimatedConversions,
-			"estimated_cost":        req.Budget,
-			"estimated_ctr":         0.05,
-			"estimated_cvr":         0.1,
-			"is_mock_data":          true,
-			"note":                  "⚠️ 测试数据：预估数据仅供参考，实际效果受多种因素影响",
-		},
-	})
+	resp, err := h.service.Client.AdRejectReason(c.Request.Context(), req)
+	if err != nil {
+		util.RespondWithSDKError(c, err, "获取审核建议")
+		return
+	}
+	util.Success(c, resp.Data)
+}
+
+// GetCompensateStatus 获取计划成本保障状态
+func (h *AdHandler) GetCompensateStatus(c *gin.Context) {
+	userSession, ok := middleware.GetUserSession(c)
+	if !ok {
+		util.Unauthorized(c, "")
+		return
+	}
+
+	var req sdk.AdCompensateStatusGetReq
+	if err := c.ShouldBindJSON(&req); err != nil {
+		util.BadRequest(c, "参数错误: "+err.Error())
+		return
+	}
+	req.AccessToken = userSession.AccessToken
+
+	resp, err := h.service.Client.AdCompensateStatusGet(c.Request.Context(), req)
+	if err != nil {
+		util.RespondWithSDKError(c, err, "获取成本保障状态")
+		return
+	}
+	util.Success(c, resp.Data)
+}
+
+// GetLearningStatus 获取计划学习期状态
+func (h *AdHandler) GetLearningStatus(c *gin.Context) {
+	userSession, ok := middleware.GetUserSession(c)
+	if !ok {
+		util.Unauthorized(c, "")
+		return
+	}
+
+	var req sdk.AdLearningStatusGetReq
+	if err := c.ShouldBindJSON(&req); err != nil {
+		util.BadRequest(c, "参数错误: "+err.Error())
+		return
+	}
+	req.AccessToken = userSession.AccessToken
+
+	resp, err := h.service.Client.AdLearningStatusGet(c.Request.Context(), req)
+	if err != nil {
+		util.RespondWithSDKError(c, err, "获取学习期状态")
+		return
+	}
+	util.Success(c, resp.Data)
+}
+
+// RoiGoalUpdate 更新计划支付ROI目标
+func (h *AdHandler) RoiGoalUpdate(c *gin.Context) {
+	userSession, ok := middleware.GetUserSession(c)
+	if !ok {
+		util.Unauthorized(c, "")
+		return
+	}
+
+	var req sdk.AdRoiGoalUpdateReq
+	if err := c.ShouldBindJSON(&req); err != nil {
+		util.BadRequest(c, "参数错误: "+err.Error())
+		return
+	}
+	req.AccessToken = userSession.AccessToken
+
+	resp, err := h.service.Client.AdRoiGoalUpdate(c.Request.Context(), req)
+	if err != nil {
+		util.RespondWithSDKError(c, err, "更新ROI目标")
+		return
+	}
+	util.Success(c, resp.Data)
 }

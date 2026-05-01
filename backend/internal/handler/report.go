@@ -11,6 +11,7 @@ import (
 	"github.com/CriarBrand/qianchuan-backend/internal/middleware"
 	"github.com/CriarBrand/qianchuan-backend/internal/service"
 	"github.com/CriarBrand/qianchuan-backend/internal/sdk"
+	"github.com/CriarBrand/qianchuan-backend/internal/util"
 	"github.com/CriarBrand/qianchuan-backend/pkg/session"
 	"github.com/gin-gonic/gin"
 )
@@ -39,27 +40,39 @@ func (h *ReportHandler) GetAdvertiserReport(c *gin.Context) {
 		return
 	}
 
-	// 解析请求参数
+	// 解析请求参数 (支持 GET query 和 POST JSON)
 	var req struct {
-		StartDate     string   `json:"start_date" binding:"required"`
-		EndDate       string   `json:"end_date" binding:"required"`
-		Fields        []string `json:"fields" binding:"required"`
-		MarketingGoal string   `json:"marketing_goal"`
-		OrderPlatform string   `json:"order_platform"`
+		StartDate     string   `form:"start_date" json:"start_date"`
+		EndDate       string   `form:"end_date" json:"end_date"`
+		Fields        []string `form:"fields" json:"fields"`
+		AdvertiserId  int64    `form:"advertiser_id" json:"advertiser_id"`
+		MarketingGoal string   `form:"marketing_goal" json:"marketing_goal"`
+	}
+	if c.Request.Method == "GET" {
+		if err := c.ShouldBindQuery(&req); err != nil {
+			util.BadRequest(c, "参数错误: "+err.Error())
+			return
+		}
+	} else {
+		if err := c.ShouldBindJSON(&req); err != nil {
+			util.BadRequest(c, "参数错误: "+err.Error())
+			return
+		}
 	}
 
-	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"code":    400,
-			"message": "参数错误: " + err.Error(),
-		})
+	if req.StartDate == "" || req.EndDate == "" {
+		util.BadRequest(c, "start_date和end_date不能为空")
 		return
 	}
+	if len(req.Fields) == 0 {
+		req.Fields = []string{"stat_cost", "show_cnt", "click_cnt", "convert_cnt"}
+	}
+	if req.AdvertiserId == 0 {
+		req.AdvertiserId = userSession.AdvertiserID
+	}
 
-	// 调用SDK (OrderPlatform 字段SDK暂不支持)
-	_ = req.OrderPlatform
 	resp, err := h.service.Client.AdvertiserReport(c.Request.Context(), sdk.AdvertiserReportReq{
-		AdvertiserId: userSession.AdvertiserID,
+		AdvertiserId: req.AdvertiserId,
 		StartDate:    req.StartDate,
 		EndDate:      req.EndDate,
 		Fields:       req.Fields,
@@ -447,147 +460,115 @@ func (h *ReportHandler) ExportReport(c *gin.Context) {
 // GetMaterialReport 获取素材报表
 // POST /qianchuan/report/material/get
 func (h *ReportHandler) GetMaterialReport(c *gin.Context) {
-	userSession, _ := middleware.GetUserSession(c)
-
-	var req struct {
-		StartDate string   `json:"start_date"`
-		EndDate   string   `json:"end_date"`
-		Fields    []string `json:"fields"`
-		Page      int64    `json:"page"`
-		PageSize  int64    `json:"page_size"`
+	userSession, ok := middleware.GetUserSession(c)
+	if !ok {
+		util.Unauthorized(c, "")
+		return
 	}
-	_ = c.ShouldBindJSON(&req)
 
-	log.Printf("Get material report: start_date=%s, end_date=%s, fields=%v",
-		req.StartDate, req.EndDate, req.Fields)
+	var req sdk.ReportMaterialGetReq
+	if err := c.ShouldBindJSON(&req); err != nil {
+		util.BadRequest(c, "参数错误: "+err.Error())
+		return
+	}
+	req.AccessToken = userSession.AccessToken
+	req.AdvertiserId = userSession.AdvertiserID
 
-	// SDK 暂未实现素材报表接口，返回 501
-	c.JSON(http.StatusNotImplemented, gin.H{
-		"code":    501,
-		"message": "素材报表功能暂未实现",
-		"hint":    "SDK 正在对接千川素材报表API，请稍后使用。建议使用创意报表查看素材效果",
-		"data": gin.H{
-			"list":  []gin.H{},
-			"total": 0,
-			"page":  req.Page,
-			"size":  req.PageSize,
-		},
-		"session": userSession,
-	})
+	resp, err := h.service.Client.ReportMaterialGet(c.Request.Context(), req)
+	if err != nil {
+		util.RespondWithSDKError(c, err, "获取素材报表")
+		return
+	}
+	util.Success(c, resp.Data)
 }
 
 // GetSearchWordReport 获取搜索词报表
-// POST /qianchuan/report/search-word/get
 func (h *ReportHandler) GetSearchWordReport(c *gin.Context) {
-	userSession, _ := middleware.GetUserSession(c)
-
-	var req struct {
-		StartDate string   `json:"start_date"`
-		EndDate   string   `json:"end_date"`
-		Fields    []string `json:"fields"`
-		AdIds     []int64  `json:"ad_ids"`
-		Page      int64    `json:"page"`
-		PageSize  int64    `json:"page_size"`
+	userSession, ok := middleware.GetUserSession(c)
+	if !ok {
+		util.Unauthorized(c, "")
+		return
 	}
-	_ = c.ShouldBindJSON(&req)
 
-	log.Printf("Get search word report: start_date=%s, end_date=%s, ad_ids=%v",
-		req.StartDate, req.EndDate, req.AdIds)
+	var req sdk.ReportSearchWordGetReq
+	if err := c.ShouldBindJSON(&req); err != nil {
+		util.BadRequest(c, "参数错误: "+err.Error())
+		return
+	}
+	req.AccessToken = userSession.AccessToken
+	req.AdvertiserId = userSession.AdvertiserID
 
-	// SDK 暂未实现搜索词报表接口，返回 501
-	c.JSON(http.StatusNotImplemented, gin.H{
-		"code":    501,
-		"message": "搜索词报表功能暂未实现",
-		"hint":    "SDK 正在对接千川搜索词报表API，请稍后使用。建议通过关键词管理查看关键词效果",
-		"data": gin.H{
-			"list":  []gin.H{},
-			"total": 0,
-			"page":  req.Page,
-			"size":  req.PageSize,
-		},
-		"session": userSession,
-	})
+	resp, err := h.service.Client.ReportSearchWordGet(c.Request.Context(), req)
+	if err != nil {
+		util.RespondWithSDKError(c, err, "获取搜索词报表")
+		return
+	}
+	util.Success(c, resp.Data)
 }
 
 // GetVideoUserLoseReport 获取视频流失报表
-// POST /qianchuan/report/video-user-lose/get
 func (h *ReportHandler) GetVideoUserLoseReport(c *gin.Context) {
-	userSession, _ := middleware.GetUserSession(c)
-
-	var req struct {
-		StartDate   string   `json:"start_date"`
-		EndDate     string   `json:"end_date"`
-		Fields      []string `json:"fields"`
-		CreativeIds []int64  `json:"creative_ids"`
-		Page        int64    `json:"page"`
-		PageSize    int64    `json:"page_size"`
+	userSession, ok := middleware.GetUserSession(c)
+	if !ok {
+		util.Unauthorized(c, "")
+		return
 	}
-	_ = c.ShouldBindJSON(&req)
 
-	log.Printf("Get video user lose report: start_date=%s, end_date=%s, creative_ids=%v",
-		req.StartDate, req.EndDate, req.CreativeIds)
+	var req sdk.ReportVideoUserLoseGetReq
+	if err := c.ShouldBindJSON(&req); err != nil {
+		util.BadRequest(c, "参数错误: "+err.Error())
+		return
+	}
+	req.AccessToken = userSession.AccessToken
+	req.AdvertiserId = userSession.AdvertiserID
 
-	// SDK 暂未实现视频流失报表接口，返回 501
-	c.JSON(http.StatusNotImplemented, gin.H{
-		"code":    501,
-		"message": "视频流失报表功能暂未实现",
-		"hint":    "SDK 正在对接千川视频流失报表API，请稍后使用。建议通过创意报表查看视频整体表现",
-		"data": gin.H{
-			"list":  []gin.H{},
-			"total": 0,
-			"page":  req.Page,
-			"size":  req.PageSize,
-		},
-		"session": userSession,
-	})
+	resp, err := h.service.Client.ReportVideoUserLoseGet(c.Request.Context(), req)
+	if err != nil {
+		util.RespondWithSDKError(c, err, "获取视频流失报表")
+		return
+	}
+	util.Success(c, resp.Data)
 }
 
 // GetCustomReport 获取自定义报表
-// GET /qianchuan/report/custom/get
 func (h *ReportHandler) GetCustomReport(c *gin.Context) {
-	userSession, _ := middleware.GetUserSession(c)
+	userSession, ok := middleware.GetUserSession(c)
+	if !ok {
+		util.Unauthorized(c, "")
+		return
+	}
 
-	startDate := c.Query("start_date")
-	endDate := c.Query("end_date")
-	dimensions := c.QueryArray("dimensions")
+	var req sdk.ReportCustomGetReq
+	if err := c.ShouldBindJSON(&req); err != nil {
+		util.BadRequest(c, "参数错误: "+err.Error())
+		return
+	}
+	req.AccessToken = userSession.AccessToken
+	req.AdvertiserId = userSession.AdvertiserID
 
-	log.Printf("Get custom report: start_date=%s, end_date=%s, dimensions=%v",
-		startDate, endDate, dimensions)
-
-	// SDK 暂未实现自定义报表接口，返回 501
-	c.JSON(http.StatusNotImplemented, gin.H{
-		"code":    501,
-		"message": "自定义报表功能暂未实现",
-		"hint":    "SDK 正在对接千川自定义报表API，请稍后使用。建议使用现有维度报表（广告主/广告/创意）",
-		"data": gin.H{
-			"list":  []gin.H{},
-			"total": 0,
-		},
-		"session": userSession,
-		"request": gin.H{
-			"start_date": startDate,
-			"end_date":   endDate,
-			"dimensions": dimensions,
-		},
-	})
+	resp, err := h.service.Client.ReportCustomGet(c.Request.Context(), req)
+	if err != nil {
+		util.RespondWithSDKError(c, err, "获取自定义报表")
+		return
+	}
+	util.Success(c, resp.Data)
 }
 
 // GetCustomReportConfig 获取自定义报表配置
-// GET /qianchuan/report/custom/config
 func (h *ReportHandler) GetCustomReportConfig(c *gin.Context) {
-	userSession, _ := middleware.GetUserSession(c)
+	userSession, ok := middleware.GetUserSession(c)
+	if !ok {
+		util.Unauthorized(c, "")
+		return
+	}
 
-	log.Printf("Get custom report config")
-
-	// SDK 暂未实现自定义报表配置接口，返回 501
-	c.JSON(http.StatusNotImplemented, gin.H{
-		"code":    501,
-		"message": "自定义报表配置功能暂未实现",
-		"hint":    "SDK 正在对接千川自定义报表配置API，请稍后使用",
-		"data": gin.H{
-			"dimensions": []gin.H{},
-			"metrics":    []gin.H{},
-		},
-		"session": userSession,
+	resp, err := h.service.Client.ReportCustomConfigGet(c.Request.Context(), sdk.ReportCustomConfigGetReq{
+		AccessToken:  userSession.AccessToken,
+		AdvertiserId: userSession.AdvertiserID,
 	})
+	if err != nil {
+		util.RespondWithSDKError(c, err, "获取自定义报表配置")
+		return
+	}
+	util.Success(c, resp.Data)
 }
