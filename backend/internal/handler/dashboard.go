@@ -2,6 +2,8 @@ package handler
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
 	"log"
 	"os"
 	"strconv"
@@ -172,6 +174,129 @@ func (h *DashboardHandler) Summary(c *gin.Context) {
 	}
 
 	util.Success(c, dashboard)
+}
+
+// BatchBalance 批量查询多账号余额
+// POST /api/dashboard/batch_balance  body: {"ids": [1,2,3]}
+func (h *DashboardHandler) BatchBalance(c *gin.Context) {
+	userSession, ok := middleware.GetUserSession(c)
+	if !ok {
+		util.Unauthorized(c, "")
+		return
+	}
+
+	var req struct {
+		Ids []int64 `json:"ids"`
+	}
+	if err := c.ShouldBindJSON(&req); err != nil {
+		util.BadRequest(c, err.Error())
+		return
+	}
+	if len(req.Ids) == 0 {
+		req.Ids = getManagedAdvertiserIDs()
+	}
+
+	type result struct {
+		AdvertiserId int64   `json:"advertiser_id"`
+		Name         string  `json:"name"`
+		Balance      float64 `json:"balance"`
+		Cash         float64 `json:"cash"`
+		Grant        float64 `json:"grant"`
+		Budget       float64 `json:"budget"`
+		BudgetMode   string  `json:"budget_mode"`
+		Error        string  `json:"error,omitempty"`
+	}
+
+	var results []result
+	for _, id := range req.Ids {
+		r := result{AdvertiserId: id}
+		if balResp, err := h.service.Client.BalanceGet(c.Request.Context(), sdk.BalanceGetReq{
+			AdvertiserId: id, AccessToken: userSession.AccessToken,
+		}); err == nil && balResp.Code == 0 {
+			r.Balance = balResp.Data.Balance / 100000
+			r.Cash = balResp.Data.Cash / 100000
+			r.Grant = balResp.Data.Grant / 100000
+		} else {
+			r.Error = "查询失败"
+		}
+		if budgetResp, err := h.service.Client.AdvertiserBudgetGet(c.Request.Context(), sdk.AdvertiserBudgetGetReq{
+			AdvertiserId: id, AccessToken: userSession.AccessToken,
+		}); err == nil && budgetResp.Code == 0 {
+			r.Budget = float64(budgetResp.Data.Budget) / 100
+			r.BudgetMode = budgetResp.Data.BudgetMode
+		}
+		results = append(results, r)
+	}
+
+	util.Success(c, results)
+}
+
+// ExportCSV 导出报表为CSV
+// GET /api/dashboard/export_csv?advertiser_id=xxx&start_date=2026-04-01&end_date=2026-04-30
+func (h *DashboardHandler) ExportCSV(c *gin.Context) {
+	userSession, ok := middleware.GetUserSession(c)
+	if !ok {
+		util.Unauthorized(c, "")
+		return
+	}
+
+	advertiserId, _ := strconv.ParseInt(c.Query("advertiser_id"), 10, 64)
+	startDate := c.DefaultQuery("start_date", "2026-04-01")
+	endDate := c.DefaultQuery("end_date", "2026-04-30")
+
+	if advertiserId == 0 {
+		advertiserId = userSession.AdvertiserID
+	}
+
+	resp, err := h.service.Client.ReportAdGet(c.Request.Context(), sdk.ReportAdGetReq{
+		AdvertiserId: advertiserId,
+		StartDate:    startDate,
+		EndDate:      endDate,
+		Fields:       []string{"stat_cost", "show_cnt", "click_cnt", "convert_cnt", "ctr", "cvr", "cpa_platform"},
+		Page:         1,
+		PageSize:     100,
+		AccessToken:  userSession.AccessToken,
+	})
+	if err != nil || resp == nil || resp.Code != 0 {
+		util.ServerError(c, "获取报表数据失败")
+		return
+	}
+
+	// 构建 CSV
+	var sb strings.Builder
+	sb.WriteString("日期,消耗(元),展示次数,点击次数,转化次数,点击率(%),转化率(%),转化成本(元)\n")
+
+	for _, item := range resp.Data.List {
+		if m, ok := item.(map[string]interface{}); ok {
+			cost := getFloatFromMap(m, "stat_cost") / 100000
+			shows := getFloatFromMap(m, "show_cnt")
+			clicks := getFloatFromMap(m, "click_cnt")
+			converts := getFloatFromMap(m, "convert_cnt")
+			ctr := getFloatFromMap(m, "ctr")
+			cvr := getFloatFromMap(m, "cvr")
+			cpa := getFloatFromMap(m, "cpa_platform") / 100000
+
+			sb.WriteString(fmt.Sprintf("%s,%.2f,%.0f,%.0f,%.0f,%.2f,%.2f,%.2f\n",
+				startDate, cost, shows, clicks, converts, ctr, cvr, cpa))
+		}
+	}
+
+	c.Header("Content-Type", "text/csv; charset=utf-8")
+	c.Header("Content-Disposition", fmt.Sprintf("attachment; filename=report_%d_%s_%s.csv", advertiserId, startDate, endDate))
+	c.String(200, sb.String())
+}
+
+func getFloatFromMap(m map[string]interface{}, key string) float64 {
+	if v, ok := m[key]; ok {
+		switch val := v.(type) {
+		case float64:
+			return val
+		case json.Number:
+			f, _ := val.Float64()
+			return f
+		}
+	}
+	return 0
 }
 
 // getManagedAdvertiserIDs 从环境变量读取托管账户ID列表

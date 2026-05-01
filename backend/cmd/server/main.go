@@ -258,6 +258,8 @@ func main() {
 	{
 		d := apiAuth.Group("/dashboard")
 		d.GET("/summary", dashboardHandler.Summary)
+		d.POST("/batch_balance", dashboardHandler.BatchBalance)
+		d.GET("/export_csv", dashboardHandler.ExportCSV)
 	}
 
 	{
